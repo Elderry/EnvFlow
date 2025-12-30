@@ -11,6 +11,7 @@ namespace EnvFlow;
 public sealed partial class MainWindow : Window
 {
     public MainWindowViewModel ViewModel { get; }
+    private EnvVariableItem? _currentlyEditingItem;
 
     public MainWindow()
     {
@@ -328,7 +329,14 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        // Exit edit mode for previously editing item
+        if (_currentlyEditingItem != null && _currentlyEditingItem != item)
+        {
+            _currentlyEditingItem.IsEditing = false;
+        }
+
         // Enter edit mode
+        _currentlyEditingItem = item;
         item.EditValue = item.Value;
         item.IsEditing = true;
     }
@@ -359,6 +367,12 @@ public sealed partial class MainWindow : Window
             // Cancel editing
             e.Handled = true;
             item.IsEditing = false;
+            
+            // Clear currently editing item
+            if (_currentlyEditingItem == item)
+            {
+                _currentlyEditingItem = null;
+            }
         }
     }
 
@@ -377,6 +391,12 @@ public sealed partial class MainWindow : Window
 
         // Exit edit mode
         item.IsEditing = false;
+        
+        // Clear currently editing item
+        if (_currentlyEditingItem == item)
+        {
+            _currentlyEditingItem = null;
+        }
 
         // Check if value changed
         if (item.EditValue == item.Value)
