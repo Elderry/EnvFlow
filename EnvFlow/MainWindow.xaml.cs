@@ -309,13 +309,16 @@ public sealed partial class MainWindow : Window
         // Prevent event from bubbling up
         e.Handled = true;
 
-        // Determine if this is a user or system variable by checking which TreeView contains it
-        bool isUserVariable = IsInUserTreeView(item);
-        bool isSystemVariable = !isUserVariable;
+        // Don't allow editing children in inline mode - too complex
+        if (item.IsChild)
+        {
+            ViewModel.StatusMessage = "Double-click the parent variable to edit all path entries";
+            UpdateStatusBar();
+            return;
+        }
 
-        // For child items (path entries), edit the parent variable instead
-        var itemToEdit = item.IsChild ? GetParentVariable(item, isUserVariable) : item;
-        if (itemToEdit == null) return;
+        // Determine if this is a user or system variable
+        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
 
         // Check admin permissions for system variables
         if (isSystemVariable && !ViewModel.IsAdmin)
@@ -325,38 +328,81 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        // Open edit dialog
-        var dialog = new VariableEditorDialog
-        {
-            Title = isSystemVariable ? "Edit System Variable" : "Edit User Variable",
-            VariableName = itemToEdit.Name,
-            VariableValue = itemToEdit.Value,
-            IsEditMode = true,
-            XamlRoot = this.Content.XamlRoot
-        };
+        // Enter edit mode
+        item.EditValue = item.Value;
+        item.IsEditing = true;
+    }
 
-        var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
+    private void EditTextBox_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Focus and select all when TextBox appears
+        if (sender is TextBox textBox)
         {
-            try
-            {
-                ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} variable: {dialog.VariableName}";
-                var service = new Services.EnvironmentVariableService();
-                
-                if (isSystemVariable)
-                    service.SetSystemVariable(dialog.VariableName, dialog.VariableValue);
-                else
-                    service.SetUserVariable(dialog.VariableName, dialog.VariableValue);
-                
-                ViewModel.RefreshVariables();
-                UpdateStatusBar();
-                ViewModel.StatusMessage = $"Updated {(isSystemVariable ? "system" : "user")} variable: {dialog.VariableName}";
-            }
-            catch (Exception ex)
-            {
-                ViewModel.StatusMessage = $"Error updating variable: {ex.Message}";
-                UpdateStatusBar();
-            }
+            textBox.Focus(FocusState.Programmatic);
+            textBox.SelectAll();
+        }
+    }
+
+    private void EditTextBox_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (sender is not TextBox textBox || textBox.DataContext is not EnvVariableItem item)
+            return;
+
+        if (e.Key == Windows.System.VirtualKey.Enter)
+        {
+            // Save changes
+            e.Handled = true;
+            SaveInlineEdit(item);
+        }
+        else if (e.Key == Windows.System.VirtualKey.Escape)
+        {
+            // Cancel editing
+            e.Handled = true;
+            item.IsEditing = false;
+        }
+    }
+
+    private void EditTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        // Save when focus is lost
+        if (sender is TextBox textBox && textBox.DataContext is EnvVariableItem item)
+        {
+            SaveInlineEdit(item);
+        }
+    }
+
+    private void SaveInlineEdit(EnvVariableItem item)
+    {
+        if (!item.IsEditing) return;
+
+        // Exit edit mode
+        item.IsEditing = false;
+
+        // Check if value changed
+        if (item.EditValue == item.Value)
+            return;
+
+        // Determine if this is a user or system variable
+        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
+
+        try
+        {
+            ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} variable: {item.Name}";
+            var service = new Services.EnvironmentVariableService();
+
+            if (isSystemVariable)
+                service.SetSystemVariable(item.Name, item.EditValue);
+            else
+                service.SetUserVariable(item.Name, item.EditValue);
+
+            ViewModel.RefreshVariables();
+            UpdateStatusBar();
+            ViewModel.StatusMessage = $"Updated {(isSystemVariable ? "system" : "user")} variable: {item.Name}";
+        }
+        catch (Exception ex)
+        {
+            ViewModel.StatusMessage = $"Error updating variable: {ex.Message}";
+            UpdateStatusBar();
         }
     }
 

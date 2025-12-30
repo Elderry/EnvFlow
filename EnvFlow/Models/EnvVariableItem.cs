@@ -1,13 +1,18 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
 namespace EnvFlow;
 
-public class EnvVariableItem
+public class EnvVariableItem : INotifyPropertyChanged
 {
+    private bool _isEditing;
+    private string _editValue = string.Empty;
+
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
@@ -18,6 +23,35 @@ public class EnvVariableItem
     public bool IsValid { get; set; } = true;
     public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
     public bool IsChild => IsPathEntry; // Path entries are children of the parent variable
+
+    public bool IsEditing
+    {
+        get => _isEditing;
+        set
+        {
+            _isEditing = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(DisplayVisibility));
+            OnPropertyChanged(nameof(EditVisibility));
+            OnPropertyChanged(nameof(ValueDisplayVisibility));
+        }
+    }
+
+    public string EditValue
+    {
+        get => _editValue;
+        set
+        {
+            _editValue = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Visibility DisplayVisibility => IsEditing ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility EditVisibility => IsEditing ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed) 
+        ? Visibility.Collapsed 
+        : Visibility.Visible;
 
     public EnvVariableItem()
     {
@@ -109,5 +143,12 @@ public class EnvVariableItem
             IconColor = new SolidColorBrush(exists ? Colors.LimeGreen : Colors.Crimson),
             ValueVisibility = Visibility.Collapsed
         };
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

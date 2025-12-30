@@ -110,14 +110,27 @@
                                             <FontIcon Glyph="{Binding Icon}" 
                                                       FontSize="16" 
                                                       Foreground="{Binding IconColor}"/>
+                                            
                                             <TextBlock Text="{Binding DisplayName}" 
-                                                       VerticalAlignment="Center"/>
+                                                       VerticalAlignment="Center"
+                                                       MinWidth="150"/>
+                                            
+                                            <!-- Display Mode: Show value in gray -->
                                             <TextBlock Text="{Binding Value}" 
                                                        Foreground="Gray"
                                                        Margin="8,0,0,0"
                                                        VerticalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis"
-                                                       Visibility="{Binding ValueVisibility}"/>
+                                                       Visibility="{Binding ValueDisplayVisibility}"/>
+                                            
+                                            <!-- Edit Mode: Show TextBox -->
+                                            <TextBox x:Name="EditTextBox"
+                                                     Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Visibility="{Binding EditVisibility}"
+                                                     MinWidth="300"
+                                                     KeyDown="EditTextBox_KeyDown"
+                                                     LostFocus="EditTextBox_LostFocus"
+                                                     Loaded="EditTextBox_Loaded"/>
                                         </StackPanel>
                                     </TreeViewItem>
                                 </DataTemplate>
@@ -210,14 +223,27 @@
                                             <FontIcon Glyph="{Binding Icon}" 
                                                       FontSize="16" 
                                                       Foreground="{Binding IconColor}"/>
+                                            
                                             <TextBlock Text="{Binding DisplayName}" 
-                                                       VerticalAlignment="Center"/>
+                                                       VerticalAlignment="Center"
+                                                       MinWidth="150"/>
+                                            
+                                            <!-- Display Mode: Show value in gray -->
                                             <TextBlock Text="{Binding Value}" 
                                                        Foreground="Gray"
                                                        Margin="8,0,0,0"
                                                        VerticalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis"
-                                                       Visibility="{Binding ValueVisibility}"/>
+                                                       Visibility="{Binding ValueDisplayVisibility}"/>
+                                            
+                                            <!-- Edit Mode: Show TextBox -->
+                                            <TextBox x:Name="EditTextBox"
+                                                     Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Visibility="{Binding EditVisibility}"
+                                                     MinWidth="300"
+                                                     KeyDown="EditTextBox_KeyDown"
+                                                     LostFocus="EditTextBox_LostFocus"
+                                                     Loaded="EditTextBox_Loaded"/>
                                         </StackPanel>
                                     </TreeViewItem>
                                 </DataTemplate>
