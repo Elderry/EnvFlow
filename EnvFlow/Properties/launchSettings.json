@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "EnvFlow": {
+      "commandName": "Project",
+      "commandLineArgs": "",
+      "workingDirectory": ".",
+      "environmentVariables": {},
+      "nativeDebugging": false
+    }
+  }
+}

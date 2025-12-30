@@ -23,7 +23,7 @@ EnvFlow is a powerful and intuitive tool for managing Windows environment variab
 
 - **UI Framework**: WinUI 3
 - **Platform**: Windows App SDK
-- **Language**: C# / .NET 8+
+- **Language**: C# / .NET 10+
 - **Design**: Fluent Design System
 - **Build**: Visual Studio 2022
 

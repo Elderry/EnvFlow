@@ -1,0 +1,33 @@
+# Build outputs
+bin/
+obj/
+*.user
+*.suo
+*.cache
+.vs/
+
+# Visual Studio
+.vscode/
+*.csproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Package files
+*.nupkg
+*.snupkg
+
+# Windows specific
+Thumbs.db
+Desktop.ini
+
+# AppPackages
+AppPackages/
+BundleArtifacts/
+
+# Others
+*.log
+*.bak
+*.swp
+*~
