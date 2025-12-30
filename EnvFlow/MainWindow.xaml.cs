@@ -160,7 +160,7 @@ public sealed partial class MainWindow : Window
 
     private void EditUserVariableButton_Click(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedUserVariable == null || ViewModel.SelectedUserVariable.IsChild)
+        if (ViewModel.SelectedUserVariable == null)
         {
             ViewModel.StatusMessage = "Please select a variable to edit";
             UpdateStatusBar();
@@ -175,7 +175,9 @@ public sealed partial class MainWindow : Window
 
         // Enter inline edit mode
         _currentlyEditingItem = ViewModel.SelectedUserVariable;
-        ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.Value;
+        ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.IsChild 
+            ? ViewModel.SelectedUserVariable.DisplayName 
+            : ViewModel.SelectedUserVariable.Value;
         ViewModel.SelectedUserVariable.IsEditing = true;
         ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
         UpdateStatusBar();
@@ -190,7 +192,7 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        if (ViewModel.SelectedSystemVariable == null || ViewModel.SelectedSystemVariable.IsChild)
+        if (ViewModel.SelectedSystemVariable == null)
         {
             ViewModel.StatusMessage = "Please select a variable to edit";
             UpdateStatusBar();
@@ -205,7 +207,9 @@ public sealed partial class MainWindow : Window
 
         // Enter inline edit mode
         _currentlyEditingItem = ViewModel.SelectedSystemVariable;
-        ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.Value;
+        ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.IsChild 
+            ? ViewModel.SelectedSystemVariable.DisplayName 
+            : ViewModel.SelectedSystemVariable.Value;
         ViewModel.SelectedSystemVariable.IsEditing = true;
         ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
         UpdateStatusBar();
