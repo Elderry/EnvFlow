@@ -113,7 +113,8 @@
                                             
                                             <TextBlock Text="{Binding DisplayName}" 
                                                        VerticalAlignment="Center"
-                                                       MinWidth="150"/>
+                                                       MinWidth="150"
+                                                       Visibility="{Binding DisplayNameVisibility}"/>
                                             
                                             <!-- Display Mode: Show value in gray -->
                                             <TextBlock Text="{Binding Value}" 
@@ -234,7 +235,8 @@
                                             
                                             <TextBlock Text="{Binding DisplayName}" 
                                                        VerticalAlignment="Center"
-                                                       MinWidth="150"/>
+                                                       MinWidth="150"
+                                                       Visibility="{Binding DisplayNameVisibility}"/>
                                             
                                             <!-- Display Mode: Show value in gray -->
                                             <TextBlock Text="{Binding Value}" 
