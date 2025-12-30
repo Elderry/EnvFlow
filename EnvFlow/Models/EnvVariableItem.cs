@@ -21,6 +21,7 @@ public class EnvVariableItem : INotifyPropertyChanged
     public ObservableCollection<EnvVariableItem> Children { get; set; } = new();
     public bool IsPathEntry { get; set; }
     public bool IsValid { get; set; } = true;
+    public bool IsReadOnly { get; set; } = false; // For volatile environment variables
     public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
     public bool IsChild => IsPathEntry; // Path entries are children of the parent variable
 
@@ -63,12 +64,13 @@ public class EnvVariableItem : INotifyPropertyChanged
     {
     }
 
-    public EnvVariableItem(string name, string value, bool isPathLike = false)
+    public EnvVariableItem(string name, string value, bool isPathLike = false, bool isReadOnly = false)
     {
         Name = name;
         Value = value;
         DisplayName = name;
         IsPathEntry = false;
+        IsReadOnly = isReadOnly;
 
         // Check if value looks like a file system path
         bool isSinglePath = !string.IsNullOrEmpty(value) && 
@@ -126,16 +128,25 @@ public class EnvVariableItem : INotifyPropertyChanged
         else if (isSinglePath)
         {
             // Single path value (like OneDrive, TEMP, etc.)
-            var expandedValue = Environment.ExpandEnvironmentVariables(value);
-            bool exists = System.IO.Directory.Exists(expandedValue) || System.IO.File.Exists(expandedValue);
-            Icon = "\uE8B7"; // Folder icon
-            IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
+            if (IsReadOnly)
+            {
+                // Volatile variables - gray color, no validation
+                Icon = "\uE8B7"; // Folder icon
+                IconColor = new SolidColorBrush(Colors.Gray);
+            }
+            else
+            {
+                var expandedValue = Environment.ExpandEnvironmentVariables(value);
+                bool exists = System.IO.Directory.Exists(expandedValue) || System.IO.File.Exists(expandedValue);
+                Icon = "\uE8B7"; // Folder icon
+                IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
+            }
             ValueVisibility = Visibility.Visible;
         }
         else
         {
             Icon = "\uE70F"; // Tag/Label icon for regular variables
-            IconColor = new SolidColorBrush(Colors.SkyBlue);
+            IconColor = new SolidColorBrush(IsReadOnly ? Colors.Gray : Colors.SkyBlue);
             ValueVisibility = Visibility.Visible;
         }
     }

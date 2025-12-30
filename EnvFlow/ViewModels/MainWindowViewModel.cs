@@ -45,8 +45,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public bool CanEditUserVariable => SelectedUserVariable != null;
-    public bool CanDeleteUserVariable => SelectedUserVariable != null;
+    public bool CanEditUserVariable => SelectedUserVariable != null && !SelectedUserVariable.IsReadOnly;
+    public bool CanDeleteUserVariable => SelectedUserVariable != null && !SelectedUserVariable.IsReadOnly;
     public bool CanEditSystemVariable => IsAdmin && SelectedSystemVariable != null;
     public bool CanDeleteSystemVariable => IsAdmin && SelectedSystemVariable != null;
 
@@ -106,11 +106,13 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
         // Load user variables
         UserVariables.Clear();
-        var userVars = _envService.GetUserVariables();
+        var userVars = _envService.GetUserVariables(out var volatileVariables);
         foreach (var kvp in userVars.OrderBy(v => v.Key))
         {
             bool isPathLike = _envService.IsPathLike(kvp.Key);
-            UserVariables.Add(new EnvVariableItem(kvp.Key, kvp.Value, isPathLike));
+            bool isVolatile = volatileVariables.Contains(kvp.Key);
+            var item = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile);
+            UserVariables.Add(item);
         }
         UserVariableCount = userVars.Count;
 

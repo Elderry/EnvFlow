@@ -299,6 +299,14 @@ public sealed partial class MainWindow : Window
         // Prevent event from bubbling up
         e.Handled = true;
 
+        // Check if the variable is read-only (volatile)
+        if (item.IsReadOnly)
+        {
+            ViewModel.StatusMessage = "This is a read-only system-managed variable";
+            UpdateStatusBar();
+            return;
+        }
+
         // Determine if this is a user or system variable
         bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
         if (!isSystemVariable)

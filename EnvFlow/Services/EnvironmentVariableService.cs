@@ -10,7 +10,13 @@ public class EnvironmentVariableService
 {
     public Dictionary<string, string> GetUserVariables()
     {
+        return GetUserVariables(out _);
+    }
+
+    public Dictionary<string, string> GetUserVariables(out HashSet<string> volatileVariables)
+    {
         var variables = new Dictionary<string, string>();
+        volatileVariables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         
         try
         {
@@ -41,6 +47,7 @@ public class EnvironmentVariableService
                         if (value != null)
                         {
                             variables[valueName] = value.ToString()!;
+                            volatileVariables.Add(valueName); // Mark as volatile
                         }
                     }
                 }
