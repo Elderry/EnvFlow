@@ -80,7 +80,7 @@
                                     Click="EditUserVariableButton_Click"
                                     IsEnabled="{x:Bind ViewModel.CanEditUserVariable, Mode=OneWay}"
                                     ToolTipService.ToolTip="Edit selected variable">
-                                <FontIcon Glyph="&#xE74D;" FontSize="14"/>
+                                <FontIcon Glyph="&#xE104;" FontSize="14"/>
                             </Button>
                             <Button Padding="8" 
                                     Click="DeleteUserVariableButton_Click"
@@ -180,7 +180,7 @@
                                     Click="EditSystemVariableButton_Click"
                                     IsEnabled="{x:Bind ViewModel.CanEditSystemVariable, Mode=OneWay}"
                                     ToolTipService.ToolTip="Edit selected variable (requires admin)">
-                                <FontIcon Glyph="&#xE74D;" FontSize="14"/>
+                                <FontIcon Glyph="&#xE104;" FontSize="14"/>
                             </Button>
                             <Button Padding="8" 
                                     Click="DeleteSystemVariableButton_Click"
