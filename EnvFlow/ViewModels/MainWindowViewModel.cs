@@ -46,9 +46,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
     }
 
     public bool CanEditUserVariable => SelectedUserVariable != null && !SelectedUserVariable.IsChild;
-    public bool CanDeleteUserVariable => SelectedUserVariable != null && !SelectedUserVariable.IsChild;
+    public bool CanDeleteUserVariable => SelectedUserVariable != null;
     public bool CanEditSystemVariable => IsAdmin && SelectedSystemVariable != null && !SelectedSystemVariable.IsChild;
-    public bool CanDeleteSystemVariable => IsAdmin && SelectedSystemVariable != null && !SelectedSystemVariable.IsChild;
+    public bool CanDeleteSystemVariable => IsAdmin && SelectedSystemVariable != null;
 
     public string StatusMessage
     {
