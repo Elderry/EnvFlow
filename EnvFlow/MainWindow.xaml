@@ -166,7 +166,7 @@
                                     Click="RestartAsAdminButton_Click"
                                     ToolTipService.ToolTip="Restart with administrator privileges to edit system variables">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <FontIcon Glyph="&#xE1EC;" FontSize="14"/>
+                                    <FontIcon Glyph="&#xEA18;" FontSize="14"/>
                                     <TextBlock Text="Restart as Admin"/>
                                 </StackPanel>
                             </Button>
