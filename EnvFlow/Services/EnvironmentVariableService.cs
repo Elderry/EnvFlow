@@ -14,6 +14,7 @@ public class EnvironmentVariableService
         
         try
         {
+            // First, read from registry to get unexpanded values
             using var key = Registry.CurrentUser.OpenSubKey(@"Environment");
             if (key != null)
             {
@@ -23,6 +24,24 @@ public class EnvironmentVariableService
                     if (value != null)
                     {
                         variables[valueName] = value.ToString()!;
+                    }
+                }
+            }
+            
+            // Also read volatile environment variables (like APPDATA, TEMP, USERPROFILE)
+            using var volatileKey = Registry.CurrentUser.OpenSubKey(@"Volatile Environment");
+            if (volatileKey != null)
+            {
+                foreach (var valueName in volatileKey.GetValueNames())
+                {
+                    // Only add if not already in registry variables
+                    if (!variables.ContainsKey(valueName))
+                    {
+                        var value = volatileKey.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
+                        if (value != null)
+                        {
+                            variables[valueName] = value.ToString()!;
+                        }
                     }
                 }
             }
