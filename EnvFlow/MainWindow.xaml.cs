@@ -158,7 +158,7 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void EditUserVariableButton_Click(object sender, RoutedEventArgs e)
+    private void EditUserVariableButton_Click(object sender, RoutedEventArgs e)
     {
         if (ViewModel.SelectedUserVariable == null || ViewModel.SelectedUserVariable.IsChild)
         {
@@ -167,36 +167,21 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        var dialog = new VariableEditorDialog
+        // Exit edit mode for previously editing item
+        if (_currentlyEditingItem != null && _currentlyEditingItem != ViewModel.SelectedUserVariable)
         {
-            Title = "Edit User Variable",
-            VariableName = ViewModel.SelectedUserVariable.Name,
-            VariableValue = ViewModel.SelectedUserVariable.Value,
-            IsEditMode = true,
-            XamlRoot = this.Content.XamlRoot
-        };
-
-        var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            try
-            {
-                ViewModel.StatusMessage = $"Updating user variable: {dialog.VariableName}";
-                var service = new Services.EnvironmentVariableService();
-                service.SetUserVariable(dialog.VariableName, dialog.VariableValue);
-                ViewModel.RefreshVariables();
-                UpdateStatusBar();
-                ViewModel.StatusMessage = $"Updated user variable: {dialog.VariableName}";
-            }
-            catch (Exception ex)
-            {
-                ViewModel.StatusMessage = $"Error updating variable: {ex.Message}";
-                UpdateStatusBar();
-            }
+            _currentlyEditingItem.IsEditing = false;
         }
+
+        // Enter inline edit mode
+        _currentlyEditingItem = ViewModel.SelectedUserVariable;
+        ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.Value;
+        ViewModel.SelectedUserVariable.IsEditing = true;
+        ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
+        UpdateStatusBar();
     }
 
-    private async void EditSystemVariableButton_Click(object sender, RoutedEventArgs e)
+    private void EditSystemVariableButton_Click(object sender, RoutedEventArgs e)
     {
         if (!ViewModel.IsAdmin)
         {
@@ -212,33 +197,18 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        var dialog = new VariableEditorDialog
+        // Exit edit mode for previously editing item
+        if (_currentlyEditingItem != null && _currentlyEditingItem != ViewModel.SelectedSystemVariable)
         {
-            Title = "Edit System Variable",
-            VariableName = ViewModel.SelectedSystemVariable.Name,
-            VariableValue = ViewModel.SelectedSystemVariable.Value,
-            IsEditMode = true,
-            XamlRoot = this.Content.XamlRoot
-        };
-
-        var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            try
-            {
-                ViewModel.StatusMessage = $"Updating system variable: {dialog.VariableName}";
-                var service = new Services.EnvironmentVariableService();
-                service.SetSystemVariable(dialog.VariableName, dialog.VariableValue);
-                ViewModel.RefreshVariables();
-                UpdateStatusBar();
-                ViewModel.StatusMessage = $"Updated system variable: {dialog.VariableName}";
-            }
-            catch (Exception ex)
-            {
-                ViewModel.StatusMessage = $"Error updating variable: {ex.Message}";
-                UpdateStatusBar();
-            }
+            _currentlyEditingItem.IsEditing = false;
         }
+
+        // Enter inline edit mode
+        _currentlyEditingItem = ViewModel.SelectedSystemVariable;
+        ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.Value;
+        ViewModel.SelectedSystemVariable.IsEditing = true;
+        ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
+        UpdateStatusBar();
     }
 
     private async void DeleteUserVariableButton_Click(object sender, RoutedEventArgs e)
