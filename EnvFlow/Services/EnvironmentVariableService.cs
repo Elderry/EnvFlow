@@ -71,10 +71,17 @@ public class EnvironmentVariableService
 
     public Dictionary<string, string> GetSystemVariables()
     {
+        return GetSystemVariables(out _);
+    }
+
+    public Dictionary<string, string> GetSystemVariables(out HashSet<string> volatileVariables)
+    {
         var variables = new Dictionary<string, string>();
+        volatileVariables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         
         try
         {
+            // Read from registry to get unexpanded values (editable variables)
             using var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Session Manager\Environment");
             if (key != null)
             {
@@ -87,6 +94,31 @@ public class EnvironmentVariableService
                     }
                 }
             }
+            
+            // Also get dynamic system variables from the current process environment
+            // These include ProgramFiles, SystemRoot, etc. that Windows computes at runtime
+            var processVars = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
+            var machineVars = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
+            
+            foreach (var key2 in processVars.Keys)
+            {
+                var keyName = key2.ToString()!;
+                
+                // If it's in process but not in Machine registry, it's a dynamic system variable
+                if (!machineVars.Contains(keyName) && !variables.ContainsKey(keyName))
+                {
+                    var value = processVars[keyName]?.ToString();
+                    if (value != null)
+                    {
+                        // Filter to only system-level dynamic variables (not user or process specific)
+                        if (IsDynamicSystemVariable(keyName))
+                        {
+                            variables[keyName] = value;
+                            volatileVariables.Add(keyName); // Mark as volatile/dynamic
+                        }
+                    }
+                }
+            }
         }
         catch (Exception)
         {
@@ -94,6 +126,19 @@ public class EnvironmentVariableService
         }
         
         return variables;
+    }
+
+    private bool IsDynamicSystemVariable(string varName)
+    {
+        // Known dynamic system variables that Windows provides
+        var dynamicVars = new[]
+        {
+            "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432",
+            "CommonProgramFiles", "CommonProgramFiles(x86)", "CommonProgramW6432",
+            "SystemRoot", "SystemDrive", "windir", "ProgramData"
+        };
+        
+        return dynamicVars.Contains(varName, StringComparer.OrdinalIgnoreCase);
     }
 
     public List<string> ParsePathVariable(string pathValue)

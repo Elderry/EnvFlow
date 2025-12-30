@@ -118,11 +118,13 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
         // Load system variables
         SystemVariables.Clear();
-        var systemVars = _envService.GetSystemVariables();
+        var systemVars = _envService.GetSystemVariables(out var systemVolatileVariables);
         foreach (var kvp in systemVars.OrderBy(v => v.Key))
         {
             bool isPathLike = _envService.IsPathLike(kvp.Key);
-            SystemVariables.Add(new EnvVariableItem(kvp.Key, kvp.Value, isPathLike));
+            bool isVolatile = systemVolatileVariables.Contains(kvp.Key);
+            var item = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile);
+            SystemVariables.Add(item);
         }
         SystemVariableCount = systemVars.Count;
 
