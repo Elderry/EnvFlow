@@ -28,8 +28,7 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button Content="Save Changes" Style="{StaticResource AccentButtonStyle}"/>
-                <Button>
+                <Button x:Name="RefreshButton" Click="RefreshButton_Click">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon Glyph="&#xE72C;" FontSize="14"/>
                         <TextBlock Text="Refresh"/>
@@ -72,13 +71,21 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                            <Button Padding="8">
+                            <Button Padding="8" 
+                                    Click="AddUserVariableButton_Click"
+                                    ToolTipService.ToolTip="Add new user variable">
                                 <FontIcon Glyph="&#xE710;" FontSize="14"/>
                             </Button>
-                            <Button Padding="8">
+                            <Button Padding="8" 
+                                    Click="EditUserVariableButton_Click"
+                                    IsEnabled="{x:Bind ViewModel.CanEditUserVariable, Mode=OneWay}"
+                                    ToolTipService.ToolTip="Edit selected variable">
                                 <FontIcon Glyph="&#xE74D;" FontSize="14"/>
                             </Button>
-                            <Button Padding="8">
+                            <Button Padding="8" 
+                                    Click="DeleteUserVariableButton_Click"
+                                    IsEnabled="{x:Bind ViewModel.CanDeleteUserVariable, Mode=OneWay}"
+                                    ToolTipService.ToolTip="Delete selected variable">
                                 <FontIcon Glyph="&#xE107;" FontSize="14"/>
                             </Button>
                         </StackPanel>
@@ -94,6 +101,7 @@
                     <ScrollViewer>
                         <TreeView x:Name="UserEnvTreeView" 
                                   ItemsSource="{x:Bind ViewModel.UserVariables, Mode=OneWay}"
+                                  SelectionChanged="UserEnvTreeView_SelectionChanged"
                                   Padding="12">
                             <TreeView.ItemTemplate>
                                 <DataTemplate>
@@ -146,17 +154,38 @@
                         
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
                             <FontIcon Glyph="&#xE7F8;" Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
-                            <TextBlock Text="System Variables" FontWeight="SemiBold" FontSize="16" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="SystemVariablesTitle" 
+                                       Text="System Variables" 
+                                       FontWeight="SemiBold" 
+                                       FontSize="16" 
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                            <Button Padding="8">
+                            <Button x:Name="RestartAsAdminButton" 
+                                    Click="RestartAsAdminButton_Click"
+                                    ToolTipService.ToolTip="Restart with administrator privileges to edit system variables">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE1EC;" FontSize="14"/>
+                                    <TextBlock Text="Restart as Admin"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Padding="8" 
+                                    Click="AddSystemVariableButton_Click"
+                                    IsEnabled="{x:Bind ViewModel.IsAdmin, Mode=OneWay}"
+                                    ToolTipService.ToolTip="Add new system variable (requires admin)">
                                 <FontIcon Glyph="&#xE710;" FontSize="14"/>
                             </Button>
-                            <Button Padding="8">
+                            <Button Padding="8" 
+                                    Click="EditSystemVariableButton_Click"
+                                    IsEnabled="{x:Bind ViewModel.CanEditSystemVariable, Mode=OneWay}"
+                                    ToolTipService.ToolTip="Edit selected variable (requires admin)">
                                 <FontIcon Glyph="&#xE74D;" FontSize="14"/>
                             </Button>
-                            <Button Padding="8">
+                            <Button Padding="8" 
+                                    Click="DeleteSystemVariableButton_Click"
+                                    IsEnabled="{x:Bind ViewModel.CanDeleteSystemVariable, Mode=OneWay}"
+                                    ToolTipService.ToolTip="Delete selected variable (requires admin)">
                                 <FontIcon Glyph="&#xE107;" FontSize="14"/>
                             </Button>
                         </StackPanel>
@@ -172,6 +201,7 @@
                     <ScrollViewer>
                         <TreeView x:Name="SystemEnvTreeView" 
                                   ItemsSource="{x:Bind ViewModel.SystemVariables, Mode=OneWay}"
+                                  SelectionChanged="SystemEnvTreeView_SelectionChanged"
                                   Padding="12">
                             <TreeView.ItemTemplate>
                                 <DataTemplate>

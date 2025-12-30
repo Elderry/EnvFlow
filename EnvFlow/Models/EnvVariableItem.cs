@@ -17,6 +17,7 @@ public class EnvVariableItem
     public bool IsPathEntry { get; set; }
     public bool IsValid { get; set; } = true;
     public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
+    public bool IsChild => IsPathEntry; // Path entries are children of the parent variable
 
     public EnvVariableItem()
     {
