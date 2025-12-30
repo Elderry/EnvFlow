@@ -92,7 +92,9 @@ public class EnvironmentVariableService
     {
         try
         {
-            return Directory.Exists(path) || File.Exists(path);
+            // Expand environment variables before checking
+            var expandedPath = Environment.ExpandEnvironmentVariables(path);
+            return Directory.Exists(expandedPath) || File.Exists(expandedPath);
         }
         catch
         {

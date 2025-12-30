@@ -79,7 +79,7 @@ public class EnvVariableItem : INotifyPropertyChanged
         bool isPathExt = name.Equals("PATHEXT", StringComparison.OrdinalIgnoreCase);
 
         // Variable-level item
-        if (isPathLike && !isPathExt && !string.IsNullOrEmpty(value))
+        if (isPathLike && !isPathExt && !string.IsNullOrEmpty(value) && value.Contains(';'))
         {
             Icon = "\uE8B7"; // Folder icon for PATH variables
             IconColor = new SolidColorBrush(Colors.Orange);
@@ -126,7 +126,8 @@ public class EnvVariableItem : INotifyPropertyChanged
         else if (isSinglePath)
         {
             // Single path value (like OneDrive, TEMP, etc.)
-            bool exists = System.IO.Directory.Exists(value) || System.IO.File.Exists(value);
+            var expandedValue = Environment.ExpandEnvironmentVariables(value);
+            bool exists = System.IO.Directory.Exists(expandedValue) || System.IO.File.Exists(expandedValue);
             Icon = "\uE8B7"; // Folder icon
             IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
             ValueVisibility = Visibility.Visible;
@@ -141,7 +142,8 @@ public class EnvVariableItem : INotifyPropertyChanged
 
     private EnvVariableItem CreatePathEntry(string path)
     {
-        bool exists = System.IO.Directory.Exists(path) || System.IO.File.Exists(path);
+        var expandedPath = Environment.ExpandEnvironmentVariables(path);
+        bool exists = System.IO.Directory.Exists(expandedPath) || System.IO.File.Exists(expandedPath);
         
         return new EnvVariableItem
         {
