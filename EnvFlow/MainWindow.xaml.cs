@@ -310,16 +310,20 @@ public sealed partial class MainWindow : Window
         // Prevent event from bubbling up
         e.Handled = true;
 
-        // Don't allow editing children in inline mode - too complex
-        if (item.IsChild)
-        {
-            ViewModel.StatusMessage = "Double-click the parent variable to edit all path entries";
-            UpdateStatusBar();
-            return;
-        }
-
         // Determine if this is a user or system variable
         bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
+        if (!isSystemVariable)
+        {
+            // Check if it's a child of a system variable
+            foreach (var sysVar in ViewModel.SystemVariables)
+            {
+                if (sysVar.Children.Contains(item))
+                {
+                    isSystemVariable = true;
+                    break;
+                }
+            }
+        }
 
         // Check admin permissions for system variables
         if (isSystemVariable && !ViewModel.IsAdmin)
@@ -337,7 +341,7 @@ public sealed partial class MainWindow : Window
 
         // Enter edit mode
         _currentlyEditingItem = item;
-        item.EditValue = item.Value;
+        item.EditValue = item.IsChild ? item.DisplayName : item.Value;
         item.IsEditing = true;
     }
 
@@ -399,25 +403,73 @@ public sealed partial class MainWindow : Window
         }
 
         // Check if value changed
-        if (item.EditValue == item.Value)
+        string originalValue = item.IsChild ? item.DisplayName : item.Value;
+        if (item.EditValue == originalValue)
             return;
 
-        // Determine if this is a user or system variable
+        // Determine if this is a user or system variable (or child of one)
         bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
+        EnvVariableItem? parentVariable = null;
+        
+        if (item.IsChild)
+        {
+            // Find parent variable
+            foreach (var userVar in ViewModel.UserVariables)
+            {
+                if (userVar.Children.Contains(item))
+                {
+                    parentVariable = userVar;
+                    isSystemVariable = false;
+                    break;
+                }
+            }
+            
+            if (parentVariable == null)
+            {
+                foreach (var sysVar in ViewModel.SystemVariables)
+                {
+                    if (sysVar.Children.Contains(item))
+                    {
+                        parentVariable = sysVar;
+                        isSystemVariable = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (parentVariable == null) return;
+        }
 
         try
         {
-            ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} variable: {item.Name}";
             var service = new Services.EnvironmentVariableService();
-
-            if (isSystemVariable)
-                service.SetSystemVariable(item.Name, item.EditValue);
+            
+            if (item.IsChild && parentVariable != null)
+            {
+                // Update the child and reconstruct the parent PATH variable
+                var paths = parentVariable.Children.Select(c => c == item ? item.EditValue : c.DisplayName).ToList();
+                string newValue = string.Join(";", paths);
+                
+                ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} path entry in {parentVariable.Name}";
+                
+                if (isSystemVariable)
+                    service.SetSystemVariable(parentVariable.Name, newValue);
+                else
+                    service.SetUserVariable(parentVariable.Name, newValue);
+            }
             else
-                service.SetUserVariable(item.Name, item.EditValue);
+            {
+                ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} variable: {item.Name}";
+                
+                if (isSystemVariable)
+                    service.SetSystemVariable(item.Name, item.EditValue);
+                else
+                    service.SetUserVariable(item.Name, item.EditValue);
+            }
 
             ViewModel.RefreshVariables();
             UpdateStatusBar();
-            ViewModel.StatusMessage = $"Updated {(isSystemVariable ? "system" : "user")} variable: {item.Name}";
+            ViewModel.StatusMessage = $"Updated {(isSystemVariable ? "system" : "user")} variable successfully";
         }
         catch (Exception ex)
         {
@@ -436,5 +488,70 @@ public sealed partial class MainWindow : Window
     {
         var collection = isUserVariable ? ViewModel.UserVariables : ViewModel.SystemVariables;
         return collection.FirstOrDefault(v => v.Children.Contains(childItem));
+    }
+
+    private async void AddChildButton_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem parentItem)
+            return;
+
+        // Determine if this is a user or system variable
+        bool isSystemVariable = ViewModel.SystemVariables.Contains(parentItem);
+
+        // Check admin permissions for system variables
+        if (isSystemVariable && !ViewModel.IsAdmin)
+        {
+            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
+            UpdateStatusBar();
+            return;
+        }
+
+        // Show dialog to add new path entry
+        var dialog = new ContentDialog
+        {
+            Title = $"Add Path Entry to {parentItem.Name}",
+            PrimaryButtonText = "Add",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = this.Content.XamlRoot
+        };
+
+        var textBox = new TextBox
+        {
+            PlaceholderText = "Enter new path (e.g., C:\\Program Files\\MyApp)",
+            MinWidth = 400
+        };
+
+        dialog.Content = textBox;
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            try
+            {
+                var service = new Services.EnvironmentVariableService();
+                
+                // Add the new path to the existing paths
+                var existingPaths = parentItem.Children.Select(c => c.DisplayName).ToList();
+                existingPaths.Add(textBox.Text.Trim());
+                string newValue = string.Join(";", existingPaths);
+                
+                ViewModel.StatusMessage = $"Adding path entry to {parentItem.Name}";
+                
+                if (isSystemVariable)
+                    service.SetSystemVariable(parentItem.Name, newValue);
+                else
+                    service.SetUserVariable(parentItem.Name, newValue);
+                
+                ViewModel.RefreshVariables();
+                UpdateStatusBar();
+                ViewModel.StatusMessage = $"Added path entry to {parentItem.Name}";
+            }
+            catch (Exception ex)
+            {
+                ViewModel.StatusMessage = $"Error adding path entry: {ex.Message}";
+                UpdateStatusBar();
+            }
+        }
     }
 }

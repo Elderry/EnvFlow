@@ -34,6 +34,7 @@ public class EnvVariableItem : INotifyPropertyChanged
             OnPropertyChanged(nameof(DisplayVisibility));
             OnPropertyChanged(nameof(EditVisibility));
             OnPropertyChanged(nameof(ValueDisplayVisibility));
+            OnPropertyChanged(nameof(AddChildButtonVisibility));
         }
     }
 
@@ -49,9 +50,12 @@ public class EnvVariableItem : INotifyPropertyChanged
 
     public Visibility DisplayVisibility => IsEditing ? Visibility.Collapsed : Visibility.Visible;
     public Visibility EditVisibility => IsEditing ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed) 
+    public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed || IsChild) 
         ? Visibility.Collapsed 
         : Visibility.Visible;
+    public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing) 
+        ? Visibility.Visible 
+        : Visibility.Collapsed;
 
     public EnvVariableItem()
     {
@@ -87,6 +91,11 @@ public class EnvVariableItem : INotifyPropertyChanged
                     Children.Add(CreatePathEntry(entry.Trim()));
                 }
             }
+            
+            ValueVisibility = Visibility.Collapsed;
+            
+            // Notify AddChildButtonVisibility to update
+            OnPropertyChanged(nameof(AddChildButtonVisibility));
         }
         else if (isPathExt && !string.IsNullOrEmpty(value))
         {
