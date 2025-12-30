@@ -92,7 +92,29 @@
                         BorderThickness="1,0,1,1"
                         CornerRadius="0,0,8,8">
                     <ScrollViewer>
-                        <TreeView x:Name="UserEnvTreeView" Padding="12"/>
+                        <TreeView x:Name="UserEnvTreeView" 
+                                  ItemsSource="{x:Bind ViewModel.UserVariables, Mode=OneWay}"
+                                  Padding="12">
+                            <TreeView.ItemTemplate>
+                                <DataTemplate>
+                                    <TreeViewItem ItemsSource="{Binding Children}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon Glyph="{Binding Icon}" 
+                                                      FontSize="16" 
+                                                      Foreground="{Binding IconColor}"/>
+                                            <TextBlock Text="{Binding DisplayName}" 
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Value}" 
+                                                       Foreground="Gray"
+                                                       Margin="8,0,0,0"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Visibility="{Binding ValueVisibility}"/>
+                                        </StackPanel>
+                                    </TreeViewItem>
+                                </DataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
                     </ScrollViewer>
                 </Border>
             </Grid>
@@ -149,7 +171,29 @@
                         BorderThickness="1,0,1,1"
                         CornerRadius="0,0,8,8">
                     <ScrollViewer>
-                        <TreeView x:Name="SystemEnvTreeView" Padding="12"/>
+                        <TreeView x:Name="SystemEnvTreeView" 
+                                  ItemsSource="{x:Bind ViewModel.SystemVariables, Mode=OneWay}"
+                                  Padding="12">
+                            <TreeView.ItemTemplate>
+                                <DataTemplate>
+                                    <TreeViewItem ItemsSource="{Binding Children}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon Glyph="{Binding Icon}" 
+                                                      FontSize="16" 
+                                                      Foreground="{Binding IconColor}"/>
+                                            <TextBlock Text="{Binding DisplayName}" 
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Value}" 
+                                                       Foreground="Gray"
+                                                       Margin="8,0,0,0"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Visibility="{Binding ValueVisibility}"/>
+                                        </StackPanel>
+                                    </TreeViewItem>
+                                </DataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
                     </ScrollViewer>
                 </Border>
             </Grid>
