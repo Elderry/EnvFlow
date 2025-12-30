@@ -106,7 +106,7 @@
                             <TreeView.ItemTemplate>
                                 <DataTemplate>
                                     <TreeViewItem ItemsSource="{Binding Children}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <StackPanel Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped">
                                             <FontIcon Glyph="{Binding Icon}" 
                                                       FontSize="16" 
                                                       Foreground="{Binding IconColor}"/>
@@ -206,7 +206,7 @@
                             <TreeView.ItemTemplate>
                                 <DataTemplate>
                                     <TreeViewItem ItemsSource="{Binding Children}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <StackPanel Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped">
                                             <FontIcon Glyph="{Binding Icon}" 
                                                       FontSize="16" 
                                                       Foreground="{Binding IconColor}"/>

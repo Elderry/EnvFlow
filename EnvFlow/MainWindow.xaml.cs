@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using EnvFlow.ViewModels;
@@ -297,5 +298,77 @@ public sealed partial class MainWindow : Window
             ViewModel.DeleteSystemVariable();
             UpdateStatusBar();
         }
+    }
+
+    private async void TreeViewItem_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+    {
+        // Get the data context (EnvVariableItem) from the tapped element
+        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem item)
+            return;
+
+        // Prevent event from bubbling up
+        e.Handled = true;
+
+        // Determine if this is a user or system variable by checking which TreeView contains it
+        bool isUserVariable = IsInUserTreeView(item);
+        bool isSystemVariable = !isUserVariable;
+
+        // For child items (path entries), edit the parent variable instead
+        var itemToEdit = item.IsChild ? GetParentVariable(item, isUserVariable) : item;
+        if (itemToEdit == null) return;
+
+        // Check admin permissions for system variables
+        if (isSystemVariable && !ViewModel.IsAdmin)
+        {
+            ViewModel.StatusMessage = "Administrator privileges required to edit system variables";
+            UpdateStatusBar();
+            return;
+        }
+
+        // Open edit dialog
+        var dialog = new VariableEditorDialog
+        {
+            Title = isSystemVariable ? "Edit System Variable" : "Edit User Variable",
+            VariableName = itemToEdit.Name,
+            VariableValue = itemToEdit.Value,
+            IsEditMode = true,
+            XamlRoot = this.Content.XamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            try
+            {
+                ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} variable: {dialog.VariableName}";
+                var service = new Services.EnvironmentVariableService();
+                
+                if (isSystemVariable)
+                    service.SetSystemVariable(dialog.VariableName, dialog.VariableValue);
+                else
+                    service.SetUserVariable(dialog.VariableName, dialog.VariableValue);
+                
+                ViewModel.RefreshVariables();
+                UpdateStatusBar();
+                ViewModel.StatusMessage = $"Updated {(isSystemVariable ? "system" : "user")} variable: {dialog.VariableName}";
+            }
+            catch (Exception ex)
+            {
+                ViewModel.StatusMessage = $"Error updating variable: {ex.Message}";
+                UpdateStatusBar();
+            }
+        }
+    }
+
+    private bool IsInUserTreeView(EnvVariableItem item)
+    {
+        // Check if the item exists in the user variables collection
+        return ViewModel.UserVariables.Any(v => v == item || v.Children.Contains(item));
+    }
+
+    private EnvVariableItem? GetParentVariable(EnvVariableItem childItem, bool isUserVariable)
+    {
+        var collection = isUserVariable ? ViewModel.UserVariables : ViewModel.SystemVariables;
+        return collection.FirstOrDefault(v => v.Children.Contains(childItem));
     }
 }
