@@ -148,7 +148,7 @@
                                                         Click="SortButton_Click"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="Sort paths alphabetically">
-                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#8A8A8A"/>
+                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#F7B32B"/>
                                                 </Button>
                                                 
                                                 <Button Padding="4" 
@@ -172,12 +172,12 @@
                                                         <MenuFlyout>
                                                             <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
                                                                 <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE74A;"/>
+                                                                    <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
                                                                 </MenuFlyoutItem.Icon>
                                                             </MenuFlyoutItem>
                                                             <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
                                                                 <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE739;"/>
+                                                                    <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
                                                                 </MenuFlyoutItem.Icon>
                                                             </MenuFlyoutItem>
                                                         </MenuFlyout>
@@ -324,7 +324,7 @@
                                                         Click="SortButton_Click"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="Sort paths alphabetically">
-                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#8A8A8A"/>
+                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#F7B32B"/>
                                                 </Button>
                                                 
                                                 <Button Padding="4" 
@@ -348,12 +348,12 @@
                                                         <MenuFlyout>
                                                             <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
                                                                 <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE74A;"/>
+                                                                    <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
                                                                 </MenuFlyoutItem.Icon>
                                                             </MenuFlyoutItem>
                                                             <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
                                                                 <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE739;"/>
+                                                                    <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
                                                                 </MenuFlyoutItem.Icon>
                                                             </MenuFlyoutItem>
                                                         </MenuFlyout>
