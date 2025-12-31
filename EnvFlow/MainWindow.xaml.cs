@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Input;
 using EnvFlow.ViewModels;
 using EnvFlow.Helpers;
@@ -18,6 +19,7 @@ public sealed partial class MainWindow : Window
     private bool _isSplitterDragging = false;
     private double _splitterStartX;
     private TreeViewItem? _currentFlyoutTreeItem = null;
+    private double _nameColumnWidth = 250;
 
     public MainWindow()
     {
@@ -1480,6 +1482,94 @@ public sealed partial class MainWindow : Window
                 rightColumn.Width = new GridLength(rightRatio, GridUnitType.Star);
             }
             
+            e.Handled = true;
+        }
+    }
+
+    // Column Splitter Handlers
+    private bool _isColumnSplitterDragging = false;
+    private double _columnSplitterStartX;
+    private double _columnSplitterStartWidth;
+    private ColumnDefinition? _resizingColumn;
+    
+    private void ColumnSplitter_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is Border splitter)
+        {
+            _isColumnSplitterDragging = true;
+            var point = e.GetCurrentPoint(null);  // Get screen coordinates
+            _columnSplitterStartX = point.Position.X;
+            
+            // Determine which column to resize based on Tag
+            var tag = splitter.Tag as string;
+            _resizingColumn = tag == "User" ? UserNameColumn : SystemNameColumn;
+            _columnSplitterStartWidth = _resizingColumn.ActualWidth;  // Use ActualWidth for current rendered width
+            
+            splitter.CapturePointer(e.Pointer);
+            e.Handled = true;
+        }
+    }
+
+    private void ColumnSplitter_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_isColumnSplitterDragging && sender is Border splitter && _resizingColumn != null)
+        {
+            var point = e.GetCurrentPoint(null);  // Get screen coordinates
+            var currentX = point.Position.X;
+            var delta = currentX - _columnSplitterStartX;
+            
+            var newWidth = _columnSplitterStartWidth + delta;
+            if (newWidth >= 100 && newWidth <= 600)  // Min and max width constraints
+            {
+                _resizingColumn.Width = new GridLength(newWidth);
+                
+                // Update all TreeViewItem column widths to match
+                var tag = splitter.Tag as string;
+                var treeView = tag == "User" ? UserEnvTreeView : SystemEnvTreeView;
+                UpdateTreeViewColumnWidths(treeView, newWidth);
+            }
+            
+            e.Handled = true;
+        }
+    }
+
+    private void UpdateTreeViewColumnWidths(TreeView treeView, double width)
+    {
+        _nameColumnWidth = width;
+        
+        // Recursively update all TreeViewItems
+        UpdateContainersColumnWidth(treeView, width);
+        
+        // Force layout update
+        treeView.UpdateLayout();
+    }
+
+    private void UpdateContainersColumnWidth(DependencyObject parent, double width)
+    {
+        int count = VisualTreeHelper.GetChildrenCount(parent);
+        for (int i = 0; i < count; i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            
+            // If we find a Grid with exactly 4 column definitions (our item template structure)
+            if (child is Grid grid && grid.ColumnDefinitions.Count == 4)
+            {
+                // Update the first column (Name column)
+                grid.ColumnDefinitions[0].Width = new GridLength(width);
+            }
+            
+            // Continue searching deeper
+            UpdateContainersColumnWidth(child, width);
+        }
+    }
+
+    private void ColumnSplitter_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_isColumnSplitterDragging && sender is Border splitter)
+        {
+            _isColumnSplitterDragging = false;
+            _resizingColumn = null;
+            splitter.ReleasePointerCaptures();
             e.Handled = true;
         }
     }

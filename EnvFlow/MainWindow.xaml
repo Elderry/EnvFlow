@@ -93,55 +93,88 @@
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1,0,1,1"
                         CornerRadius="0,0,8,8">
-                    <ScrollViewer>
-                        <TreeView x:Name="UserEnvTreeView" 
-                                  ItemsSource="{x:Bind ViewModel.UserVariables, Mode=OneWay}"
-                                  SelectionChanged="UserEnvTreeView_SelectionChanged"
-                                  Padding="12">
-                            <TreeView.ItemContainerStyle>
-                                <Style TargetType="TreeViewItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                </Style>
-                            </TreeView.ItemContainerStyle>
-                            <TreeView.ItemTemplate>
-                                <DataTemplate>
-                                    <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
-                                        <Grid HorizontalAlignment="Stretch">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            
-                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped">
-                                                <FontIcon Glyph="{Binding Icon}" 
-                                                          FontSize="16" 
-                                                          Foreground="{Binding IconColor}"/>
-                                            
-                                                <TextBlock Text="{Binding DisplayName}" 
-                                                           VerticalAlignment="Center"
-                                                           MinWidth="150"
-                                                           Visibility="{Binding DisplayNameVisibility}"/>
-                                            
-                                                <!-- Display Mode: Show value in gray -->
-                                                <TextBlock Text="{Binding Value}" 
-                                                           Foreground="Gray"
-                                                           Margin="8,0,0,0"
-                                                           VerticalAlignment="Center"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           Visibility="{Binding ValueDisplayVisibility}"/>
-                                            
-                                                <!-- Edit Mode: Show TextBox -->
-                                                <TextBox x:Name="EditTextBox"
-                                                         Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                         Visibility="{Binding EditVisibility}"
-                                                         MinWidth="300"
-                                                         KeyDown="EditTextBox_KeyDown"
-                                                         LostFocus="EditTextBox_LostFocus"
-                                                         Loaded="EditTextBox_Loaded"/>
-                                            </StackPanel>
-                                            
-                                            <!-- Hover Buttons (Right-aligned) -->
-                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Column Headers -->
+                        <Grid Grid.Row="0" Padding="48,8,12,8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition x:Name="UserNameColumn" Width="250"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <Border Grid.Column="1" Width="8" Background="Transparent" Margin="0"
+                                    PointerPressed="ColumnSplitter_PointerPressed"
+                                    PointerMoved="ColumnSplitter_PointerMoved"
+                                    PointerReleased="ColumnSplitter_PointerReleased"
+                                    Tag="User">
+                                <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
+                            </Border>
+                            <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </Grid>
+                        
+                        <!-- TreeView with ScrollViewer -->
+                        <ScrollViewer Grid.Row="1">
+                            <TreeView x:Name="UserEnvTreeView" 
+                                      ItemsSource="{x:Bind ViewModel.UserVariables, Mode=OneWay}"
+                                      SelectionChanged="UserEnvTreeView_SelectionChanged"
+                                      Padding="12">
+                                <TreeView.ItemContainerStyle>
+                                    <Style TargetType="TreeViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    </Style>
+                                </TreeView.ItemContainerStyle>
+                                <TreeView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="250"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <!-- Name Column -->
+                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped">
+                                                    <FontIcon Glyph="{Binding Icon}" 
+                                                              FontSize="16" 
+                                                              Foreground="{Binding IconColor}"/>
+                                                
+                                                    <TextBlock Text="{Binding DisplayName}" 
+                                                               VerticalAlignment="Center"
+                                                               Visibility="{Binding DisplayNameVisibility}"/>
+                                                </StackPanel>
+                                                
+                                                <!-- Column Separator -->
+                                                <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ValueDisplayVisibility}"/>
+                                                
+                                                <!-- Value Column -->
+                                                <Grid Grid.Column="2">
+                                                    <!-- Display Mode: Show value in gray -->
+                                                    <TextBlock Text="{Binding Value}" 
+                                                               Foreground="Gray"
+                                                               VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Visibility="{Binding ValueDisplayVisibility}"/>
+                                                
+                                                    <!-- Edit Mode: Show TextBox -->
+                                                    <TextBox x:Name="EditTextBox"
+                                                             Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             Visibility="{Binding EditVisibility}"
+                                                             KeyDown="EditTextBox_KeyDown"
+                                                             LostFocus="EditTextBox_LostFocus"
+                                                             Loaded="EditTextBox_Loaded"/>
+                                                </Grid>
+                                                
+                                                <!-- Hover Buttons (Right-aligned) -->
+                                                <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
                                                 <!-- Add Child Button for composite variables -->
                                                 <Button Padding="4" 
                                                         Click="AddChildButton_Click"
@@ -219,8 +252,9 @@
                             </TreeView.ItemTemplate>
                         </TreeView>
                     </ScrollViewer>
-                </Border>
-            </Grid>
+                </Grid>
+            </Border>
+        </Grid>
 
             <!-- Splitter -->
             <controls:CursorGrid Grid.Column="1" 
@@ -291,55 +325,88 @@
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1,0,1,1"
                         CornerRadius="0,0,8,8">
-                    <ScrollViewer>
-                        <TreeView x:Name="SystemEnvTreeView" 
-                                  ItemsSource="{x:Bind ViewModel.SystemVariables, Mode=OneWay}"
-                                  SelectionChanged="SystemEnvTreeView_SelectionChanged"
-                                  Padding="12">
-                            <TreeView.ItemContainerStyle>
-                                <Style TargetType="TreeViewItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                </Style>
-                            </TreeView.ItemContainerStyle>
-                            <TreeView.ItemTemplate>
-                                <DataTemplate>
-                                    <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
-                                        <Grid HorizontalAlignment="Stretch">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            
-                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System">
-                                                <FontIcon Glyph="{Binding Icon}" 
-                                                          FontSize="16" 
-                                                          Foreground="{Binding IconColor}"/>
-                                            
-                                                <TextBlock Text="{Binding DisplayName}" 
-                                                           VerticalAlignment="Center"
-                                                           MinWidth="150"
-                                                           Visibility="{Binding DisplayNameVisibility}"/>
-                                            
-                                                <!-- Display Mode: Show value in gray -->
-                                                <TextBlock Text="{Binding Value}" 
-                                                           Foreground="Gray"
-                                                           Margin="8,0,0,0"
-                                                           VerticalAlignment="Center"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           Visibility="{Binding ValueDisplayVisibility}"/>
-                                            
-                                                <!-- Edit Mode: Show TextBox -->
-                                                <TextBox x:Name="EditTextBox"
-                                                         Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                         Visibility="{Binding EditVisibility}"
-                                                         MinWidth="300"
-                                                         KeyDown="EditTextBox_KeyDown"
-                                                         LostFocus="EditTextBox_LostFocus"
-                                                         Loaded="EditTextBox_Loaded"/>
-                                            </StackPanel>
-                                            
-                                            <!-- Hover Buttons (Right-aligned) -->
-                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Column Headers -->
+                        <Grid Grid.Row="0" Padding="48,8,12,8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition x:Name="SystemNameColumn" Width="250"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <Border Grid.Column="1" Width="8" Background="Transparent" Margin="0"
+                                    PointerPressed="ColumnSplitter_PointerPressed"
+                                    PointerMoved="ColumnSplitter_PointerMoved"
+                                    PointerReleased="ColumnSplitter_PointerReleased"
+                                    Tag="System">
+                                <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
+                            </Border>
+                            <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </Grid>
+                        
+                        <!-- TreeView with ScrollViewer -->
+                        <ScrollViewer Grid.Row="1">
+                            <TreeView x:Name="SystemEnvTreeView" 
+                                      ItemsSource="{x:Bind ViewModel.SystemVariables, Mode=OneWay}"
+                                      SelectionChanged="SystemEnvTreeView_SelectionChanged"
+                                      Padding="12">
+                                <TreeView.ItemContainerStyle>
+                                    <Style TargetType="TreeViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    </Style>
+                                </TreeView.ItemContainerStyle>
+                                <TreeView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="250"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <!-- Name Column -->
+                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System">
+                                                    <FontIcon Glyph="{Binding Icon}" 
+                                                              FontSize="16" 
+                                                              Foreground="{Binding IconColor}"/>
+                                                
+                                                    <TextBlock Text="{Binding DisplayName}" 
+                                                               VerticalAlignment="Center"
+                                                               Visibility="{Binding DisplayNameVisibility}"/>
+                                                </StackPanel>
+                                                
+                                                <!-- Column Separator -->
+                                                <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ValueDisplayVisibility}"/>
+                                                
+                                                <!-- Value Column -->
+                                                <Grid Grid.Column="2">
+                                                    <!-- Display Mode: Show value in gray -->
+                                                    <TextBlock Text="{Binding Value}" 
+                                                               Foreground="Gray"
+                                                               VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Visibility="{Binding ValueDisplayVisibility}"/>
+                                                
+                                                    <!-- Edit Mode: Show TextBox -->
+                                                    <TextBox x:Name="EditTextBox"
+                                                             Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             Visibility="{Binding EditVisibility}"
+                                                             KeyDown="EditTextBox_KeyDown"
+                                                             LostFocus="EditTextBox_LostFocus"
+                                                             Loaded="EditTextBox_Loaded"/>
+                                                </Grid>
+                                                
+                                                <!-- Hover Buttons (Right-aligned) -->
+                                                <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
                                                 <!-- Add Child Button for composite variables -->
                                                 <Button Padding="4" 
                                                         Click="AddChildButton_Click"
@@ -417,8 +484,9 @@
                             </TreeView.ItemTemplate>
                         </TreeView>
                     </ScrollViewer>
-                </Border>
-            </Grid>
+                </Grid>
+            </Border>
+        </Grid>
             </Grid>
         </Grid>
 
