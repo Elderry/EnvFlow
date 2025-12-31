@@ -96,11 +96,8 @@ public class EnvVariableItem : INotifyPropertyChanged
                            !value.Contains(';') &&
                            (value.Contains('\\') || value.Contains(':'));
 
-        // PATHEXT is special - it contains extensions, not paths
-        bool isPathExt = name.Equals("PATHEXT", StringComparison.OrdinalIgnoreCase);
-
         // Variable-level item
-        if (isPathLike && !isPathExt && !string.IsNullOrEmpty(value) && value.Contains(';'))
+        if (isPathLike && !string.IsNullOrEmpty(value) && value.Contains(';'))
         {
             Icon = "\uE8B7"; // Folder icon for PATH variables
             IconColor = new SolidColorBrush(Colors.Orange);
@@ -119,30 +116,6 @@ public class EnvVariableItem : INotifyPropertyChanged
             
             // Notify AddChildButtonVisibility to update
             OnPropertyChanged(nameof(AddChildButtonVisibility));
-        }
-        else if (isPathExt && !string.IsNullOrEmpty(value))
-        {
-            // PATHEXT contains file extensions, show as expandable list
-            Icon = "\uE8E9"; // List icon
-            IconColor = new SolidColorBrush(Colors.Orange);
-            
-            var extensions = value.Split(';', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var ext in extensions)
-            {
-                if (!string.IsNullOrWhiteSpace(ext))
-                {
-                    Children.Add(new EnvVariableItem
-                    {
-                        Name = ext.Trim(),
-                        DisplayName = ext.Trim(),
-                        Value = ext.Trim(),
-                        Icon = "\uE8A5", // Document icon
-                        IconColor = new SolidColorBrush(Colors.MediumPurple),
-                        IsPathEntry = true,
-                        ValueVisibility = Visibility.Collapsed
-                    });
-                }
-            }
         }
         else if (isSinglePath)
         {

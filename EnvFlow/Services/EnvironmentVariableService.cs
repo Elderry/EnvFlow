@@ -155,7 +155,7 @@ public class EnvironmentVariableService
 
     public bool IsPathLike(string variableName)
     {
-        var pathVariables = new[] { "PATH", "PATHEXT", "PSMODULEPATH", "CLASSPATH" };
+        var pathVariables = new[] { "PATH", "PSMODULEPATH", "CLASSPATH" };
         return pathVariables.Contains(variableName.ToUpper());
     }
 
