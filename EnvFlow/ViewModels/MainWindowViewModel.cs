@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -104,6 +105,14 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         StatusMessage = "Loading environment variables...";
 
+        // Save expanded state before clearing
+        var expandedUserVars = new HashSet<string>(
+            UserVariables.Where(v => v.IsExpanded).Select(v => v.Name),
+            StringComparer.OrdinalIgnoreCase);
+        var expandedSystemVars = new HashSet<string>(
+            SystemVariables.Where(v => v.IsExpanded).Select(v => v.Name),
+            StringComparer.OrdinalIgnoreCase);
+
         // Load user variables
         UserVariables.Clear();
         var userVars = _envService.GetUserVariables(out var volatileVariables);
@@ -112,6 +121,13 @@ public class MainWindowViewModel : INotifyPropertyChanged
             bool isPathLike = _envService.IsPathLike(kvp.Key);
             bool isVolatile = volatileVariables.Contains(kvp.Key);
             var item = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile);
+            
+            // Restore expanded state
+            if (expandedUserVars.Contains(kvp.Key))
+            {
+                item.IsExpanded = true;
+            }
+            
             UserVariables.Add(item);
         }
         UserVariableCount = userVars.Count;
@@ -124,6 +140,13 @@ public class MainWindowViewModel : INotifyPropertyChanged
             bool isPathLike = _envService.IsPathLike(kvp.Key);
             bool isVolatile = systemVolatileVariables.Contains(kvp.Key);
             var item = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile);
+            
+            // Restore expanded state
+            if (expandedSystemVars.Contains(kvp.Key))
+            {
+                item.IsExpanded = true;
+            }
+            
             SystemVariables.Add(item);
         }
         SystemVariableCount = systemVars.Count;

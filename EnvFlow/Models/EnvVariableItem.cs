@@ -22,6 +22,7 @@ public class EnvVariableItem : INotifyPropertyChanged
     public bool IsPathEntry { get; set; }
     public bool IsValid { get; set; } = true;
     public bool IsReadOnly { get; set; } = false; // For volatile environment variables
+    public bool IsExpanded { get; set; } = false; // Track expand/collapse state
     public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
     public bool IsChild => IsPathEntry; // Path entries are children of the parent variable
 
