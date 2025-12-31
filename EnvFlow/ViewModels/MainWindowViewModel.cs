@@ -121,75 +121,27 @@ public class MainWindowViewModel : INotifyPropertyChanged
     private void UpdateVariableCollection(ObservableCollection<EnvVariableItem> collection, 
         Dictionary<string, string> newVars, HashSet<string> volatileVars)
     {
-        // Create a dictionary of existing items for quick lookup
-        var existingItems = collection.ToDictionary(v => v.Name, StringComparer.OrdinalIgnoreCase);
-        var processedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        // Save expanded state before clearing
+        var expandedStates = collection
+            .Where(v => v.IsExpanded)
+            .Select(v => v.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        // Update existing items or add new ones (in sorted order)
-        var sortedVars = newVars.OrderBy(v => v.Key).ToList();
-        int currentIndex = 0;
+        // Clear and rebuild - simpler and more reliable than in-place updates
+        collection.Clear();
 
+        // Add all variables in sorted order
+        var sortedVars = newVars.OrderBy(v => v.Key);
+        
         foreach (var kvp in sortedVars)
         {
-            processedNames.Add(kvp.Key);
-
-            if (existingItems.TryGetValue(kvp.Key, out var existingItem))
+            bool isVolatile = volatileVars.Contains(kvp.Key);
+            var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isVolatile)
             {
-                // Update existing item
-                bool needsUpdate = existingItem.Value != kvp.Value;
-                
-                if (needsUpdate)
-                {
-                    // Save expanded state
-                    bool wasExpanded = existingItem.IsExpanded;
-                    
-                    // Remove and recreate to update children properly
-                    collection.Remove(existingItem);
-                    
-                    bool isVolatile = volatileVars.Contains(kvp.Key);
-                    var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isVolatile)
-                    {
-                        IsExpanded = wasExpanded
-                    };
-                    
-                    // Insert at correct position
-                    if (currentIndex < collection.Count)
-                        collection.Insert(currentIndex, newItem);
-                    else
-                        collection.Add(newItem);
-                }
-                else
-                {
-                    // Move to correct position if needed
-                    int existingIndex = collection.IndexOf(existingItem);
-                    if (existingIndex != currentIndex)
-                    {
-                        collection.Move(existingIndex, currentIndex);
-                    }
-                }
-            }
-            else
-            {
-                // Add new item
-                bool isVolatile = volatileVars.Contains(kvp.Key);
-                var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isVolatile);
-                
-                if (currentIndex < collection.Count)
-                    collection.Insert(currentIndex, newItem);
-                else
-                    collection.Add(newItem);
-            }
-
-            currentIndex++;
-        }
-
-        // Remove items that no longer exist
-        for (int i = collection.Count - 1; i >= 0; i--)
-        {
-            if (!processedNames.Contains(collection[i].Name))
-            {
-                collection.RemoveAt(i);
-            }
+                IsExpanded = expandedStates.Contains(kvp.Key)
+            };
+            
+            collection.Add(newItem);
         }
     }
 
