@@ -291,6 +291,169 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private void TreeItem_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is TreeViewItem treeViewItem)
+        {
+            var hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons");
+            if (hoverButtons != null)
+            {
+                hoverButtons.Opacity = 1.0;
+            }
+        }
+    }
+
+    private void TreeItem_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is TreeViewItem treeViewItem)
+        {
+            var hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons");
+            if (hoverButtons != null)
+            {
+                hoverButtons.Opacity = 0;
+            }
+        }
+    }
+
+    private T? FindChildByName<T>(DependencyObject parent, string childName) where T : FrameworkElement
+    {
+        int childCount = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent);
+        for (int i = 0; i < childCount; i++)
+        {
+            var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
+            if (child is T typedChild && typedChild.Name == childName)
+            {
+                return typedChild;
+            }
+
+            var result = FindChildByName<T>(child, childName);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private void EditItemButton_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as Button)?.DataContext is not EnvVariableItem item)
+            return;
+
+        // Check if the variable is read-only
+        if (item.IsReadOnly)
+        {
+            ViewModel.StatusMessage = "This is a read-only system-managed variable";
+            UpdateStatusBar();
+            return;
+        }
+
+        // Determine if this is a system variable
+        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
+        if (!isSystemVariable)
+        {
+            foreach (var sysVar in ViewModel.SystemVariables)
+            {
+                if (sysVar.Children.Contains(item))
+                {
+                    isSystemVariable = true;
+                    break;
+                }
+            }
+        }
+
+        // Check admin permissions for system variables
+        if (isSystemVariable && !ViewModel.IsAdmin)
+        {
+            ViewModel.StatusMessage = "Administrator privileges required to edit system variables";
+            UpdateStatusBar();
+            return;
+        }
+
+        // Exit edit mode for previously editing item
+        if (_currentlyEditingItem != null && _currentlyEditingItem != item)
+        {
+            _currentlyEditingItem.IsEditing = false;
+        }
+
+        // Enter inline edit mode
+        _currentlyEditingItem = item;
+        item.EditValue = item.IsChild ? item.DisplayName : item.Value;
+        item.IsEditing = true;
+        ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
+        UpdateStatusBar();
+    }
+
+    private async void DeleteItemButton_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as Button)?.DataContext is not EnvVariableItem item)
+            return;
+
+        // Check if the variable is read-only
+        if (item.IsReadOnly)
+        {
+            ViewModel.StatusMessage = "This is a read-only system-managed variable";
+            UpdateStatusBar();
+            return;
+        }
+
+        // Determine if this is a system variable
+        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
+        if (!isSystemVariable)
+        {
+            foreach (var sysVar in ViewModel.SystemVariables)
+            {
+                if (sysVar.Children.Contains(item))
+                {
+                    isSystemVariable = true;
+                    break;
+                }
+            }
+        }
+
+        // Check admin permissions for system variables
+        if (isSystemVariable && !ViewModel.IsAdmin)
+        {
+            ViewModel.StatusMessage = "Administrator privileges required to delete system variables";
+            UpdateStatusBar();
+            return;
+        }
+
+        // Check if this is a child item
+        if (item.IsChild)
+        {
+            await DeleteChildEntry(item, isSystemVariable);
+            return;
+        }
+
+        // Delete parent variable
+        var confirmDialog = new ContentDialog
+        {
+            Title = "Confirm Delete",
+            Content = $"Are you sure you want to delete the {(isSystemVariable ? "system" : "user")} variable '{item.Name}'?",
+            PrimaryButtonText = "Delete",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = this.Content.XamlRoot
+        };
+
+        var result = await confirmDialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            if (isSystemVariable)
+            {
+                ViewModel.SelectedSystemVariable = item;
+                ViewModel.DeleteSystemVariable();
+            }
+            else
+            {
+                ViewModel.SelectedUserVariable = item;
+                ViewModel.DeleteUserVariable();
+            }
+            UpdateStatusBar();
+        }
+    }
+
     private async void TreeViewItem_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
     {
         // Get the data context (EnvVariableItem) from the tapped element

@@ -70,25 +70,12 @@
                             <TextBlock Text="User Variables" FontWeight="SemiBold" FontSize="16" VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                            <Button Padding="8" 
-                                    Click="AddUserVariableButton_Click"
-                                    ToolTipService.ToolTip="Add new user variable">
-                                <FontIcon Glyph="&#xE710;" FontSize="14"/>
-                            </Button>
-                            <Button Padding="8" 
-                                    Click="EditUserVariableButton_Click"
-                                    IsEnabled="{x:Bind ViewModel.CanEditUserVariable, Mode=OneWay}"
-                                    ToolTipService.ToolTip="Edit selected variable">
-                                <FontIcon Glyph="&#xE104;" FontSize="14"/>
-                            </Button>
-                            <Button Padding="8" 
-                                    Click="DeleteUserVariableButton_Click"
-                                    IsEnabled="{x:Bind ViewModel.CanDeleteUserVariable, Mode=OneWay}"
-                                    ToolTipService.ToolTip="Delete selected variable">
-                                <FontIcon Glyph="&#xE107;" FontSize="14"/>
-                            </Button>
-                        </StackPanel>
+                        <Button Grid.Column="1" 
+                                Padding="8" 
+                                Click="AddUserVariableButton_Click"
+                                ToolTipService.ToolTip="Add new user variable">
+                            <FontIcon Glyph="&#xE710;" FontSize="14"/>
+                        </Button>
                     </Grid>
                 </Border>
 
@@ -103,52 +90,78 @@
                                   ItemsSource="{x:Bind ViewModel.UserVariables, Mode=OneWay}"
                                   SelectionChanged="UserEnvTreeView_SelectionChanged"
                                   Padding="12">
+                            <TreeView.ItemContainerStyle>
+                                <Style TargetType="TreeViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </TreeView.ItemContainerStyle>
                             <TreeView.ItemTemplate>
                                 <DataTemplate>
-                                    <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped">
-                                            <FontIcon Glyph="{Binding Icon}" 
-                                                      FontSize="16" 
-                                                      Foreground="{Binding IconColor}"/>
+                                    <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
                                             
-                                            <TextBlock Text="{Binding DisplayName}" 
-                                                       VerticalAlignment="Center"
-                                                       MinWidth="150"
-                                                       Visibility="{Binding DisplayNameVisibility}"/>
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped">
+                                                <FontIcon Glyph="{Binding Icon}" 
+                                                          FontSize="16" 
+                                                          Foreground="{Binding IconColor}"/>
                                             
-                                            <!-- Display Mode: Show value in gray -->
-                                            <TextBlock Text="{Binding Value}" 
-                                                       Foreground="Gray"
-                                                       Margin="8,0,0,0"
-                                                       VerticalAlignment="Center"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       Visibility="{Binding ValueDisplayVisibility}"/>
+                                                <TextBlock Text="{Binding DisplayName}" 
+                                                           VerticalAlignment="Center"
+                                                           MinWidth="150"
+                                                           Visibility="{Binding DisplayNameVisibility}"/>
                                             
-                                            <!-- Edit Mode: Show TextBox -->
-                                            <TextBox x:Name="EditTextBox"
-                                                     Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                     Visibility="{Binding EditVisibility}"
-                                                     MinWidth="300"
-                                                     KeyDown="EditTextBox_KeyDown"
-                                                     LostFocus="EditTextBox_LostFocus"
-                                                     Loaded="EditTextBox_Loaded"/>
+                                                <!-- Display Mode: Show value in gray -->
+                                                <TextBlock Text="{Binding Value}" 
+                                                           Foreground="Gray"
+                                                           Margin="8,0,0,0"
+                                                           VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Visibility="{Binding ValueDisplayVisibility}"/>
                                             
-                                            <!-- Add Child Button for composite variables -->
-                                            <Button Padding="4" 
-                                                    Click="AddChildButton_Click"
-                                                    Visibility="{Binding AddChildButtonVisibility}"
-                                                    ToolTipService.ToolTip="Add new path entry">
-                                                <FontIcon Glyph="&#xE710;" FontSize="12"/>
-                                            </Button>
+                                                <!-- Edit Mode: Show TextBox -->
+                                                <TextBox x:Name="EditTextBox"
+                                                         Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         Visibility="{Binding EditVisibility}"
+                                                         MinWidth="300"
+                                                         KeyDown="EditTextBox_KeyDown"
+                                                         LostFocus="EditTextBox_LostFocus"
+                                                         Loaded="EditTextBox_Loaded"/>
                                             
-                                            <!-- Normalize Button for composite variables -->
-                                            <Button Padding="4" 
-                                                    Click="NormalizeButton_Click"
-                                                    Visibility="{Binding NormalizeButtonVisibility}"
-                                                    ToolTipService.ToolTip="Normalize paths (replace with variables and sort)">
-                                                <FontIcon Glyph="&#xE8CB;" FontSize="12"/>
-                                            </Button>
-                                        </StackPanel>
+                                                <!-- Add Child Button for composite variables -->
+                                                <Button Padding="4" 
+                                                        Click="AddChildButton_Click"
+                                                        Visibility="{Binding AddChildButtonVisibility}"
+                                                        ToolTipService.ToolTip="Add new path entry">
+                                                    <FontIcon Glyph="&#xE710;" FontSize="12"/>
+                                                </Button>
+                                            
+                                                <!-- Normalize Button for composite variables -->
+                                                <Button Padding="4" 
+                                                        Click="NormalizeButton_Click"
+                                                        Visibility="{Binding NormalizeButtonVisibility}"
+                                                        ToolTipService.ToolTip="Normalize paths (replace with variables and sort)">
+                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12"/>
+                                                </Button>
+                                            </StackPanel>
+                                            
+                                            <!-- Hover Buttons (Right-aligned) -->
+                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,0,0">
+                                                <Button Padding="4" 
+                                                        Click="EditItemButton_Click"
+                                                        ToolTipService.ToolTip="Edit">
+                                                    <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
+                                                </Button>
+                                                <Button Padding="4" 
+                                                        Click="DeleteItemButton_Click"
+                                                        ToolTipService.ToolTip="Delete">
+                                                    <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
                                     </TreeViewItem>
                                 </DataTemplate>
                             </TreeView.ItemTemplate>
@@ -206,18 +219,6 @@
                                     ToolTipService.ToolTip="Add new system variable (requires admin)">
                                 <FontIcon Glyph="&#xE710;" FontSize="14"/>
                             </Button>
-                            <Button Padding="8" 
-                                    Click="EditSystemVariableButton_Click"
-                                    IsEnabled="{x:Bind ViewModel.CanEditSystemVariable, Mode=OneWay}"
-                                    ToolTipService.ToolTip="Edit selected variable (requires admin)">
-                                <FontIcon Glyph="&#xE104;" FontSize="14"/>
-                            </Button>
-                            <Button Padding="8" 
-                                    Click="DeleteSystemVariableButton_Click"
-                                    IsEnabled="{x:Bind ViewModel.CanDeleteSystemVariable, Mode=OneWay}"
-                                    ToolTipService.ToolTip="Delete selected variable (requires admin)">
-                                <FontIcon Glyph="&#xE107;" FontSize="14"/>
-                            </Button>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -233,52 +234,78 @@
                                   ItemsSource="{x:Bind ViewModel.SystemVariables, Mode=OneWay}"
                                   SelectionChanged="SystemEnvTreeView_SelectionChanged"
                                   Padding="12">
+                            <TreeView.ItemContainerStyle>
+                                <Style TargetType="TreeViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </TreeView.ItemContainerStyle>
                             <TreeView.ItemTemplate>
                                 <DataTemplate>
-                                    <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System">
-                                            <FontIcon Glyph="{Binding Icon}" 
-                                                      FontSize="16" 
-                                                      Foreground="{Binding IconColor}"/>
+                                    <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
                                             
-                                            <TextBlock Text="{Binding DisplayName}" 
-                                                       VerticalAlignment="Center"
-                                                       MinWidth="150"
-                                                       Visibility="{Binding DisplayNameVisibility}"/>
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System">
+                                                <FontIcon Glyph="{Binding Icon}" 
+                                                          FontSize="16" 
+                                                          Foreground="{Binding IconColor}"/>
                                             
-                                            <!-- Display Mode: Show value in gray -->
-                                            <TextBlock Text="{Binding Value}" 
-                                                       Foreground="Gray"
-                                                       Margin="8,0,0,0"
-                                                       VerticalAlignment="Center"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       Visibility="{Binding ValueDisplayVisibility}"/>
+                                                <TextBlock Text="{Binding DisplayName}" 
+                                                           VerticalAlignment="Center"
+                                                           MinWidth="150"
+                                                           Visibility="{Binding DisplayNameVisibility}"/>
                                             
-                                            <!-- Edit Mode: Show TextBox -->
-                                            <TextBox x:Name="EditTextBox"
-                                                     Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                     Visibility="{Binding EditVisibility}"
-                                                     MinWidth="300"
-                                                     KeyDown="EditTextBox_KeyDown"
-                                                     LostFocus="EditTextBox_LostFocus"
-                                                     Loaded="EditTextBox_Loaded"/>
+                                                <!-- Display Mode: Show value in gray -->
+                                                <TextBlock Text="{Binding Value}" 
+                                                           Foreground="Gray"
+                                                           Margin="8,0,0,0"
+                                                           VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Visibility="{Binding ValueDisplayVisibility}"/>
                                             
-                                            <!-- Add Child Button for composite variables -->
-                                            <Button Padding="4" 
-                                                    Click="AddChildButton_Click"
-                                                    Visibility="{Binding AddChildButtonVisibility}"
-                                                    ToolTipService.ToolTip="Add new path entry">
-                                                <FontIcon Glyph="&#xE710;" FontSize="12"/>
-                                            </Button>
+                                                <!-- Edit Mode: Show TextBox -->
+                                                <TextBox x:Name="EditTextBox"
+                                                         Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         Visibility="{Binding EditVisibility}"
+                                                         MinWidth="300"
+                                                         KeyDown="EditTextBox_KeyDown"
+                                                         LostFocus="EditTextBox_LostFocus"
+                                                         Loaded="EditTextBox_Loaded"/>
                                             
-                                            <!-- Normalize Button for composite variables -->
-                                            <Button Padding="4" 
-                                                    Click="NormalizeButton_Click"
-                                                    Visibility="{Binding NormalizeButtonVisibility}"
-                                                    ToolTipService.ToolTip="Normalize paths (replace with variables and sort)">
-                                                <FontIcon Glyph="&#xE8CB;" FontSize="12"/>
-                                            </Button>
-                                        </StackPanel>
+                                                <!-- Add Child Button for composite variables -->
+                                                <Button Padding="4" 
+                                                        Click="AddChildButton_Click"
+                                                        Visibility="{Binding AddChildButtonVisibility}"
+                                                        ToolTipService.ToolTip="Add new path entry">
+                                                    <FontIcon Glyph="&#xE710;" FontSize="12"/>
+                                                </Button>
+                                            
+                                                <!-- Normalize Button for composite variables -->
+                                                <Button Padding="4" 
+                                                        Click="NormalizeButton_Click"
+                                                        Visibility="{Binding NormalizeButtonVisibility}"
+                                                        ToolTipService.ToolTip="Normalize paths (replace with variables and sort)">
+                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12"/>
+                                                </Button>
+                                            </StackPanel>
+                                            
+                                            <!-- Hover Buttons (Right-aligned) -->
+                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,0,0">
+                                                <Button Padding="4" 
+                                                        Click="EditItemButton_Click"
+                                                        ToolTipService.ToolTip="Edit">
+                                                    <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
+                                                </Button>
+                                                <Button Padding="4" 
+                                                        Click="DeleteItemButton_Click"
+                                                        ToolTipService.ToolTip="Delete">
+                                                    <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
                                     </TreeViewItem>
                                 </DataTemplate>
                             </TreeView.ItemTemplate>
