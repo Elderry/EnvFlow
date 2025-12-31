@@ -16,35 +16,42 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Title Bar -->
-        <Grid Grid.Row="0" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16,12">
+        <!-- Custom Title Bar -->
+        <Grid x:Name="CustomTitleBar" Grid.Row="0" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16,8,150,8" Height="48">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                 <FontIcon Glyph="&#xE74C;" FontSize="20" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
                 <TextBlock Text="EnvFlow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
-            </StackPanel>
-
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                <Button x:Name="RefreshButton" Click="RefreshButton_Click">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE72C;" FontSize="14"/>
-                        <TextBlock Text="Refresh"/>
-                    </StackPanel>
-                </Button>
             </StackPanel>
         </Grid>
 
         <!-- Main Content Area with Two Panels -->
         <Grid Grid.Row="1" Padding="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MinWidth="300"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*" MinWidth="300"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Refresh Button Bar -->
+            <Grid Grid.Row="0" Margin="0,-8,0,12">
+                <Button x:Name="RefreshButton" Click="RefreshButton_Click" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE72C;" FontSize="14"/>
+                        <TextBlock Text="Refresh"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+            
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" MinWidth="300"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="3*" MinWidth="300"/>
+                </Grid.ColumnDefinitions>
 
             <!-- Left Panel: User Environment Variables -->
             <Grid Grid.Column="0">
@@ -369,6 +376,7 @@
                         </TreeView>
                     </ScrollViewer>
                 </Border>
+            </Grid>
             </Grid>
         </Grid>
 
