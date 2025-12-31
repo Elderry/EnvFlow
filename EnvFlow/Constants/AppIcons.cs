@@ -20,5 +20,5 @@ public static class AppIcons
     
     // Variable type icons
     public const string Tag = "\uE8EC";
-    public const string List = "\uE8E9";
+    public const string DialShape1 = "\uF156";
 }

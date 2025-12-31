@@ -99,14 +99,14 @@ public class EnvVariableItem : INotifyPropertyChanged
         // Variable-level item
         if (isMultiValue)
         {
-            Icon = isPathLike ? AppIcons.Library : AppIcons.Library;
+            Icon = isPathLike ? AppIcons.Library : AppIcons.DialShape1;
             IconColor = new SolidColorBrush(Colors.Orange);
 
             // Parse path entries as children
             var entries = value.Split(';');
             foreach (var entry in entries)
             {
-                Children.Add(CreatePathEntry(entry));
+                Children.Add(CreateVarEntry(entry));
             }
 
             ValueVisibility = Visibility.Collapsed;
@@ -126,9 +126,10 @@ public class EnvVariableItem : INotifyPropertyChanged
             else
             {
                 var expandedValue = Environment.ExpandEnvironmentVariables(value);
+                bool isFolder = Directory.Exists(expandedValue);
                 bool isFile = File.Exists(expandedValue);
-                bool exists = Directory.Exists(expandedValue) || isFile;
-                Icon = isFile ? AppIcons.File : AppIcons.Folder;
+				bool exists =  isFolder || isFile;
+                Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : AppIcons.Error;
                 IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
             }
             ValueVisibility = Visibility.Visible;
@@ -136,25 +137,28 @@ public class EnvVariableItem : INotifyPropertyChanged
         else
         {
             Icon = AppIcons.Tag;
-            IconColor = new SolidColorBrush(IsReadOnly ? Colors.Gray : Colors.SkyBlue);
+            IconColor = new SolidColorBrush(IsReadOnly ? Colors.Gray : Colors.DeepSkyBlue);
             ValueVisibility = Visibility.Visible;
         }
     }
 
-    private EnvVariableItem CreatePathEntry(string path)
+    private EnvVariableItem CreateVarEntry(string value)
     {
-        var expandedPath = Environment.ExpandEnvironmentVariables(path);
-        bool exists = Directory.Exists(expandedPath) || File.Exists(expandedPath);
-        
+		value = Environment.ExpandEnvironmentVariables(value);
+		bool isPathLike = value.Contains('\\') || value.Contains('/') || value.Contains(':');
+        bool isFolder = Directory.Exists(value);
+        bool isFile = File.Exists(value);
+        bool exists = isFolder || isFile;
+
         return new EnvVariableItem
         {
-            Name = path,
-            Value = path,
-            DisplayName = path,
+            Name = value,
+            Value = value,
+            DisplayName = value,
             IsPathEntry = true,
             IsValid = exists,
-            Icon = exists ? AppIcons.Folder : AppIcons.Error,
-            IconColor = new SolidColorBrush(exists ? Colors.LimeGreen : Colors.Crimson),
+            Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,
+            IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : isPathLike ? Colors.Crimson : Colors.DeepSkyBlue),
             ValueVisibility = Visibility.Collapsed
         };
     }
