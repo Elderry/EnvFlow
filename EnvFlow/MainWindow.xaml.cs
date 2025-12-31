@@ -34,20 +34,12 @@ public sealed partial class MainWindow : Window
             // Customize title bar
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(CustomTitleBar);
-            
-            // Set title bar button colors for better visibility on light background
-            if (AppWindow.TitleBar != null)
-            {
-                var titleBar = AppWindow.TitleBar;
-                titleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
-                titleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
-                titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
-                titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 102, 102, 102);
-                titleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(20, 0, 0, 0);
-                titleBar.ButtonHoverForegroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
-                titleBar.ButtonPressedBackgroundColor = Windows.UI.Color.FromArgb(40, 0, 0, 0);
-                titleBar.ButtonPressedForegroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
-            }
+
+            var titleBar = AppWindow.TitleBar;
+            titleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+            titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
+            titleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+            titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 102, 102, 102);
 
             // Set splitter cursor
             SplitterGrid.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
