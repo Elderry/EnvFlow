@@ -1573,4 +1573,16 @@ public sealed partial class MainWindow : Window
             e.Handled = true;
         }
     }
+
+    private void NameColumn_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is StackPanel stackPanel && stackPanel.DataContext is EnvVariableItem item)
+        {
+            // All child items (leaf entries) span all columns
+            if (item.IsChild)
+            {
+                Grid.SetColumnSpan(stackPanel, 4);
+            }
+        }
+    }
 }

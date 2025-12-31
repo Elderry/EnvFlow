@@ -141,8 +141,8 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 
-                                                <!-- Name Column -->
-                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped">
+                                                <!-- Name Column - spans all columns for composite variables -->
+                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped" Loaded="NameColumn_Loaded">
                                                     <FontIcon Glyph="{Binding Icon}" 
                                                               FontSize="16" 
                                                               Foreground="{Binding IconColor}"/>
@@ -373,8 +373,8 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 
-                                                <!-- Name Column -->
-                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System">
+                                                <!-- Name Column - spans all columns for composite variables -->
+                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System" Loaded="NameColumn_Loaded">
                                                     <FontIcon Glyph="{Binding Icon}" 
                                                               FontSize="16" 
                                                               Foreground="{Binding IconColor}"/>
