@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     Title="EnvFlow - Environment Variable Editor">
 
-    <Grid>
+    <Grid Background="#F3F3F3">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
 
         <!-- Custom Title Bar -->
-        <Grid x:Name="CustomTitleBar" Grid.Row="0" Background="{ThemeResource LayerFillColorDefaultBrush}" Padding="16,8,150,8" Height="48">
+        <Grid x:Name="CustomTitleBar" Grid.Row="0" Background="#F3F3F3" Padding="16,8,150,8" Height="48">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>

@@ -7,6 +7,18 @@
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Custom background colors -->
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="#F3F3F3"/>
+                    <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#F8F8F8"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="#202020"/>
+                    <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#2B2B2B"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
