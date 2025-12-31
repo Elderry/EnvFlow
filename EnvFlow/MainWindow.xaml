@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     Title="EnvFlow - Environment Variable Editor">
 
-    <Grid Background="#F3F3F3">
+    <Grid x:Name="RootGrid" Background="#F3F3F3">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -109,14 +109,14 @@
                             </Grid.ColumnDefinitions>
                             
                             <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <Border Grid.Column="1" Width="8" Background="Transparent" Margin="0"
+                            <controls:CursorGrid x:Name="UserColumnSplitter" Grid.Column="1" Width="8" Background="Transparent"
                                     PointerPressed="ColumnSplitter_PointerPressed"
                                     PointerMoved="ColumnSplitter_PointerMoved"
                                     PointerReleased="ColumnSplitter_PointerReleased"
                                     Tag="User">
                                 <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
-                            </Border>
-                            <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </controls:CursorGrid>
+                            <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0"/>
                         </Grid>
                         
                         <!-- TreeView with ScrollViewer -->
@@ -341,14 +341,14 @@
                             </Grid.ColumnDefinitions>
                             
                             <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <Border Grid.Column="1" Width="8" Background="Transparent" Margin="0"
+                            <controls:CursorGrid x:Name="SystemColumnSplitter" Grid.Column="1" Width="8" Background="Transparent"
                                     PointerPressed="ColumnSplitter_PointerPressed"
                                     PointerMoved="ColumnSplitter_PointerMoved"
                                     PointerReleased="ColumnSplitter_PointerReleased"
                                     Tag="System">
                                 <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
-                            </Border>
-                            <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </controls:CursorGrid>
+                            <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0"/>
                         </Grid>
                         
                         <!-- TreeView with ScrollViewer -->

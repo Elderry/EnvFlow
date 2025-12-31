@@ -46,6 +46,10 @@ public sealed partial class MainWindow : Window
             // Set splitter cursor
             SplitterGrid.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
 
+            // Set column splitter cursors
+            UserColumnSplitter.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
+            SystemColumnSplitter.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
+
             // Update status bar
             UpdateStatusBar();
             
@@ -1494,14 +1498,14 @@ public sealed partial class MainWindow : Window
     
     private void ColumnSplitter_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
-        if (sender is Border splitter)
+        if (sender is UIElement splitter)
         {
             _isColumnSplitterDragging = true;
             var point = e.GetCurrentPoint(null);  // Get screen coordinates
             _columnSplitterStartX = point.Position.X;
             
             // Determine which column to resize based on Tag
-            var tag = splitter.Tag as string;
+            var tag = (sender as FrameworkElement)?.Tag as string;
             _resizingColumn = tag == "User" ? UserNameColumn : SystemNameColumn;
             _columnSplitterStartWidth = _resizingColumn.ActualWidth;  // Use ActualWidth for current rendered width
             
@@ -1512,7 +1516,7 @@ public sealed partial class MainWindow : Window
 
     private void ColumnSplitter_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
-        if (_isColumnSplitterDragging && sender is Border splitter && _resizingColumn != null)
+        if (_isColumnSplitterDragging && _resizingColumn != null)
         {
             var point = e.GetCurrentPoint(null);  // Get screen coordinates
             var currentX = point.Position.X;
@@ -1524,7 +1528,7 @@ public sealed partial class MainWindow : Window
                 _resizingColumn.Width = new GridLength(newWidth);
                 
                 // Update all TreeViewItem column widths to match
-                var tag = splitter.Tag as string;
+                var tag = (sender as FrameworkElement)?.Tag as string;
                 var treeView = tag == "User" ? UserEnvTreeView : SystemEnvTreeView;
                 UpdateTreeViewColumnWidths(treeView, newWidth);
             }
@@ -1565,7 +1569,7 @@ public sealed partial class MainWindow : Window
 
     private void ColumnSplitter_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
-        if (_isColumnSplitterDragging && sender is Border splitter)
+        if (_isColumnSplitterDragging && sender is UIElement splitter)
         {
             _isColumnSplitterDragging = false;
             _resizingColumn = null;
