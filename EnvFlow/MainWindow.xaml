@@ -143,11 +143,11 @@
                                                     <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
                                                 </Button>
                                                 
-                                                <!-- Normalize Button for composite variables -->
+                                                <!-- Sort Button for composite variables -->
                                                 <Button Padding="4" 
-                                                        Click="NormalizeButton_Click"
+                                                        Click="SortButton_Click"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
-                                                        ToolTipService.ToolTip="Normalize paths (replace with variables and sort)">
+                                                        ToolTipService.ToolTip="Sort paths alphabetically">
                                                     <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#8A8A8A"/>
                                                 </Button>
                                                 
@@ -161,6 +161,27 @@
                                                         Click="DeleteItemButton_Click"
                                                         ToolTipService.ToolTip="Delete">
                                                     <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
+                                                </Button>
+                                                
+                                                <!-- More Options Menu for composite variables -->
+                                                <Button Padding="4"
+                                                        Visibility="{Binding NormalizeButtonVisibility}"
+                                                        ToolTipService.ToolTip="More options">
+                                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                                                    <Button.Flyout>
+                                                        <MenuFlyout>
+                                                            <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
+                                                                <MenuFlyoutItem.Icon>
+                                                                    <FontIcon Glyph="&#xE74A;"/>
+                                                                </MenuFlyoutItem.Icon>
+                                                            </MenuFlyoutItem>
+                                                            <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
+                                                                <MenuFlyoutItem.Icon>
+                                                                    <FontIcon Glyph="&#xE739;"/>
+                                                                </MenuFlyoutItem.Icon>
+                                                            </MenuFlyoutItem>
+                                                        </MenuFlyout>
+                                                    </Button.Flyout>
                                                 </Button>
                                             </StackPanel>
                                         </Grid>
@@ -298,11 +319,11 @@
                                                     <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
                                                 </Button>
                                                 
-                                                <!-- Normalize Button for composite variables -->
+                                                <!-- Sort Button for composite variables -->
                                                 <Button Padding="4" 
-                                                        Click="NormalizeButton_Click"
+                                                        Click="SortButton_Click"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
-                                                        ToolTipService.ToolTip="Normalize paths (replace with variables and sort)">
+                                                        ToolTipService.ToolTip="Sort paths alphabetically">
                                                     <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#8A8A8A"/>
                                                 </Button>
                                                 
@@ -316,6 +337,27 @@
                                                         Click="DeleteItemButton_Click"
                                                         ToolTipService.ToolTip="Delete">
                                                     <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
+                                                </Button>
+                                                
+                                                <!-- More Options Menu for composite variables -->
+                                                <Button Padding="4"
+                                                        Visibility="{Binding NormalizeButtonVisibility}"
+                                                        ToolTipService.ToolTip="More options">
+                                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                                                    <Button.Flyout>
+                                                        <MenuFlyout>
+                                                            <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
+                                                                <MenuFlyoutItem.Icon>
+                                                                    <FontIcon Glyph="&#xE74A;"/>
+                                                                </MenuFlyoutItem.Icon>
+                                                            </MenuFlyoutItem>
+                                                            <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
+                                                                <MenuFlyoutItem.Icon>
+                                                                    <FontIcon Glyph="&#xE739;"/>
+                                                                </MenuFlyoutItem.Icon>
+                                                            </MenuFlyoutItem>
+                                                        </MenuFlyout>
+                                                    </Button.Flyout>
                                                 </Button>
                                             </StackPanel>
                                         </Grid>
