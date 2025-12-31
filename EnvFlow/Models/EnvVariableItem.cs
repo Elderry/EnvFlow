@@ -68,6 +68,12 @@ public class EnvVariableItem : INotifyPropertyChanged
     public Visibility HoverButtonsVisibility => !IsReadOnly 
         ? Visibility.Visible 
         : Visibility.Collapsed;
+    
+    public Visibility EditButtonVisibility => (!IsChild && Children.Count > 0) 
+        ? Visibility.Collapsed 
+        : Visibility.Visible;
+    
+    public bool IsComposite => !IsChild && Children.Count > 0;
 
     public EnvVariableItem()
     {

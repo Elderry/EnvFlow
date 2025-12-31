@@ -477,6 +477,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        // Check if the variable is composite (has children)
+        if (item.IsComposite)
+        {
+            return;
+        }
+
         // Determine if this is a user or system variable
         bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
         if (!isSystemVariable)

@@ -153,6 +153,7 @@
                                                 
                                                 <Button Padding="4" 
                                                         Click="EditItemButton_Click"
+                                                        Visibility="{Binding EditButtonVisibility}"
                                                         ToolTipService.ToolTip="Edit">
                                                     <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
                                                 </Button>
@@ -307,6 +308,7 @@
                                                 
                                                 <Button Padding="4" 
                                                         Click="EditItemButton_Click"
+                                                        Visibility="{Binding EditButtonVisibility}"
                                                         ToolTipService.ToolTip="Edit">
                                                     <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
                                                 </Button>
