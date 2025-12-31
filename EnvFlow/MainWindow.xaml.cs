@@ -14,6 +14,8 @@ public sealed partial class MainWindow : Window
 {
     public MainWindowViewModel ViewModel { get; }
     private EnvVariableItem? _currentlyEditingItem;
+    private bool _isSplitterDragging = false;
+    private double _splitterStartX;
 
     public MainWindow()
     {
@@ -984,6 +986,82 @@ public sealed partial class MainWindow : Window
                 ViewModel.StatusMessage = $"Error removing path entry: {ex.Message}";
                 UpdateStatusBar();
             }
+        }
+    }
+
+    // Splitter drag functionality
+    private void Splitter_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        // Cursor change to SizeWestEast handled by system when dragging
+    }
+
+    private void Splitter_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        // Cursor restored by system
+    }
+
+    private void Splitter_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (sender is Grid splitter)
+        {
+            _isSplitterDragging = true;
+            _splitterStartX = e.GetCurrentPoint(null).Position.X;
+            splitter.CapturePointer(e.Pointer);
+            e.Handled = true;
+        }
+    }
+
+    private void Splitter_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_isSplitterDragging && sender is Grid splitter)
+        {
+            var currentPoint = e.GetCurrentPoint(null).Position.X;
+            var delta = currentPoint - _splitterStartX;
+            
+            // Get the parent grid
+            if (splitter.Parent is Grid parentGrid && parentGrid.ColumnDefinitions.Count >= 3)
+            {
+                var leftColumn = parentGrid.ColumnDefinitions[0];
+                var rightColumn = parentGrid.ColumnDefinitions[2];
+                
+                // Calculate new widths
+                var leftWidth = leftColumn.ActualWidth + delta;
+                var rightWidth = rightColumn.ActualWidth - delta;
+                
+                // Enforce minimum widths
+                if (leftWidth >= 300 && rightWidth >= 300)
+                {
+                    leftColumn.Width = new GridLength(leftWidth, GridUnitType.Pixel);
+                    rightColumn.Width = new GridLength(rightWidth, GridUnitType.Pixel);
+                    _splitterStartX = currentPoint;
+                }
+            }
+            e.Handled = true;
+        }
+    }
+
+    private void Splitter_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (_isSplitterDragging && sender is Grid splitter)
+        {
+            _isSplitterDragging = false;
+            splitter.ReleasePointerCaptures();
+            
+            // Convert pixel widths back to star sizing for responsive behavior
+            if (splitter.Parent is Grid parentGrid && parentGrid.ColumnDefinitions.Count >= 3)
+            {
+                var leftColumn = parentGrid.ColumnDefinitions[0];
+                var rightColumn = parentGrid.ColumnDefinitions[2];
+                
+                var totalWidth = leftColumn.ActualWidth + rightColumn.ActualWidth;
+                var leftRatio = leftColumn.ActualWidth / totalWidth;
+                var rightRatio = rightColumn.ActualWidth / totalWidth;
+                
+                leftColumn.Width = new GridLength(leftRatio, GridUnitType.Star);
+                rightColumn.Width = new GridLength(rightRatio, GridUnitType.Star);
+            }
+            
+            e.Handled = true;
         }
     }
 }

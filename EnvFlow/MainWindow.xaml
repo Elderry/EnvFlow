@@ -40,9 +40,9 @@
         <!-- Main Content Area with Two Panels -->
         <Grid Grid.Row="1" Padding="16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" MinWidth="300"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" MinWidth="300"/>
             </Grid.ColumnDefinitions>
 
             <!-- Left Panel: User Environment Variables -->
@@ -171,9 +171,19 @@
             </Grid>
 
             <!-- Splitter -->
-            <Border Grid.Column="1" Width="16" Padding="6,0">
-                <Rectangle Fill="{ThemeResource DividerStrokeColorDefaultBrush}" Width="2"/>
-            </Border>
+            <Grid Grid.Column="1" 
+                  Width="12" 
+                  Background="Transparent"
+                  x:Name="SplitterGrid"
+                  PointerEntered="Splitter_PointerEntered"
+                  PointerExited="Splitter_PointerExited"
+                  PointerPressed="Splitter_PointerPressed"
+                  PointerMoved="Splitter_PointerMoved"
+                  PointerReleased="Splitter_PointerReleased">
+                <Rectangle Fill="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                           Width="2"
+                           HorizontalAlignment="Center"/>
+            </Grid>
 
             <!-- Right Panel: System Environment Variables -->
             <Grid Grid.Column="2">
