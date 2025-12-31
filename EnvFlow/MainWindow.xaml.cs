@@ -17,6 +17,7 @@ public sealed partial class MainWindow : Window
     private EnvVariableItem? _currentlyEditingItem;
     private bool _isSplitterDragging = false;
     private double _splitterStartX;
+    private TreeViewItem? _currentFlyoutTreeItem = null;
 
     public MainWindow()
     {
@@ -313,7 +314,47 @@ public sealed partial class MainWindow : Window
     {
         if (sender is TreeViewItem treeViewItem)
         {
+            // Don't hide buttons if the flyout is currently open for this item
+            if (_currentFlyoutTreeItem == treeViewItem)
+                return;
+
             var hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons");
+            if (hoverButtons != null)
+            {
+                hoverButtons.Opacity = 0;
+            }
+        }
+    }
+
+    private void MenuFlyout_Opening(object sender, object e)
+    {
+        // Track which TreeViewItem has its flyout open
+        if (sender is MenuFlyout flyout && flyout.Target is Button button)
+        {
+            // Find the parent TreeViewItem
+            DependencyObject parent = button;
+            while (parent != null && parent is not TreeViewItem)
+            {
+                parent = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(parent);
+            }
+            
+            if (parent is TreeViewItem treeViewItem)
+            {
+                _currentFlyoutTreeItem = treeViewItem;
+            }
+        }
+    }
+
+    private void MenuFlyout_Closed(object sender, object e)
+    {
+        // Clear the tracked item
+        var previousItem = _currentFlyoutTreeItem;
+        _currentFlyoutTreeItem = null;
+
+        // Hide hover buttons if pointer is not over the item
+        if (previousItem != null)
+        {
+            var hoverButtons = FindChildByName<StackPanel>(previousItem, "HoverButtons");
             if (hoverButtons != null)
             {
                 hoverButtons.Opacity = 0;

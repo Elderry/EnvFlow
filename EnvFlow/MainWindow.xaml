@@ -165,11 +165,12 @@
                                                 
                                                 <!-- More Options Menu for composite variables -->
                                                 <Button Padding="4"
+                                                        x:Name="MoreOptionsButton"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="More options">
                                                     <FontIcon Glyph="&#xE712;" FontSize="12"/>
                                                     <Button.Flyout>
-                                                        <MenuFlyout>
+                                                        <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
                                                             <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
                                                                 <MenuFlyoutItem.Icon>
                                                                     <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
@@ -341,11 +342,12 @@
                                                 
                                                 <!-- More Options Menu for composite variables -->
                                                 <Button Padding="4"
+                                                        x:Name="MoreOptionsButton"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="More options">
                                                     <FontIcon Glyph="&#xE712;" FontSize="12"/>
                                                     <Button.Flyout>
-                                                        <MenuFlyout>
+                                                        <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
                                                             <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
                                                                 <MenuFlyoutItem.Icon>
                                                                     <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
