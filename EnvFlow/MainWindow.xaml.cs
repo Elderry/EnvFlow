@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
@@ -549,6 +550,114 @@ public sealed partial class MainWindow : Window
                 ViewModel.StatusMessage = $"Error adding path entry: {ex.Message}";
                 UpdateStatusBar();
             }
+        }
+    }
+
+    private async void NormalizeButton_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem parentItem)
+            return;
+
+        // Determine if this is a user or system variable
+        bool isSystemVariable = ViewModel.SystemVariables.Contains(parentItem);
+
+        // Check admin permissions for system variables
+        if (isSystemVariable && !ViewModel.IsAdmin)
+        {
+            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
+            UpdateStatusBar();
+            return;
+        }
+
+        try
+        {
+            var service = new Services.EnvironmentVariableService();
+            
+            // Get all environment variables for substitution
+            var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            
+            // Add user variables
+            foreach (var item in ViewModel.UserVariables)
+            {
+                if (!item.IsChild && !string.IsNullOrEmpty(item.Value))
+                {
+                    allVars[item.Name] = Environment.ExpandEnvironmentVariables(item.Value);
+                }
+            }
+            
+            // Add system variables
+            foreach (var item in ViewModel.SystemVariables)
+            {
+                if (!item.IsChild && !string.IsNullOrEmpty(item.Value))
+                {
+                    allVars[item.Name] = Environment.ExpandEnvironmentVariables(item.Value);
+                }
+            }
+            
+            // Normalize and sort paths
+            var normalizedPaths = new List<string>();
+            
+            foreach (var child in parentItem.Children)
+            {
+                var path = child.DisplayName.Trim();
+                var expandedPath = Environment.ExpandEnvironmentVariables(path);
+                
+                // Try to find a matching environment variable
+                string bestMatch = null;
+                int longestMatchLength = 0;
+                
+                foreach (var kvp in allVars)
+                {
+                    var varValue = kvp.Value.TrimEnd('\\');
+                    
+                    // Check if path starts with this variable's value
+                    if (expandedPath.StartsWith(varValue, StringComparison.OrdinalIgnoreCase) && 
+                        varValue.Length > longestMatchLength)
+                    {
+                        bestMatch = kvp.Key;
+                        longestMatchLength = varValue.Length;
+                    }
+                }
+                
+                // Replace with variable reference if found
+                string normalizedPath;
+                if (bestMatch != null)
+                {
+                    var varValue = allVars[bestMatch].TrimEnd('\\');
+                    var remainder = expandedPath.Substring(varValue.Length).TrimStart('\\');
+                    normalizedPath = string.IsNullOrEmpty(remainder) 
+                        ? $"%{bestMatch}%" 
+                        : $"%{bestMatch}%\\{remainder}";
+                }
+                else
+                {
+                    normalizedPath = path;
+                }
+                
+                normalizedPaths.Add(normalizedPath);
+            }
+            
+            // Sort paths
+            normalizedPaths.Sort(StringComparer.OrdinalIgnoreCase);
+            
+            // Save the normalized and sorted value
+            string newValue = string.Join(";", normalizedPaths);
+            
+            ViewModel.StatusMessage = $"Normalizing {parentItem.Name}";
+            
+            if (isSystemVariable)
+                service.SetSystemVariable(parentItem.Name, newValue);
+            else
+                service.SetUserVariable(parentItem.Name, newValue);
+            
+            ViewModel.RefreshVariables();
+            UpdateStatusBar();
+            ViewModel.StatusMessage = $"Normalized {parentItem.Name}";
+        }
+        catch (Exception ex)
+        {
+            ViewModel.StatusMessage = $"Error normalizing: {ex.Message}";
+            UpdateStatusBar();
         }
     }
 
