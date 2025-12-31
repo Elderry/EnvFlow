@@ -141,7 +141,7 @@
                                             </StackPanel>
                                             
                                             <!-- Hover Buttons (Right-aligned) -->
-                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,0,0" Visibility="{Binding HoverButtonsVisibility}">
+                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
                                                 <!-- Add Child Button for composite variables -->
                                                 <Button Padding="4" 
                                                         Click="AddChildButton_Click"
@@ -339,7 +339,7 @@
                                             </StackPanel>
                                             
                                             <!-- Hover Buttons (Right-aligned) -->
-                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,0,0" Visibility="{Binding HoverButtonsVisibility}">
+                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
                                                 <!-- Add Child Button for composite variables -->
                                                 <Button Padding="4" 
                                                         Click="AddChildButton_Click"
