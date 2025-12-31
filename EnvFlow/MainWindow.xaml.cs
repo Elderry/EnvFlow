@@ -955,21 +955,30 @@ public sealed partial class MainWindow : Window
             // Get all environment variables for substitution
             var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             
-            // Add user variables
+            // Add all read-only variables (volatile, system-defined)
             foreach (var item in ViewModel.UserVariables)
             {
-                if (!item.IsChild && !string.IsNullOrEmpty(item.Value))
+                if (!item.IsChild && !string.IsNullOrEmpty(item.Value) && item.IsReadOnly)
                 {
-                    allVars[item.Name] = Environment.ExpandEnvironmentVariables(item.Value);
+                    // Get the environment variable from the current process (fully expanded)
+                    var varValue = Environment.GetEnvironmentVariable(item.Name);
+                    if (!string.IsNullOrEmpty(varValue))
+                    {
+                        allVars[item.Name] = varValue;
+                    }
                 }
             }
             
-            // Add system variables
             foreach (var item in ViewModel.SystemVariables)
             {
-                if (!item.IsChild && !string.IsNullOrEmpty(item.Value))
+                if (!item.IsChild && !string.IsNullOrEmpty(item.Value) && item.IsReadOnly)
                 {
-                    allVars[item.Name] = Environment.ExpandEnvironmentVariables(item.Value);
+                    // Get the environment variable from the current process (fully expanded)
+                    var varValue = Environment.GetEnvironmentVariable(item.Name);
+                    if (!string.IsNullOrEmpty(varValue))
+                    {
+                        allVars[item.Name] = varValue;
+                    }
                 }
             }
             
@@ -1111,21 +1120,30 @@ public sealed partial class MainWindow : Window
             // Get all environment variables for substitution
             var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             
-            // Add user variables
+            // Add all read-only variables (volatile, system-defined)
             foreach (var userVar in ViewModel.UserVariables)
             {
-                if (!userVar.IsChild && !string.IsNullOrEmpty(userVar.Value))
+                if (!userVar.IsChild && !string.IsNullOrEmpty(userVar.Value) && userVar.IsReadOnly)
                 {
-                    allVars[userVar.Name] = Environment.ExpandEnvironmentVariables(userVar.Value);
+                    // Get the environment variable from the current process (fully expanded)
+                    var varValue = Environment.GetEnvironmentVariable(userVar.Name);
+                    if (!string.IsNullOrEmpty(varValue))
+                    {
+                        allVars[userVar.Name] = varValue;
+                    }
                 }
             }
             
-            // Add system variables
             foreach (var sysVar in ViewModel.SystemVariables)
             {
-                if (!sysVar.IsChild && !string.IsNullOrEmpty(sysVar.Value))
+                if (!sysVar.IsChild && !string.IsNullOrEmpty(sysVar.Value) && sysVar.IsReadOnly)
                 {
-                    allVars[sysVar.Name] = Environment.ExpandEnvironmentVariables(sysVar.Value);
+                    // Get the environment variable from the current process (fully expanded)
+                    var varValue = Environment.GetEnvironmentVariable(sysVar.Name);
+                    if (!string.IsNullOrEmpty(varValue))
+                    {
+                        allVars[sysVar.Name] = varValue;
+                    }
                 }
             }
             
