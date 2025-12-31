@@ -138,7 +138,7 @@ public class EnvVariableItem : INotifyPropertyChanged
                         Value = ext.Trim(),
                         Icon = "\uE8A5", // Document icon
                         IconColor = new SolidColorBrush(Colors.MediumPurple),
-                        IsPathEntry = false,
+                        IsPathEntry = true,
                         ValueVisibility = Visibility.Collapsed
                     });
                 }
