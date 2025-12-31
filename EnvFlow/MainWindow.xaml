@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="using:EnvFlow"
+    xmlns:controls="using:EnvFlow.Controls"
     mc:Ignorable="d"
     Title="EnvFlow - Environment Variable Editor">
 
@@ -171,7 +172,7 @@
             </Grid>
 
             <!-- Splitter -->
-            <Grid Grid.Column="1" 
+            <controls:CursorGrid Grid.Column="1" 
                   Width="12" 
                   Background="Transparent"
                   x:Name="SplitterGrid"
@@ -183,7 +184,7 @@
                 <Rectangle Fill="{ThemeResource DividerStrokeColorDefaultBrush}" 
                            Width="2"
                            HorizontalAlignment="Center"/>
-            </Grid>
+            </controls:CursorGrid>
 
             <!-- Right Panel: System Environment Variables -->
             <Grid Grid.Column="2">

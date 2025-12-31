@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Input;
 using EnvFlow.ViewModels;
 using EnvFlow.Helpers;
 using EnvFlow.Dialogs;
@@ -28,6 +29,9 @@ public sealed partial class MainWindow : Window
             // Set window size
             var appWindow = this.AppWindow;
             appWindow.Resize(new Windows.Graphics.SizeInt32(1400, 800));
+
+            // Set splitter cursor
+            SplitterGrid.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
 
             // Update status bar
             UpdateStatusBar();
