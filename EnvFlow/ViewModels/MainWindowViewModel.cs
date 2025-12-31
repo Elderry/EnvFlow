@@ -146,9 +146,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
                     // Remove and recreate to update children properly
                     collection.Remove(existingItem);
                     
-                    bool isPathLike = _envService.IsPathLike(kvp.Key);
                     bool isVolatile = volatileVars.Contains(kvp.Key);
-                    var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile)
+                    var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isVolatile)
                     {
                         IsExpanded = wasExpanded
                     };
@@ -172,9 +171,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
             else
             {
                 // Add new item
-                bool isPathLike = _envService.IsPathLike(kvp.Key);
                 bool isVolatile = volatileVars.Contains(kvp.Key);
-                var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile);
+                var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isVolatile);
                 
                 if (currentIndex < collection.Count)
                     collection.Insert(currentIndex, newItem);

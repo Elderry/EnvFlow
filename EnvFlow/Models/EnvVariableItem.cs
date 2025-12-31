@@ -1,7 +1,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
+using EnvFlow.Constants;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -16,7 +18,7 @@ public class EnvVariableItem : INotifyPropertyChanged
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
-    public string Icon { get; set; } = "\uE838"; // Default folder icon
+    public string Icon { get; set; } = AppIcons.Library;
     public Brush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
     public ObservableCollection<EnvVariableItem> Children { get; set; } = new();
     public bool IsPathEntry { get; set; }
@@ -83,7 +85,7 @@ public class EnvVariableItem : INotifyPropertyChanged
     {
     }
 
-    public EnvVariableItem(string name, string value, bool isPathLike = false, bool isReadOnly = false)
+    public EnvVariableItem(string name, string value, bool isReadOnly = false)
     {
         Name = name;
         Value = value;
@@ -91,53 +93,49 @@ public class EnvVariableItem : INotifyPropertyChanged
         IsPathEntry = false;
         IsReadOnly = isReadOnly;
 
-        // Check if value looks like a file system path
-        bool isSinglePath = !string.IsNullOrEmpty(value) && 
-                           !value.Contains(';') &&
-                           (value.Contains('\\') || value.Contains(':'));
+        bool isPathLike = value.Contains('\\') || value.Contains('/') || value.Contains(':');
+        bool isMultiValue = value.Contains(';');
 
         // Variable-level item
-        if (isPathLike && !string.IsNullOrEmpty(value) && value.Contains(';'))
+        if (isMultiValue)
         {
-            Icon = "\uE8B7"; // Folder icon for PATH variables
+            Icon = isPathLike ? AppIcons.Library : AppIcons.Library;
             IconColor = new SolidColorBrush(Colors.Orange);
-            
+
             // Parse path entries as children
-            var entries = value.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            var entries = value.Split(';');
             foreach (var entry in entries)
             {
-                if (!string.IsNullOrWhiteSpace(entry))
-                {
-                    Children.Add(CreatePathEntry(entry.Trim()));
-                }
+                Children.Add(CreatePathEntry(entry));
             }
-            
+
             ValueVisibility = Visibility.Collapsed;
-            
+
             // Notify AddChildButtonVisibility to update
             OnPropertyChanged(nameof(AddChildButtonVisibility));
         }
-        else if (isSinglePath)
+        else if (isPathLike)
         {
             // Single path value (like OneDrive, TEMP, etc.)
             if (IsReadOnly)
             {
                 // Volatile variables - gray color, no validation
-                Icon = "\uE8B7"; // Folder icon
+                Icon = AppIcons.Folder;
                 IconColor = new SolidColorBrush(Colors.Gray);
             }
             else
             {
                 var expandedValue = Environment.ExpandEnvironmentVariables(value);
-                bool exists = System.IO.Directory.Exists(expandedValue) || System.IO.File.Exists(expandedValue);
-                Icon = "\uE8B7"; // Folder icon
+                bool isFile = File.Exists(expandedValue);
+                bool exists = Directory.Exists(expandedValue) || isFile;
+                Icon = isFile ? AppIcons.File : AppIcons.Folder;
                 IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
             }
             ValueVisibility = Visibility.Visible;
         }
         else
         {
-            Icon = "\uE70F"; // Tag/Label icon for regular variables
+            Icon = AppIcons.Tag;
             IconColor = new SolidColorBrush(IsReadOnly ? Colors.Gray : Colors.SkyBlue);
             ValueVisibility = Visibility.Visible;
         }
@@ -146,7 +144,7 @@ public class EnvVariableItem : INotifyPropertyChanged
     private EnvVariableItem CreatePathEntry(string path)
     {
         var expandedPath = Environment.ExpandEnvironmentVariables(path);
-        bool exists = System.IO.Directory.Exists(expandedPath) || System.IO.File.Exists(expandedPath);
+        bool exists = Directory.Exists(expandedPath) || File.Exists(expandedPath);
         
         return new EnvVariableItem
         {
@@ -155,7 +153,7 @@ public class EnvVariableItem : INotifyPropertyChanged
             DisplayName = path,
             IsPathEntry = true,
             IsValid = exists,
-            Icon = exists ? "\uE8B7" : "\uE7BA", // Folder icon or error icon
+            Icon = exists ? AppIcons.Folder : AppIcons.Error,
             IconColor = new SolidColorBrush(exists ? Colors.LimeGreen : Colors.Crimson),
             ValueVisibility = Visibility.Collapsed
         };
