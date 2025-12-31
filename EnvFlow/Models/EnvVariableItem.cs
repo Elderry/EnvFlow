@@ -64,6 +64,10 @@ public class EnvVariableItem : INotifyPropertyChanged
     public Visibility NormalizeButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
+    
+    public Visibility HoverButtonsVisibility => !IsReadOnly 
+        ? Visibility.Visible 
+        : Visibility.Collapsed;
 
     public EnvVariableItem()
     {

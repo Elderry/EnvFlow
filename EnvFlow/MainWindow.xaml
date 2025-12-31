@@ -130,26 +130,26 @@
                                                          KeyDown="EditTextBox_KeyDown"
                                                          LostFocus="EditTextBox_LostFocus"
                                                          Loaded="EditTextBox_Loaded"/>
+                                            </StackPanel>
                                             
+                                            <!-- Hover Buttons (Right-aligned) -->
+                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,0,0" Visibility="{Binding HoverButtonsVisibility}">
                                                 <!-- Add Child Button for composite variables -->
                                                 <Button Padding="4" 
                                                         Click="AddChildButton_Click"
                                                         Visibility="{Binding AddChildButtonVisibility}"
                                                         ToolTipService.ToolTip="Add new path entry">
-                                                    <FontIcon Glyph="&#xE710;" FontSize="12"/>
+                                                    <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
                                                 </Button>
-                                            
+                                                
                                                 <!-- Normalize Button for composite variables -->
                                                 <Button Padding="4" 
                                                         Click="NormalizeButton_Click"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="Normalize paths (replace with variables and sort)">
-                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12"/>
+                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#8A8A8A"/>
                                                 </Button>
-                                            </StackPanel>
-                                            
-                                            <!-- Hover Buttons (Right-aligned) -->
-                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,0,0">
+                                                
                                                 <Button Padding="4" 
                                                         Click="EditItemButton_Click"
                                                         ToolTipService.ToolTip="Edit">
@@ -274,26 +274,26 @@
                                                          KeyDown="EditTextBox_KeyDown"
                                                          LostFocus="EditTextBox_LostFocus"
                                                          Loaded="EditTextBox_Loaded"/>
+                                            </StackPanel>
                                             
+                                            <!-- Hover Buttons (Right-aligned) -->
+                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,0,0" Visibility="{Binding HoverButtonsVisibility}">
                                                 <!-- Add Child Button for composite variables -->
                                                 <Button Padding="4" 
                                                         Click="AddChildButton_Click"
                                                         Visibility="{Binding AddChildButtonVisibility}"
                                                         ToolTipService.ToolTip="Add new path entry">
-                                                    <FontIcon Glyph="&#xE710;" FontSize="12"/>
+                                                    <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
                                                 </Button>
-                                            
+                                                
                                                 <!-- Normalize Button for composite variables -->
                                                 <Button Padding="4" 
                                                         Click="NormalizeButton_Click"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="Normalize paths (replace with variables and sort)">
-                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12"/>
+                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#8A8A8A"/>
                                                 </Button>
-                                            </StackPanel>
-                                            
-                                            <!-- Hover Buttons (Right-aligned) -->
-                                            <StackPanel Grid.Column="1" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,0,0">
+                                                
                                                 <Button Padding="4" 
                                                         Click="EditItemButton_Click"
                                                         ToolTipService.ToolTip="Edit">
