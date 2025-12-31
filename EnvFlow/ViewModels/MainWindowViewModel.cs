@@ -105,53 +105,94 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         StatusMessage = "Loading environment variables...";
 
-        // Save expanded state before clearing
-        var expandedUserVars = new HashSet<string>(
-            UserVariables.Where(v => v.IsExpanded).Select(v => v.Name),
-            StringComparer.OrdinalIgnoreCase);
-        var expandedSystemVars = new HashSet<string>(
-            SystemVariables.Where(v => v.IsExpanded).Select(v => v.Name),
-            StringComparer.OrdinalIgnoreCase);
-
-        // Load user variables
-        UserVariables.Clear();
+        // Load user variables - update in place to avoid blink
         var userVars = _envService.GetUserVariables(out var volatileVariables);
-        foreach (var kvp in userVars.OrderBy(v => v.Key))
-        {
-            bool isPathLike = _envService.IsPathLike(kvp.Key);
-            bool isVolatile = volatileVariables.Contains(kvp.Key);
-            var item = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile);
-            
-            // Restore expanded state
-            if (expandedUserVars.Contains(kvp.Key))
-            {
-                item.IsExpanded = true;
-            }
-            
-            UserVariables.Add(item);
-        }
+        UpdateVariableCollection(UserVariables, userVars, volatileVariables);
         UserVariableCount = userVars.Count;
 
-        // Load system variables
-        SystemVariables.Clear();
+        // Load system variables - update in place to avoid blink
         var systemVars = _envService.GetSystemVariables(out var systemVolatileVariables);
-        foreach (var kvp in systemVars.OrderBy(v => v.Key))
-        {
-            bool isPathLike = _envService.IsPathLike(kvp.Key);
-            bool isVolatile = systemVolatileVariables.Contains(kvp.Key);
-            var item = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile);
-            
-            // Restore expanded state
-            if (expandedSystemVars.Contains(kvp.Key))
-            {
-                item.IsExpanded = true;
-            }
-            
-            SystemVariables.Add(item);
-        }
+        UpdateVariableCollection(SystemVariables, systemVars, systemVolatileVariables);
         SystemVariableCount = systemVars.Count;
 
         StatusMessage = $"Loaded {UserVariableCount} user and {SystemVariableCount} system variables";
+    }
+
+    private void UpdateVariableCollection(ObservableCollection<EnvVariableItem> collection, 
+        Dictionary<string, string> newVars, HashSet<string> volatileVars)
+    {
+        // Create a dictionary of existing items for quick lookup
+        var existingItems = collection.ToDictionary(v => v.Name, StringComparer.OrdinalIgnoreCase);
+        var processedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Update existing items or add new ones (in sorted order)
+        var sortedVars = newVars.OrderBy(v => v.Key).ToList();
+        int currentIndex = 0;
+
+        foreach (var kvp in sortedVars)
+        {
+            processedNames.Add(kvp.Key);
+
+            if (existingItems.TryGetValue(kvp.Key, out var existingItem))
+            {
+                // Update existing item
+                bool needsUpdate = existingItem.Value != kvp.Value;
+                
+                if (needsUpdate)
+                {
+                    // Save expanded state
+                    bool wasExpanded = existingItem.IsExpanded;
+                    
+                    // Remove and recreate to update children properly
+                    collection.Remove(existingItem);
+                    
+                    bool isPathLike = _envService.IsPathLike(kvp.Key);
+                    bool isVolatile = volatileVars.Contains(kvp.Key);
+                    var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile)
+                    {
+                        IsExpanded = wasExpanded
+                    };
+                    
+                    // Insert at correct position
+                    if (currentIndex < collection.Count)
+                        collection.Insert(currentIndex, newItem);
+                    else
+                        collection.Add(newItem);
+                }
+                else
+                {
+                    // Move to correct position if needed
+                    int existingIndex = collection.IndexOf(existingItem);
+                    if (existingIndex != currentIndex)
+                    {
+                        collection.Move(existingIndex, currentIndex);
+                    }
+                }
+            }
+            else
+            {
+                // Add new item
+                bool isPathLike = _envService.IsPathLike(kvp.Key);
+                bool isVolatile = volatileVars.Contains(kvp.Key);
+                var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isPathLike, isVolatile);
+                
+                if (currentIndex < collection.Count)
+                    collection.Insert(currentIndex, newItem);
+                else
+                    collection.Add(newItem);
+            }
+
+            currentIndex++;
+        }
+
+        // Remove items that no longer exist
+        for (int i = collection.Count - 1; i >= 0; i--)
+        {
+            if (!processedNames.Contains(collection[i].Name))
+            {
+                collection.RemoveAt(i);
+            }
+        }
     }
 
     public void RefreshVariables()
