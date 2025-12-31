@@ -191,6 +191,27 @@
                                                         </MenuFlyout>
                                                     </Button.Flyout>
                                                 </Button>
+                                                
+                                                <!-- More Options Menu for non-composite variables -->
+                                                <Button Padding="4"
+                                                        Visibility="{Binding MoreOptionsVisibility}"
+                                                        ToolTipService.ToolTip="More options">
+                                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                                                    <Button.Flyout>
+                                                        <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
+                                                            <MenuFlyoutItem Text="Shrink value" Click="ShrinkValueButton_Click">
+                                                                <MenuFlyoutItem.Icon>
+                                                                    <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                                                </MenuFlyoutItem.Icon>
+                                                            </MenuFlyoutItem>
+                                                            <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
+                                                                <MenuFlyoutItem.Icon>
+                                                                    <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                                                </MenuFlyoutItem.Icon>
+                                                            </MenuFlyoutItem>
+                                                        </MenuFlyout>
+                                                    </Button.Flyout>
+                                                </Button>
                                             </StackPanel>
                                         </Grid>
                                     </TreeViewItem>
@@ -361,6 +382,27 @@
                                                                 </MenuFlyoutItem.Icon>
                                                             </MenuFlyoutItem>
                                                             <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
+                                                                <MenuFlyoutItem.Icon>
+                                                                    <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                                                </MenuFlyoutItem.Icon>
+                                                            </MenuFlyoutItem>
+                                                        </MenuFlyout>
+                                                    </Button.Flyout>
+                                                </Button>
+                                                
+                                                <!-- More Options Menu for non-composite variables -->
+                                                <Button Padding="4"
+                                                        Visibility="{Binding MoreOptionsVisibility}"
+                                                        ToolTipService.ToolTip="More options">
+                                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                                                    <Button.Flyout>
+                                                        <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
+                                                            <MenuFlyoutItem Text="Shrink value" Click="ShrinkValueButton_Click">
+                                                                <MenuFlyoutItem.Icon>
+                                                                    <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                                                </MenuFlyoutItem.Icon>
+                                                            </MenuFlyoutItem>
+                                                            <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
                                                                 <MenuFlyoutItem.Icon>
                                                                     <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
                                                                 </MenuFlyoutItem.Icon>

@@ -1088,6 +1088,145 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private async void ShrinkValueButton_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
+            return;
+
+        // Determine if this is a user or system variable
+        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
+
+        // Check admin permissions for system variables
+        if (isSystemVariable && !ViewModel.IsAdmin)
+        {
+            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
+            UpdateStatusBar();
+            return;
+        }
+
+        try
+        {
+            var service = new Services.EnvironmentVariableService();
+            
+            // Get all environment variables for substitution
+            var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            
+            // Add user variables
+            foreach (var userVar in ViewModel.UserVariables)
+            {
+                if (!userVar.IsChild && !string.IsNullOrEmpty(userVar.Value))
+                {
+                    allVars[userVar.Name] = Environment.ExpandEnvironmentVariables(userVar.Value);
+                }
+            }
+            
+            // Add system variables
+            foreach (var sysVar in ViewModel.SystemVariables)
+            {
+                if (!sysVar.IsChild && !string.IsNullOrEmpty(sysVar.Value))
+                {
+                    allVars[sysVar.Name] = Environment.ExpandEnvironmentVariables(sysVar.Value);
+                }
+            }
+            
+            // Expand the current value
+            var expandedValue = Environment.ExpandEnvironmentVariables(item.Value);
+            
+            // Try to find a matching environment variable
+            string bestMatch = null;
+            int longestMatchLength = 0;
+            
+            foreach (var kvp in allVars)
+            {
+                // Skip the variable itself
+                if (kvp.Key.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                    
+                var varValue = kvp.Value.TrimEnd('\\');
+                
+                // Check if value starts with this variable's value
+                if (expandedValue.StartsWith(varValue, StringComparison.OrdinalIgnoreCase) && 
+                    varValue.Length > longestMatchLength)
+                {
+                    bestMatch = kvp.Key;
+                    longestMatchLength = varValue.Length;
+                }
+            }
+            
+            // Replace with variable reference if found
+            string shrunkValue;
+            if (bestMatch != null)
+            {
+                var varValue = allVars[bestMatch].TrimEnd('\\');
+                var remainder = expandedValue.Substring(varValue.Length).TrimStart('\\');
+                shrunkValue = string.IsNullOrEmpty(remainder) 
+                    ? $"%{bestMatch}%" 
+                    : $"%{bestMatch}%\\{remainder}";
+            }
+            else
+            {
+                shrunkValue = item.Value;
+            }
+            
+            ViewModel.StatusMessage = $"Shrinking {item.Name}";
+            
+            if (isSystemVariable)
+                service.SetSystemVariable(item.Name, shrunkValue);
+            else
+                service.SetUserVariable(item.Name, shrunkValue);
+            
+            ViewModel.RefreshVariables();
+            UpdateStatusBar();
+            ViewModel.StatusMessage = $"Shrunk value in {item.Name}";
+        }
+        catch (Exception ex)
+        {
+            ViewModel.StatusMessage = $"Error shrinking: {ex.Message}";
+            UpdateStatusBar();
+        }
+    }
+
+    private async void ExpandValueButton_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
+            return;
+
+        // Determine if this is a user or system variable
+        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
+
+        // Check admin permissions for system variables
+        if (isSystemVariable && !ViewModel.IsAdmin)
+        {
+            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
+            UpdateStatusBar();
+            return;
+        }
+
+        try
+        {
+            var service = new Services.EnvironmentVariableService();
+            
+            // Expand the value
+            var expandedValue = Environment.ExpandEnvironmentVariables(item.Value);
+            
+            ViewModel.StatusMessage = $"Expanding {item.Name}";
+            
+            if (isSystemVariable)
+                service.SetSystemVariable(item.Name, expandedValue);
+            else
+                service.SetUserVariable(item.Name, expandedValue);
+            
+            ViewModel.RefreshVariables();
+            UpdateStatusBar();
+            ViewModel.StatusMessage = $"Expanded value in {item.Name}";
+        }
+        catch (Exception ex)
+        {
+            ViewModel.StatusMessage = $"Error expanding: {ex.Message}";
+            UpdateStatusBar();
+        }
+    }
+
     private async void DeleteChildButton_Click(object sender, RoutedEventArgs e)
     {
         if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem childItem)

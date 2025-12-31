@@ -73,6 +73,10 @@ public class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Collapsed 
         : Visibility.Visible;
     
+    public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsChild || Children.Count == 0)) 
+        ? Visibility.Visible 
+        : Visibility.Collapsed;
+    
     public bool IsComposite => !IsChild && Children.Count > 0;
 
     public EnvVariableItem()
