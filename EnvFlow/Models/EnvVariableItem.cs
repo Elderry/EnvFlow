@@ -74,7 +74,16 @@ public class EnvVariableItem : INotifyPropertyChanged
     public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
+    
+    public Visibility AddChildMenuVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !(IsSystemVariable && !IsAdmin)) 
+        ? Visibility.Visible 
+        : Visibility.Collapsed;
+    
     public Visibility SortButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly) 
+        ? Visibility.Visible 
+        : Visibility.Collapsed;
+    
+    public Visibility SortMenuVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly && !(IsSystemVariable && !IsAdmin)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
