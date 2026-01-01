@@ -80,8 +80,12 @@ public class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility EditButtonVisibility => (!IsChild && Children.Count > 0) 
+    public Visibility EditButtonVisibility => (!IsChild && Children.Count > 0) || IsReadOnly
         ? Visibility.Collapsed 
+        : Visibility.Visible;
+    
+    public Visibility DeleteButtonVisibility => IsReadOnly
+        ? Visibility.Collapsed
         : Visibility.Visible;
     
     public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsChild || Children.Count == 0)) 

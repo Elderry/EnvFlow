@@ -151,7 +151,7 @@
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
@@ -215,7 +215,7 @@
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
@@ -463,7 +463,7 @@
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
@@ -527,7 +527,7 @@
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
