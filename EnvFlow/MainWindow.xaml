@@ -9,266 +9,266 @@
     mc:Ignorable="d"
     Title="EnvFlow - Environment Variable Editor">
 
-    <Grid x:Name="RootGrid" Background="#F3F3F3">
-        <Grid.RowDefinitions>
+  <Grid x:Name="RootGrid" Background="#F3F3F3">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- Custom Title Bar -->
+    <Grid x:Name="CustomTitleBar" Grid.Row="0" Background="#F3F3F3" Padding="16,8,150,8" Height="48">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+        <FontIcon Glyph="&#xE74C;" FontSize="20" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+        <TextBlock Text="EnvFlow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
+      </StackPanel>
+    </Grid>
+
+    <!-- Main Content Area with Two Panels -->
+    <Grid Grid.Row="1" Padding="16">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <!-- Refresh Button Bar -->
+      <Grid Grid.Row="0" Margin="0,-8,0,12">
+        <Button x:Name="RefreshButton" Click="RefreshButton_Click" HorizontalAlignment="Right">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <FontIcon Glyph="&#xE72C;" FontSize="14"/>
+            <TextBlock Text="Refresh"/>
+          </StackPanel>
+        </Button>
+      </Grid>
+
+      <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="2*" MinWidth="300"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="3*" MinWidth="300"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel: User Environment Variables -->
+        <Grid Grid.Column="0">
+          <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+          </Grid.RowDefinitions>
 
-        <!-- Custom Title Bar -->
-        <Grid x:Name="CustomTitleBar" Grid.Row="0" Background="#F3F3F3" Padding="16,8,150,8" Height="48">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                <FontIcon Glyph="&#xE74C;" FontSize="20" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                <TextBlock Text="EnvFlow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
-            </StackPanel>
-        </Grid>
-
-        <!-- Main Content Area with Two Panels -->
-        <Grid Grid.Row="1" Padding="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            
-            <!-- Refresh Button Bar -->
-            <Grid Grid.Row="0" Margin="0,-8,0,12">
-                <Button x:Name="RefreshButton" Click="RefreshButton_Click" HorizontalAlignment="Right">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE72C;" FontSize="14"/>
-                        <TextBlock Text="Refresh"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
-            
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" MinWidth="300"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="3*" MinWidth="300"/>
-                </Grid.ColumnDefinitions>
-
-            <!-- Left Panel: User Environment Variables -->
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- Header -->
-                <Border Grid.Row="0" 
+          <!-- Header -->
+          <Border Grid.Row="0" 
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8,8,0,0"
                         Padding="16,12">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-                            <FontIcon Glyph="&#xE77B;" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
-                            <TextBlock Text="User Variables" FontWeight="SemiBold" FontSize="16" VerticalAlignment="Center"/>
-                        </StackPanel>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="1" 
+              <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE77B;" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                <TextBlock Text="User Variables" FontWeight="SemiBold" FontSize="16" VerticalAlignment="Center"/>
+              </StackPanel>
+
+              <Button Grid.Column="1" 
                                 Padding="8" 
                                 Click="AddUserVariableButton_Click"
                                 ToolTipService.ToolTip="Add new user variable">
-                            <FontIcon Glyph="&#xE710;" FontSize="14"/>
-                        </Button>
-                    </Grid>
-                </Border>
+                <FontIcon Glyph="&#xE710;" FontSize="14"/>
+              </Button>
+            </Grid>
+          </Border>
 
-                <!-- TreeView -->
-                <Border Grid.Row="1"
+          <!-- TreeView -->
+          <Border Grid.Row="1"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1,0,1,1"
                         CornerRadius="0,0,8,8">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        
-                        <!-- Column Headers -->
-                        <Grid Grid.Row="0" Padding="48,8,12,8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition x:Name="UserNameColumn" Width="250"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <controls:CursorGrid x:Name="UserColumnSplitter" Grid.Column="1" Width="8" Background="Transparent"
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+
+              <!-- Column Headers -->
+              <Grid Grid.Row="0" Padding="48,8,12,8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition x:Name="UserNameColumn" Width="250"/>
+                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                <controls:CursorGrid x:Name="UserColumnSplitter" Grid.Column="1" Width="8" Background="Transparent"
                                     PointerPressed="ColumnSplitter_PointerPressed"
                                     PointerMoved="ColumnSplitter_PointerMoved"
                                     PointerReleased="ColumnSplitter_PointerReleased"
                                     Tag="User">
-                                <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
-                            </controls:CursorGrid>
-                            <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0"/>
-                        </Grid>
-                        
-                        <!-- TreeView with ScrollViewer -->
-                        <ScrollViewer Grid.Row="1">
-                            <TreeView x:Name="UserEnvTreeView" 
+                  <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
+                </controls:CursorGrid>
+                <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0"/>
+              </Grid>
+
+              <!-- TreeView with ScrollViewer -->
+              <ScrollViewer Grid.Row="1">
+                <TreeView x:Name="UserEnvTreeView" 
                                       ItemsSource="{x:Bind ViewModel.UserVariables, Mode=OneWay}"
                                       SelectionChanged="UserEnvTreeView_SelectionChanged"
                                       Padding="12">
-                                <TreeView.ItemContainerStyle>
-                                    <Style TargetType="TreeViewItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    </Style>
-                                </TreeView.ItemContainerStyle>
-                                <TreeView.ItemTemplate>
-                                    <DataTemplate>
-                                        <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
-                                            <Grid HorizontalAlignment="Stretch">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="250"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                
-                                                <!-- Name Column - spans all columns for composite variables -->
-                                                <Grid Grid.Column="0">
-                                                    <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Loaded="NameColumn_Loaded">
-                                                        <FontIcon Glyph="{Binding Icon}" 
+                  <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem">
+                      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                  </TreeView.ItemContainerStyle>
+                  <TreeView.ItemTemplate>
+                    <DataTemplate>
+                      <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
+                        <Grid HorizontalAlignment="Stretch">
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                          </Grid.ColumnDefinitions>
+
+                          <!-- Name Column - spans all columns for composite variables -->
+                          <Grid Grid.Column="0">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Loaded="NameColumn_Loaded">
+                              <FontIcon Glyph="{Binding Icon}" 
                                                                   FontSize="16" 
                                                                   Foreground="{Binding IconColor}"/>
-                                                    
-                                                        <TextBlock Text="{Binding DisplayName}" 
+
+                              <TextBlock Text="{Binding DisplayName}" 
                                                                    VerticalAlignment="Center"
                                                                    Visibility="{Binding DisplayNameVisibility}"/>
-                                                    </StackPanel>
-                                                    
-                                                    <!-- Edit TextBox for child items -->
-                                                    <TextBox x:Name="ChildEditTextBox"
+                            </StackPanel>
+
+                            <!-- Edit TextBox for child items -->
+                            <TextBox x:Name="ChildEditTextBox"
                                                              Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Visibility="{Binding ChildEditVisibility}"
                                                              KeyDown="EditTextBox_KeyDown"
                                                              LostFocus="EditTextBox_LostFocus"
                                                              Loaded="EditTextBox_Loaded"
                                                              Margin="24,0,0,0"/>
-                                                </Grid>
-                                                
-                                                <!-- Column Separator -->
-                                                <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ValueDisplayVisibility}"/>
-                                                
-                                                <!-- Value Column -->
-                                                <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">
-                                                    <!-- Display Mode: Show value in gray -->
-                                                    <TextBlock Text="{Binding Value}" 
+                          </Grid>
+
+                          <!-- Column Separator -->
+                          <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ValueDisplayVisibility}"/>
+
+                          <!-- Value Column -->
+                          <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">
+                            <!-- Display Mode: Show value in gray -->
+                            <TextBlock Text="{Binding Value}" 
                                                                Foreground="Gray"
                                                                VerticalAlignment="Center"
                                                                TextTrimming="CharacterEllipsis"
                                                                Visibility="{Binding ValueDisplayVisibility}"/>
-                                                
-                                                    <!-- Edit Mode: Show TextBox -->
-                                                    <TextBox x:Name="EditTextBox"
+
+                            <!-- Edit Mode: Show TextBox -->
+                            <TextBox x:Name="EditTextBox"
                                                              Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Visibility="{Binding EditVisibility}"
                                                              KeyDown="EditTextBox_KeyDown"
                                                              LostFocus="EditTextBox_LostFocus"
                                                              Loaded="EditTextBox_Loaded"/>
-                                                </Grid>
-                                                
-                                                <!-- Hover Buttons (Right-aligned) -->
-                                                <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
-                                                <!-- Add Child Button for composite variables -->
-                                                <Button Padding="4" 
+                          </Grid>
+
+                          <!-- Hover Buttons (Right-aligned) -->
+                          <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
+                            <!-- Add Child Button for composite variables -->
+                            <Button Padding="4" 
                                                         Click="AddChildButton_Click"
                                                         Visibility="{Binding AddChildButtonVisibility}"
                                                         ToolTipService.ToolTip="Add new path entry">
-                                                    <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
-                                                </Button>
-                                                
-                                                <!-- Sort Button for composite variables -->
-                                                <Button Padding="4" 
+                              <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
+                            </Button>
+
+                            <!-- Sort Button for composite variables -->
+                            <Button Padding="4" 
                                                         Click="SortButton_Click"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="Sort paths alphabetically">
-                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#F7B32B"/>
-                                                </Button>
-                                                
-                                                <Button Padding="4" 
+                              <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#F7B32B"/>
+                            </Button>
+
+                            <Button Padding="4" 
                                                         Click="EditItemButton_Click"
                                                         Visibility="{Binding EditButtonVisibility}"
                                                         ToolTipService.ToolTip="Edit">
-                                                    <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
-                                                </Button>
-                                                <Button Padding="4" 
+                              <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
+                            </Button>
+                            <Button Padding="4" 
                                                         Click="DeleteItemButton_Click"
                                                         ToolTipService.ToolTip="Delete">
-                                                    <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
-                                                </Button>
-                                                
-                                                <!-- More Options Menu for composite variables -->
-                                                <Button Padding="4"
+                              <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
+                            </Button>
+
+                            <!-- More Options Menu for composite variables -->
+                            <Button Padding="4"
                                                         x:Name="MoreOptionsButton"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="More options">
-                                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
-                                                    <Button.Flyout>
-                                                        <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                                            <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
-                                                                <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
-                                                                </MenuFlyoutItem.Icon>
-                                                            </MenuFlyoutItem>
-                                                            <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
-                                                                <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
-                                                                </MenuFlyoutItem.Icon>
-                                                            </MenuFlyoutItem>
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                                
-                                                <!-- More Options Menu for non-composite variables -->
-                                                <Button Padding="4"
+                              <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                              <Button.Flyout>
+                                <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
+                                  <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                </MenuFlyout>
+                              </Button.Flyout>
+                            </Button>
+
+                            <!-- More Options Menu for non-composite variables -->
+                            <Button Padding="4"
                                                         Visibility="{Binding MoreOptionsVisibility}"
                                                         ToolTipService.ToolTip="More options">
-                                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
-                                                    <Button.Flyout>
-                                                        <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                                            <MenuFlyoutItem Text="Shrink value" Click="ShrinkValueButton_Click">
-                                                                <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
-                                                                </MenuFlyoutItem.Icon>
-                                                            </MenuFlyoutItem>
-                                                            <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
-                                                                <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
-                                                                </MenuFlyoutItem.Icon>
-                                                            </MenuFlyoutItem>
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                            </StackPanel>
-                                        </Grid>
-                                    </TreeViewItem>
-                                </DataTemplate>
-                            </TreeView.ItemTemplate>
-                        </TreeView>
-                    </ScrollViewer>
-                </Grid>
-            </Border>
+                              <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                              <Button.Flyout>
+                                <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkValueButton_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                </MenuFlyout>
+                              </Button.Flyout>
+                            </Button>
+                          </StackPanel>
+                        </Grid>
+                      </TreeViewItem>
+                    </DataTemplate>
+                  </TreeView.ItemTemplate>
+                </TreeView>
+              </ScrollViewer>
+            </Grid>
+          </Border>
         </Grid>
 
-            <!-- Splitter -->
-            <controls:CursorGrid Grid.Column="1" 
+        <!-- Splitter -->
+        <controls:CursorGrid Grid.Column="1" 
                   Width="12" 
                   Background="Transparent"
                   x:Name="SplitterGrid"
@@ -277,263 +277,263 @@
                   PointerPressed="Splitter_PointerPressed"
                   PointerMoved="Splitter_PointerMoved"
                   PointerReleased="Splitter_PointerReleased">
-                <Rectangle Fill="{ThemeResource DividerStrokeColorDefaultBrush}" 
+          <Rectangle Fill="{ThemeResource DividerStrokeColorDefaultBrush}" 
                            Width="2"
                            HorizontalAlignment="Center"/>
-            </controls:CursorGrid>
+        </controls:CursorGrid>
 
-            <!-- Right Panel: System Environment Variables -->
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+        <!-- Right Panel: System Environment Variables -->
+        <Grid Grid.Column="2">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
 
-                <!-- Header -->
-                <Border Grid.Row="0" 
+          <!-- Header -->
+          <Border Grid.Row="0" 
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8,8,0,0"
                         Padding="16,12">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-                            <FontIcon Glyph="&#xE7F8;" Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
-                            <TextBlock x:Name="SystemVariablesTitle" 
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+
+              <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                <FontIcon Glyph="&#xE7F8;" Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                <TextBlock x:Name="SystemVariablesTitle" 
                                        Text="System Variables" 
                                        FontWeight="SemiBold" 
                                        FontSize="16" 
                                        VerticalAlignment="Center"/>
-                        </StackPanel>
+              </StackPanel>
 
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                            <Button x:Name="RestartAsAdminButton" 
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                <Button x:Name="RestartAsAdminButton" 
                                     Click="RestartAsAdminButton_Click"
                                     ToolTipService.ToolTip="Restart with administrator privileges to edit system variables">
-                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <FontIcon Glyph="&#xEA18;" FontSize="14"/>
-                                    <TextBlock Text="Restart as Admin"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Padding="8" 
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon Glyph="&#xEA18;" FontSize="14"/>
+                    <TextBlock Text="Restart as Admin"/>
+                  </StackPanel>
+                </Button>
+                <Button Padding="8" 
                                     Click="AddSystemVariableButton_Click"
                                     IsEnabled="{x:Bind ViewModel.IsAdmin, Mode=OneWay}"
                                     ToolTipService.ToolTip="Add new system variable (requires admin)">
-                                <FontIcon Glyph="&#xE710;" FontSize="14"/>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </Border>
+                  <FontIcon Glyph="&#xE710;" FontSize="14"/>
+                </Button>
+              </StackPanel>
+            </Grid>
+          </Border>
 
-                <!-- TreeView -->
-                <Border Grid.Row="1"
+          <!-- TreeView -->
+          <Border Grid.Row="1"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1,0,1,1"
                         CornerRadius="0,0,8,8">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        
-                        <!-- Column Headers -->
-                        <Grid Grid.Row="0" Padding="48,8,12,8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition x:Name="SystemNameColumn" Width="250"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <controls:CursorGrid x:Name="SystemColumnSplitter" Grid.Column="1" Width="8" Background="Transparent"
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+
+              <!-- Column Headers -->
+              <Grid Grid.Row="0" Padding="48,8,12,8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition x:Name="SystemNameColumn" Width="250"/>
+                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                <controls:CursorGrid x:Name="SystemColumnSplitter" Grid.Column="1" Width="8" Background="Transparent"
                                     PointerPressed="ColumnSplitter_PointerPressed"
                                     PointerMoved="ColumnSplitter_PointerMoved"
                                     PointerReleased="ColumnSplitter_PointerReleased"
                                     Tag="System">
-                                <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
-                            </controls:CursorGrid>
-                            <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0"/>
-                        </Grid>
-                        
-                        <!-- TreeView with ScrollViewer -->
-                        <ScrollViewer Grid.Row="1">
-                            <TreeView x:Name="SystemEnvTreeView" 
+                  <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
+                </controls:CursorGrid>
+                <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0"/>
+              </Grid>
+
+              <!-- TreeView with ScrollViewer -->
+              <ScrollViewer Grid.Row="1">
+                <TreeView x:Name="SystemEnvTreeView" 
                                       ItemsSource="{x:Bind ViewModel.SystemVariables, Mode=OneWay}"
                                       SelectionChanged="SystemEnvTreeView_SelectionChanged"
                                       Padding="12">
-                                <TreeView.ItemContainerStyle>
-                                    <Style TargetType="TreeViewItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    </Style>
-                                </TreeView.ItemContainerStyle>
-                                <TreeView.ItemTemplate>
-                                    <DataTemplate>
-                                        <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
-                                            <Grid HorizontalAlignment="Stretch">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="250"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                
-                                                <!-- Name Column - spans all columns for composite variables -->
-                                                <Grid Grid.Column="0">
-                                                    <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System" Loaded="NameColumn_Loaded">
-                                                        <FontIcon Glyph="{Binding Icon}" 
+                  <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem">
+                      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                  </TreeView.ItemContainerStyle>
+                  <TreeView.ItemTemplate>
+                    <DataTemplate>
+                      <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
+                        <Grid HorizontalAlignment="Stretch">
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                          </Grid.ColumnDefinitions>
+
+                          <!-- Name Column - spans all columns for composite variables -->
+                          <Grid Grid.Column="0">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System" Loaded="NameColumn_Loaded">
+                              <FontIcon Glyph="{Binding Icon}" 
                                                                   FontSize="16" 
                                                                   Foreground="{Binding IconColor}"/>
-                                                    
-                                                        <TextBlock Text="{Binding DisplayName}" 
+
+                              <TextBlock Text="{Binding DisplayName}" 
                                                                    VerticalAlignment="Center"
                                                                    Visibility="{Binding DisplayNameVisibility}"/>
-                                                    </StackPanel>
-                                                    
-                                                    <!-- Edit TextBox for child items -->
-                                                    <TextBox x:Name="ChildEditTextBox"
+                            </StackPanel>
+
+                            <!-- Edit TextBox for child items -->
+                            <TextBox x:Name="ChildEditTextBox"
                                                              Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Visibility="{Binding ChildEditVisibility}"
                                                              KeyDown="EditTextBox_KeyDown"
                                                              LostFocus="EditTextBox_LostFocus"
                                                              Loaded="EditTextBox_Loaded"
                                                              Margin="32,0,0,0"/>
-                                                </Grid>
-                                                
-                                                <!-- Column Separator -->
-                                                <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ValueDisplayVisibility}"/>
-                                                
-                                                <!-- Value Column -->
-                                                <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">
-                                                    <!-- Display Mode: Show value in gray -->
-                                                    <TextBlock Text="{Binding Value}" 
+                          </Grid>
+
+                          <!-- Column Separator -->
+                          <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ValueDisplayVisibility}"/>
+
+                          <!-- Value Column -->
+                          <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">
+                            <!-- Display Mode: Show value in gray -->
+                            <TextBlock Text="{Binding Value}" 
                                                                Foreground="Gray"
                                                                VerticalAlignment="Center"
                                                                TextTrimming="CharacterEllipsis"
                                                                Visibility="{Binding ValueDisplayVisibility}"/>
-                                                
-                                                    <!-- Edit Mode: Show TextBox -->
-                                                    <TextBox x:Name="EditTextBox"
+
+                            <!-- Edit Mode: Show TextBox -->
+                            <TextBox x:Name="EditTextBox"
                                                              Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                              Visibility="{Binding EditVisibility}"
                                                              KeyDown="EditTextBox_KeyDown"
                                                              LostFocus="EditTextBox_LostFocus"
                                                              Loaded="EditTextBox_Loaded"/>
-                                                </Grid>
-                                                
-                                                <!-- Hover Buttons (Right-aligned) -->
-                                                <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
-                                                <!-- Add Child Button for composite variables -->
-                                                <Button Padding="4" 
+                          </Grid>
+
+                          <!-- Hover Buttons (Right-aligned) -->
+                          <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
+                            <!-- Add Child Button for composite variables -->
+                            <Button Padding="4" 
                                                         Click="AddChildButton_Click"
                                                         Visibility="{Binding AddChildButtonVisibility}"
                                                         ToolTipService.ToolTip="Add new path entry">
-                                                    <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
-                                                </Button>
-                                                
-                                                <!-- Sort Button for composite variables -->
-                                                <Button Padding="4" 
+                              <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
+                            </Button>
+
+                            <!-- Sort Button for composite variables -->
+                            <Button Padding="4" 
                                                         Click="SortButton_Click"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="Sort paths alphabetically">
-                                                    <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#F7B32B"/>
-                                                </Button>
-                                                
-                                                <Button Padding="4" 
+                              <FontIcon Glyph="&#xE8CB;" FontSize="12" Foreground="#F7B32B"/>
+                            </Button>
+
+                            <Button Padding="4" 
                                                         Click="EditItemButton_Click"
                                                         Visibility="{Binding EditButtonVisibility}"
                                                         ToolTipService.ToolTip="Edit">
-                                                    <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
-                                                </Button>
-                                                <Button Padding="4" 
+                              <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
+                            </Button>
+                            <Button Padding="4" 
                                                         Click="DeleteItemButton_Click"
                                                         ToolTipService.ToolTip="Delete">
-                                                    <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
-                                                </Button>
-                                                
-                                                <!-- More Options Menu for composite variables -->
-                                                <Button Padding="4"
+                              <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
+                            </Button>
+
+                            <!-- More Options Menu for composite variables -->
+                            <Button Padding="4"
                                                         x:Name="MoreOptionsButton"
                                                         Visibility="{Binding NormalizeButtonVisibility}"
                                                         ToolTipService.ToolTip="More options">
-                                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
-                                                    <Button.Flyout>
-                                                        <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                                            <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
-                                                                <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
-                                                                </MenuFlyoutItem.Icon>
-                                                            </MenuFlyoutItem>
-                                                            <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
-                                                                <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
-                                                                </MenuFlyoutItem.Icon>
-                                                            </MenuFlyoutItem>
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                                
-                                                <!-- More Options Menu for non-composite variables -->
-                                                <Button Padding="4"
+                              <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                              <Button.Flyout>
+                                <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
+                                  <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                </MenuFlyout>
+                              </Button.Flyout>
+                            </Button>
+
+                            <!-- More Options Menu for non-composite variables -->
+                            <Button Padding="4"
                                                         Visibility="{Binding MoreOptionsVisibility}"
                                                         ToolTipService.ToolTip="More options">
-                                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
-                                                    <Button.Flyout>
-                                                        <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                                            <MenuFlyoutItem Text="Shrink value" Click="ShrinkValueButton_Click">
-                                                                <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
-                                                                </MenuFlyoutItem.Icon>
-                                                            </MenuFlyoutItem>
-                                                            <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
-                                                                <MenuFlyoutItem.Icon>
-                                                                    <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
-                                                                </MenuFlyoutItem.Icon>
-                                                            </MenuFlyoutItem>
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                            </StackPanel>
-                                        </Grid>
-                                    </TreeViewItem>
-                                </DataTemplate>
-                            </TreeView.ItemTemplate>
-                        </TreeView>
-                    </ScrollViewer>
-                </Grid>
-            </Border>
-        </Grid>
+                              <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                              <Button.Flyout>
+                                <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkValueButton_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                </MenuFlyout>
+                              </Button.Flyout>
+                            </Button>
+                          </StackPanel>
+                        </Grid>
+                      </TreeViewItem>
+                    </DataTemplate>
+                  </TreeView.ItemTemplate>
+                </TreeView>
+              </ScrollViewer>
             </Grid>
+          </Border>
         </Grid>
+      </Grid>
+    </Grid>
 
-        <!-- Status Bar -->
-        <Border Grid.Row="2" 
+    <!-- Status Bar -->
+    <Border Grid.Row="2" 
                 Background="{ThemeResource LayerFillColorDefaultBrush}" 
                 BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                 BorderThickness="0,1,0,0"
                 Padding="16,8">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="StatusTextBlock"
+        <TextBlock x:Name="StatusTextBlock"
                            Grid.Column="0" 
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                            VerticalAlignment="Center"/>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
-                    <TextBlock x:Name="UserCountTextBlock" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                    <TextBlock x:Name="SystemCountTextBlock" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                </StackPanel>
-            </Grid>
-        </Border>
-    </Grid>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+          <TextBlock x:Name="UserCountTextBlock" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+          <TextBlock x:Name="SystemCountTextBlock" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
 </Window>

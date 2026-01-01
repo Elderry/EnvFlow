@@ -1,0 +1,26 @@
+# Based on example file from .NET Learn site:
+# https://github.com/dotnet/docs/blob/main/docs/fundamentals/code-analysis/code-style-rule-options.md#example-editorconfig-file
+
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
+root = true
+
+# C# files
+[*.cs]
+
+#### Core EditorConfig Options ####
+
+# Indentation and spacing
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = true
+
+# XAML files
+[*.xaml]
+
+# Indentation and spacing
+indent_size = 2
+indent_style = space
