@@ -467,9 +467,8 @@ public sealed partial class MainWindow : Window
             
             if (parentItem == null) return;
             
-            dialog.ConfigureForPathEntry(parentItem.Name);
+            dialog.ConfigureForPathEntry(parentItem.Name, isEditMode: true);
             dialog.VariableValue = item.DisplayName;
-            dialog.Title = $"Edit Variable Entry in {parentItem.Name}";
             
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(dialog.VariableValue))
@@ -1715,6 +1714,54 @@ public sealed partial class MainWindow : Window
                 {
                     Grid.SetColumnSpan(parentGrid, 3);
                     Canvas.SetZIndex(parentGrid, 1);  // Ensure it's on top
+                }
+            }
+        }
+    }
+
+    private void HoverButtons_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not StackPanel panel || panel.Tag?.ToString() != "System")
+            return;
+
+        // Update button colors based on admin status
+        UpdateSystemButtonColors(panel);
+        
+        // Subscribe to IsAdmin changes to update colors dynamically
+        ViewModel.PropertyChanged += (s, args) =>
+        {
+            if (args.PropertyName == nameof(ViewModel.IsAdmin))
+            {
+                UpdateSystemButtonColors(panel);
+            }
+        };
+    }
+
+    private void UpdateSystemButtonColors(StackPanel panel)
+    {
+        var grayBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 160, 160, 160));
+        
+        foreach (var child in panel.Children)
+        {
+            if (child is Button button && button.Content is FontIcon icon)
+            {
+                if (!ViewModel.IsAdmin)
+                {
+                    // Gray out when not admin
+                    icon.Foreground = grayBrush;
+                }
+                else
+                {
+                    // Restore original colors when admin
+                    var glyph = icon.Glyph;
+                    icon.Foreground = glyph switch
+                    {
+                        "\uE710" => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 16, 124, 16)),  // Green (Add)
+                        "\uE8CB" => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 247, 179, 43)),  // Yellow (Sort)
+                        "\uE104" => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 120, 212)),  // Blue (Edit)
+                        "\uE107" => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 232, 17, 35)),  // Red (Delete)
+                        _ => icon.Foreground
+                    };
                 }
             }
         }

@@ -29,11 +29,12 @@ public sealed partial class VariableEditorDialog : ContentDialog
         UpdatePrimaryButtonState();
     }
     
-    public void ConfigureForPathEntry(string parentVariableName)
+    public void ConfigureForPathEntry(string parentVariableName, bool isEditMode = false)
     {
         IsPathEntryMode = true;
-        Title = $"Add Variable Entry to {parentVariableName}";
-        PrimaryButtonText = "Add";
+        IsEditMode = isEditMode;
+        Title = isEditMode ? $"Edit Variable Entry in {parentVariableName}" : $"Add Variable Entry to {parentVariableName}";
+        PrimaryButtonText = isEditMode ? "Save" : "Add";
         VariableNameLabel.Visibility = Visibility.Collapsed;
         VariableNameTextBox.Visibility = Visibility.Collapsed;
         VariableValueTextBox.PlaceholderText = "Enter new path (e.g., C:\\Program Files\\MyApp)";
