@@ -398,7 +398,7 @@ public sealed partial class MainWindow : Window
         return null;
     }
 
-    private void EditItemButton_Click(object sender, RoutedEventArgs e)
+    private async void EditItemButton_Click(object sender, RoutedEventArgs e)
     {
         if ((sender as Button)?.DataContext is not EnvVariableItem item)
             return;
@@ -433,18 +433,111 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        // Exit edit mode for previously editing item
-        if (_currentlyEditingItem != null && _currentlyEditingItem != item)
+        // Open VariableEditorDialog for editing
+        if (item.IsChild)
         {
-            _currentlyEditingItem.IsEditing = false;
+            // For child items, open dialog in path entry mode
+            var dialog = new Dialogs.VariableEditorDialog
+            {
+                XamlRoot = this.Content.XamlRoot
+            };
+            
+            // Find parent variable
+            EnvVariableItem? parentItem = null;
+            foreach (var userVar in ViewModel.UserVariables)
+            {
+                if (userVar.Children.Contains(item))
+                {
+                    parentItem = userVar;
+                    break;
+                }
+            }
+            
+            if (parentItem == null)
+            {
+                foreach (var sysVar in ViewModel.SystemVariables)
+                {
+                    if (sysVar.Children.Contains(item))
+                    {
+                        parentItem = sysVar;
+                        break;
+                    }
+                }
+            }
+            
+            if (parentItem == null) return;
+            
+            dialog.ConfigureForPathEntry(parentItem.Name);
+            dialog.VariableValue = item.DisplayName;
+            dialog.Title = $"Edit Variable Entry in {parentItem.Name}";
+            
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(dialog.VariableValue))
+            {
+                try
+                {
+                    var service = new Services.EnvironmentVariableService();
+                    
+                    // Update the path in the parent's value
+                    var paths = parentItem.Children.Select(c => c == item ? dialog.VariableValue.Trim() : c.DisplayName).ToList();
+                    string newValue = string.Join(";", paths);
+                    
+                    ViewModel.StatusMessage = $"Updating path entry in {parentItem.Name}";
+                    
+                    if (isSystemVariable)
+                        service.SetSystemVariable(parentItem.Name, newValue);
+                    else
+                        service.SetUserVariable(parentItem.Name, newValue);
+                    
+                    ViewModel.RefreshVariables();
+                    UpdateStatusBar();
+                    ViewModel.StatusMessage = $"Updated path entry in {parentItem.Name}";
+                }
+                catch (Exception ex)
+                {
+                    ViewModel.StatusMessage = $"Error updating path entry: {ex.Message}";
+                    UpdateStatusBar();
+                }
+            }
         }
-
-        // Enter inline edit mode
-        _currentlyEditingItem = item;
-        item.EditValue = item.IsChild ? item.DisplayName : item.Value;
-        item.IsEditing = true;
-        ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
-        UpdateStatusBar();
+        else
+        {
+            // For parent/single value items, open dialog in normal mode
+            var dialog = new Dialogs.VariableEditorDialog
+            {
+                XamlRoot = this.Content.XamlRoot,
+                Title = "Edit Variable",
+                IsEditMode = true
+            };
+            
+            dialog.VariableName = item.Name;
+            dialog.VariableValue = item.Value;
+            
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                try
+                {
+                    var service = new Services.EnvironmentVariableService();
+                    
+                    ViewModel.StatusMessage = $"Updating {item.Name}";
+                    
+                    if (isSystemVariable)
+                        service.SetSystemVariable(item.Name, dialog.VariableValue);
+                    else
+                        service.SetUserVariable(item.Name, dialog.VariableValue);
+                    
+                    ViewModel.RefreshVariables();
+                    UpdateStatusBar();
+                    ViewModel.StatusMessage = $"Updated {item.Name}";
+                }
+                catch (Exception ex)
+                {
+                    ViewModel.StatusMessage = $"Error updating variable: {ex.Message}";
+                    UpdateStatusBar();
+                }
+            }
+        }
     }
 
     private void CopyName_Click(object sender, RoutedEventArgs e)
