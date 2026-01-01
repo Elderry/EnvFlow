@@ -164,7 +164,7 @@
                           </Grid>
 
                           <!-- Column Separator -->
-                          <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ValueDisplayVisibility}"/>
+                          <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ColumnSeparatorVisibility}"/>
 
                           <!-- Value Column -->
                           <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">
@@ -407,7 +407,7 @@
                           </Grid>
 
                           <!-- Column Separator -->
-                          <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ValueDisplayVisibility}"/>
+                          <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ColumnSeparatorVisibility}"/>
 
                           <!-- Value Column -->
                           <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">

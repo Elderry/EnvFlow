@@ -62,6 +62,7 @@ public class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Collapsed 
         : Visibility.Visible;
     public Visibility DisplayNameVisibility => (IsChild && IsEditing) ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility ColumnSeparatorVisibility => (IsChild || Children.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
