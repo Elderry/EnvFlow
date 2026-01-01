@@ -1,4 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml;
+using System;
+using System.Threading.Tasks;
 
 namespace EnvFlow.Dialogs;
 
@@ -17,30 +20,99 @@ public sealed partial class VariableEditorDialog : ContentDialog
     }
 
     public bool IsEditMode { get; set; }
+    
+    public bool IsPathEntryMode { get; set; }
 
     public VariableEditorDialog()
     {
         InitializeComponent();
         UpdatePrimaryButtonState();
     }
+    
+    public void ConfigureForPathEntry(string parentVariableName)
+    {
+        IsPathEntryMode = true;
+        Title = $"Add Variable Entry to {parentVariableName}";
+        PrimaryButtonText = "Add";
+        VariableNameLabel.Visibility = Visibility.Collapsed;
+        VariableNameTextBox.Visibility = Visibility.Collapsed;
+        VariableValueTextBox.PlaceholderText = "Enter new path (e.g., C:\\Program Files\\MyApp)";
+        VariableValueTextBox.MinHeight = 40;
+        VariableValueTextBox.MaxHeight = 100;
+    }
+
+    private async void BrowseFolder_Click(object sender, RoutedEventArgs e)
+    {
+        var folderPicker = new Windows.Storage.Pickers.FolderPicker();
+        folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder;
+        folderPicker.FileTypeFilter.Add("*");
+        
+        // Get window handle from App.MainWindow
+        if (App.MainWindow != null)
+        {
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
+        }
+        
+        var folder = await folderPicker.PickSingleFolderAsync();
+        if (folder != null)
+        {
+            VariableValueTextBox.Text = folder.Path;
+        }
+    }
+
+    private async void BrowseFile_Click(object sender, RoutedEventArgs e)
+    {
+        var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
+        filePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder;
+        filePicker.FileTypeFilter.Add("*");
+        
+        // Get window handle from App.MainWindow
+        if (App.MainWindow != null)
+        {
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
+        }
+        
+        var file = await filePicker.PickSingleFileAsync();
+        if (file != null)
+        {
+            VariableValueTextBox.Text = file.Path;
+        }
+    }
 
     private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        // Validate input
-        if (string.IsNullOrWhiteSpace(VariableNameTextBox.Text))
+        // Validate input based on mode
+        if (IsPathEntryMode)
         {
-            ErrorTextBlock.Text = "Variable name cannot be empty.";
-            ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-            args.Cancel = true;
-            return;
+            // For path entry mode, only validate the value field
+            if (string.IsNullOrWhiteSpace(VariableValueTextBox.Text))
+            {
+                ErrorTextBlock.Text = "Path cannot be empty.";
+                ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                args.Cancel = true;
+                return;
+            }
         }
-
-        if (VariableNameTextBox.Text.Contains('='))
+        else
         {
-            ErrorTextBlock.Text = "Variable name cannot contain '=' character.";
-            ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-            args.Cancel = true;
-            return;
+            // For variable mode, validate the name field
+            if (string.IsNullOrWhiteSpace(VariableNameTextBox.Text))
+            {
+                ErrorTextBlock.Text = "Variable name cannot be empty.";
+                ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                args.Cancel = true;
+                return;
+            }
+
+            if (VariableNameTextBox.Text.Contains('='))
+            {
+                ErrorTextBlock.Text = "Variable name cannot contain '=' character.";
+                ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                args.Cancel = true;
+                return;
+            }
         }
 
         ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
@@ -59,6 +131,13 @@ public sealed partial class VariableEditorDialog : ContentDialog
 
     private void UpdatePrimaryButtonState()
     {
-        IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(VariableNameTextBox.Text);
+        if (IsPathEntryMode)
+        {
+            IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(VariableValueTextBox.Text);
+        }
+        else
+        {
+            IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(VariableNameTextBox.Text);
+        }
     }
 }

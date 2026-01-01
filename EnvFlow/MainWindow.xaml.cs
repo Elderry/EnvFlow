@@ -736,26 +736,16 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        // Show dialog to add new path entry
-        var dialog = new ContentDialog
+        // Use the VariableEditorDialog in path entry mode
+        var dialog = new Dialogs.VariableEditorDialog
         {
-            Title = $"Add Path Entry to {parentItem.Name}",
-            PrimaryButtonText = "Add",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Primary,
             XamlRoot = this.Content.XamlRoot
         };
-
-        var textBox = new TextBox
-        {
-            PlaceholderText = "Enter new path (e.g., C:\\Program Files\\MyApp)",
-            MinWidth = 400
-        };
-
-        dialog.Content = textBox;
+        
+        dialog.ConfigureForPathEntry(parentItem.Name);
 
         var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text))
+        if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(dialog.VariableValue))
         {
             try
             {
@@ -763,7 +753,7 @@ public sealed partial class MainWindow : Window
                 
                 // Add the new path to the existing paths
                 var existingPaths = parentItem.Children.Select(c => c.DisplayName).ToList();
-                existingPaths.Add(textBox.Text.Trim());
+                existingPaths.Add(dialog.VariableValue.Trim());
                 string newValue = string.Join(";", existingPaths);
                 
                 ViewModel.StatusMessage = $"Adding path entry to {parentItem.Name}";

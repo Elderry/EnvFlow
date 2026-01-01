@@ -6,6 +6,8 @@ namespace EnvFlow;
 public partial class App : Application
 {
     private Window? m_window;
+    
+    public static Window? MainWindow { get; private set; }
 
     public App()
     {
@@ -24,6 +26,7 @@ public partial class App : Application
         try
         {
             m_window = new MainWindow();
+            MainWindow = m_window;
             m_window.Activate();
         }
         catch (Exception ex)
