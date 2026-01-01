@@ -347,14 +347,6 @@ public sealed partial class MainWindow : Window
         // Track which TreeViewItem has its flyout open
         if (sender is MenuFlyout flyout && flyout.Target is Button button)
         {
-            // Check if this is a system variable and user is not admin
-            if (button.DataContext is EnvVariableItem item && item.IsSystemVariable && !ViewModel.IsAdmin)
-            {
-                // Cancel the flyout opening by hiding it immediately
-                flyout.Hide();
-                return;
-            }
-            
             // Find the parent TreeViewItem
             DependencyObject parent = button;
             while (parent != null && parent is not TreeViewItem)
@@ -1636,6 +1628,18 @@ public sealed partial class MainWindow : Window
                     icon.Foreground = grayBrush;
                 }
             }
+        }
+    }
+
+    private void MoreOptionsButton_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        // Check if this is a system variable and disable if not admin
+        if (button.DataContext is EnvVariableItem item && item.IsSystemVariable && !ViewModel.IsAdmin)
+        {
+            button.IsEnabled = false;
         }
     }
 }

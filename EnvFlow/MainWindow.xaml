@@ -594,7 +594,7 @@
                             <Button Padding="4"
                                                         x:Name="MoreOptionsButton"
                                                         Visibility="{Binding SortButtonVisibility}"
-                                                        IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
+                                                        Loaded="MoreOptionsButton_Loaded"
                                                         ToolTipService.ToolTip="More options">
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
@@ -622,7 +622,7 @@
                             <!-- More Options Menu for non-composite variables -->
                             <Button Padding="4"
                                                         Visibility="{Binding MoreOptionsVisibility}"
-                                                        IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
+                                                        Loaded="MoreOptionsButton_Loaded"
                                                         ToolTipService.ToolTip="More options">
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
