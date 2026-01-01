@@ -24,6 +24,8 @@ public class EnvVariableItem : INotifyPropertyChanged
     public bool IsPathEntry { get; set; }
     public bool IsValid { get; set; } = true;
     public bool IsReadOnly { get; set; } = false; // For volatile environment variables
+    public bool IsSystemVariable { get; set; } = false; // Track if this is a system variable
+    public bool IsAdmin { get; set; } = false; // Track if user has admin privileges
     public bool IsExpanded { get; set; } = false; // Track expand/collapse state
     public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
     public bool IsChild => IsPathEntry; // Path entries are children of the parent variable
@@ -69,10 +71,10 @@ public class EnvVariableItem : INotifyPropertyChanged
     public Visibility CopyNameVisibility => !IsChild ? Visibility.Visible : Visibility.Collapsed;
     public Visibility CopyValueInNameColumnVisibility => Visibility.Visible;
     
-    public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing) 
+    public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !(IsSystemVariable && !IsAdmin)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
-    public Visibility SortButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly) 
+    public Visibility SortButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly && !(IsSystemVariable && !IsAdmin)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
@@ -80,15 +82,15 @@ public class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility EditButtonVisibility => (!IsChild && Children.Count > 0) || IsReadOnly
+    public Visibility EditButtonVisibility => (!IsChild && Children.Count > 0) || IsReadOnly || (IsSystemVariable && !IsAdmin)
         ? Visibility.Collapsed 
         : Visibility.Visible;
     
-    public Visibility DeleteButtonVisibility => IsReadOnly
+    public Visibility DeleteButtonVisibility => IsReadOnly || (IsSystemVariable && !IsAdmin)
         ? Visibility.Collapsed
         : Visibility.Visible;
     
-    public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsChild || Children.Count == 0)) 
+    public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsChild || Children.Count == 0) && !(IsSystemVariable && !IsAdmin)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
@@ -173,8 +175,19 @@ public class EnvVariableItem : INotifyPropertyChanged
             IsValid = exists,
             Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,
             IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : isPathLike ? Colors.Crimson : Colors.DeepSkyBlue),
-            ValueVisibility = Visibility.Collapsed
+            ValueVisibility = Visibility.Collapsed,
+            IsSystemVariable = IsSystemVariable,
+            IsAdmin = IsAdmin
         };
+    }
+
+    public void UpdateChildrenProperties()
+    {
+        foreach (var child in Children)
+        {
+            child.IsSystemVariable = IsSystemVariable;
+            child.IsAdmin = IsAdmin;
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

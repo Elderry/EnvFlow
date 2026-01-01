@@ -107,19 +107,19 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
         // Load user variables - update in place to avoid blink
         var userVars = _envService.GetUserVariables(out var volatileVariables);
-        UpdateVariableCollection(UserVariables, userVars, volatileVariables);
+        UpdateVariableCollection(UserVariables, userVars, volatileVariables, isSystemVariable: false);
         UserVariableCount = userVars.Count;
 
         // Load system variables - update in place to avoid blink
         var systemVars = _envService.GetSystemVariables(out var systemVolatileVariables);
-        UpdateVariableCollection(SystemVariables, systemVars, systemVolatileVariables);
+        UpdateVariableCollection(SystemVariables, systemVars, systemVolatileVariables, isSystemVariable: true);
         SystemVariableCount = systemVars.Count;
 
         StatusMessage = $"Loaded {UserVariableCount} user and {SystemVariableCount} system variables";
     }
 
     private void UpdateVariableCollection(ObservableCollection<EnvVariableItem> collection, 
-        Dictionary<string, string> newVars, HashSet<string> volatileVars)
+        Dictionary<string, string> newVars, HashSet<string> volatileVars, bool isSystemVariable)
     {
         // Save expanded state before clearing
         var expandedStates = collection
@@ -138,8 +138,13 @@ public class MainWindowViewModel : INotifyPropertyChanged
             bool isVolatile = volatileVars.Contains(kvp.Key);
             var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isVolatile)
             {
-                IsExpanded = expandedStates.Contains(kvp.Key)
+                IsExpanded = expandedStates.Contains(kvp.Key),
+                IsSystemVariable = isSystemVariable,
+                IsAdmin = IsAdmin
             };
+            
+            // Update children with parent's properties
+            newItem.UpdateChildrenProperties();
             
             collection.Add(newItem);
         }
