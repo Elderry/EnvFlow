@@ -147,10 +147,11 @@ public class EnvVariableItem : INotifyPropertyChanged
 
     private EnvVariableItem CreateVarEntry(string value)
     {
-		value = Environment.ExpandEnvironmentVariables(value);
-		bool isPathLike = value.Contains('\\') || value.Contains('/') || value.Contains(':');
-        bool isFolder = Directory.Exists(value);
-        bool isFile = File.Exists(value);
+        // Expand for validation purposes only
+        var expanded = Environment.ExpandEnvironmentVariables(value);
+        bool isPathLike = expanded.Contains('\\') || expanded.Contains('/') || expanded.Contains(':');
+        bool isFolder = Directory.Exists(expanded);
+        bool isFile = File.Exists(expanded);
         bool exists = isFolder || isFile;
 
         return new EnvVariableItem
