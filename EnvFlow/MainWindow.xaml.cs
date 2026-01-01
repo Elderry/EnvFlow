@@ -447,6 +447,27 @@ public sealed partial class MainWindow : Window
         UpdateStatusBar();
     }
 
+    private void CopyValue_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
+            return;
+
+        try
+        {
+            var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+            dataPackage.SetText(item.IsChild ? item.DisplayName : item.Value);
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+            
+            ViewModel.StatusMessage = "Value copied to clipboard";
+            UpdateStatusBar();
+        }
+        catch (Exception ex)
+        {
+            ViewModel.StatusMessage = $"Error copying to clipboard: {ex.Message}";
+            UpdateStatusBar();
+        }
+    }
+
     private async void DeleteItemButton_Click(object sender, RoutedEventArgs e)
     {
         if ((sender as Button)?.DataContext is not EnvVariableItem item)

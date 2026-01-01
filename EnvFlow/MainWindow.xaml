@@ -144,6 +144,15 @@
                           <!-- Name Column - spans all columns for composite variables -->
                           <Grid Grid.Column="0">
                             <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Loaded="NameColumn_Loaded">
+                              <StackPanel.ContextFlyout>
+                                <MenuFlyout>
+                                  <MenuFlyoutItem Text="Copy" Click="CopyValue_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE8C8;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                </MenuFlyout>
+                              </StackPanel.ContextFlyout>
                               <FontIcon Glyph="{Binding Icon}" 
                                                                   FontSize="16" 
                                                                   Foreground="{Binding IconColor}"/>
@@ -173,7 +182,17 @@
                                                                Foreground="Gray"
                                                                VerticalAlignment="Center"
                                                                TextTrimming="CharacterEllipsis"
-                                                               Visibility="{Binding ValueDisplayVisibility}"/>
+                                                               Visibility="{Binding ValueDisplayVisibility}">
+                              <TextBlock.ContextFlyout>
+                                <MenuFlyout>
+                                  <MenuFlyoutItem Text="Copy" Click="CopyValue_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE8C8;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                </MenuFlyout>
+                              </TextBlock.ContextFlyout>
+                            </TextBlock>
 
                             <!-- Edit Mode: Show TextBox -->
                             <TextBox x:Name="EditTextBox"
@@ -387,6 +406,15 @@
                           <!-- Name Column - spans all columns for composite variables -->
                           <Grid Grid.Column="0">
                             <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System" Loaded="NameColumn_Loaded">
+                              <StackPanel.ContextFlyout>
+                                <MenuFlyout>
+                                  <MenuFlyoutItem Text="Copy" Click="CopyValue_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE8C8;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                </MenuFlyout>
+                              </StackPanel.ContextFlyout>
                               <FontIcon Glyph="{Binding Icon}" 
                                                                   FontSize="16" 
                                                                   Foreground="{Binding IconColor}"/>
@@ -416,7 +444,17 @@
                                                                Foreground="Gray"
                                                                VerticalAlignment="Center"
                                                                TextTrimming="CharacterEllipsis"
-                                                               Visibility="{Binding ValueDisplayVisibility}"/>
+                                                               Visibility="{Binding ValueDisplayVisibility}">
+                              <TextBlock.ContextFlyout>
+                                <MenuFlyout>
+                                  <MenuFlyoutItem Text="Copy" Click="CopyValue_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE8C8;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                </MenuFlyout>
+                              </TextBlock.ContextFlyout>
+                            </TextBlock>
 
                             <!-- Edit Mode: Show TextBox -->
                             <TextBox x:Name="EditTextBox"
