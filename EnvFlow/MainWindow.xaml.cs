@@ -1616,7 +1616,7 @@ public sealed partial class MainWindow : Window
         if (sender is not StackPanel panel || panel.Tag?.ToString() != "System")
             return;
 
-        // Only gray out buttons if not admin (for system variables)
+        // Only gray out and disable buttons if not admin (for system variables)
         if (!ViewModel.IsAdmin)
         {
             var grayBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 160, 160, 160));
@@ -1626,6 +1626,7 @@ public sealed partial class MainWindow : Window
                 if (child is Button button && button.Content is FontIcon icon)
                 {
                     icon.Foreground = grayBrush;
+                    button.IsEnabled = false;
                 }
             }
         }
