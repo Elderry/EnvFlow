@@ -64,6 +64,11 @@ public class EnvVariableItem : INotifyPropertyChanged
     public Visibility DisplayNameVisibility => (IsChild && IsEditing) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility ColumnSeparatorVisibility => (IsChild || Children.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility IsChildVisibility => IsChild ? Visibility.Visible : Visibility.Collapsed;
+    
+    // Context menu visibility
+    public Visibility CopyNameVisibility => !IsChild ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility CopyValueInNameColumnVisibility => (IsChild || Children.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+    
     public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing) 
         ? Visibility.Visible 
         : Visibility.Collapsed;

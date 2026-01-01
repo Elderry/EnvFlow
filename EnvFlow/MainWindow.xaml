@@ -146,7 +146,12 @@
                             <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Loaded="NameColumn_Loaded">
                               <StackPanel.ContextFlyout>
                                 <MenuFlyout>
-                                  <MenuFlyoutItem Text="Copy" Click="CopyValue_Click">
+                                  <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE8C8;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Copy value" Click="CopyValue_Click" Visibility="{Binding CopyValueInNameColumnVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
@@ -185,7 +190,12 @@
                                                                Visibility="{Binding ValueDisplayVisibility}">
                               <TextBlock.ContextFlyout>
                                 <MenuFlyout>
-                                  <MenuFlyoutItem Text="Copy" Click="CopyValue_Click">
+                                  <MenuFlyoutItem Text="Copy name" Click="CopyName_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE8C8;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Copy value" Click="CopyValue_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
@@ -408,7 +418,12 @@
                             <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System" Loaded="NameColumn_Loaded">
                               <StackPanel.ContextFlyout>
                                 <MenuFlyout>
-                                  <MenuFlyoutItem Text="Copy" Click="CopyValue_Click">
+                                  <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE8C8;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Copy value" Click="CopyValue_Click" Visibility="{Binding CopyValueInNameColumnVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
@@ -447,7 +462,12 @@
                                                                Visibility="{Binding ValueDisplayVisibility}">
                               <TextBlock.ContextFlyout>
                                 <MenuFlyout>
-                                  <MenuFlyoutItem Text="Copy" Click="CopyValue_Click">
+                                  <MenuFlyoutItem Text="Copy name" Click="CopyName_Click">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE8C8;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Copy value" Click="CopyValue_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>

@@ -447,6 +447,27 @@ public sealed partial class MainWindow : Window
         UpdateStatusBar();
     }
 
+    private void CopyName_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
+            return;
+
+        try
+        {
+            var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+            dataPackage.SetText(item.Name);
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+            
+            ViewModel.StatusMessage = "Name copied to clipboard";
+            UpdateStatusBar();
+        }
+        catch (Exception ex)
+        {
+            ViewModel.StatusMessage = $"Error copying to clipboard: {ex.Message}";
+            UpdateStatusBar();
+        }
+    }
+
     private void CopyValue_Click(object sender, RoutedEventArgs e)
     {
         if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
