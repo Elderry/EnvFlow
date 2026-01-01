@@ -37,6 +37,7 @@ public class EnvVariableItem : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(DisplayVisibility));
             OnPropertyChanged(nameof(EditVisibility));
+            OnPropertyChanged(nameof(ChildEditVisibility));
             OnPropertyChanged(nameof(ValueDisplayVisibility));
             OnPropertyChanged(nameof(DisplayNameVisibility));
             OnPropertyChanged(nameof(AddChildButtonVisibility));
@@ -55,7 +56,8 @@ public class EnvVariableItem : INotifyPropertyChanged
     }
 
     public Visibility DisplayVisibility => IsEditing ? Visibility.Collapsed : Visibility.Visible;
-    public Visibility EditVisibility => IsEditing ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility EditVisibility => (IsEditing && !IsChild) ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ChildEditVisibility => (IsEditing && IsChild) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed || IsChild) 
         ? Visibility.Collapsed 
         : Visibility.Visible;

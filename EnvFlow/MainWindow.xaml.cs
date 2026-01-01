@@ -1585,7 +1585,12 @@ public sealed partial class MainWindow : Window
             // All child items (leaf entries) span all columns
             if (item.IsChild)
             {
-                Grid.SetColumnSpan(stackPanel, 4);
+                // Find the parent Grid and make it span all columns
+                if (stackPanel.Parent is Grid parentGrid)
+                {
+                    Grid.SetColumnSpan(parentGrid, 3);
+                    Canvas.SetZIndex(parentGrid, 1);  // Ensure it's on top
+                }
             }
         }
     }
