@@ -178,12 +178,12 @@
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Shrink value" Click="ShrinkButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                      <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Expand value" Click="ExpandButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                      <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
@@ -252,12 +252,12 @@
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Shrink value" Click="ShrinkButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                      <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Expand value" Click="ExpandButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                      <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
@@ -310,12 +310,12 @@
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Shrink entries" Click="ShrinkButton_Click">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                      <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Expand entries" Click="ExpandButton_Click">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                      <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
@@ -331,12 +331,12 @@
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
                                   <MenuFlyoutItem Text="Shrink value" Click="ShrinkValueButton_Click">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                      <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                      <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
@@ -507,12 +507,12 @@
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Shrink value" Click="ShrinkButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                      <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Expand value" Click="ExpandButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                      <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
@@ -581,12 +581,12 @@
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Shrink value" Click="ShrinkButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                      <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Expand value" Click="ExpandButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                      <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
@@ -646,12 +646,12 @@
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Shrink entries" Click="ShrinkButton_Click">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                      <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Expand entries" Click="ExpandButton_Click">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                      <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
@@ -668,12 +668,12 @@
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
                                   <MenuFlyoutItem Text="Shrink value" Click="ShrinkValueButton_Click">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
+                                      <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
+                                      <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
