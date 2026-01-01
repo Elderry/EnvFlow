@@ -151,17 +151,17 @@
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Add entry" Click="AddChildButton_Click" Visibility="{Binding AddChildMenuVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Add path entry" Click="AddChildButton_Click" Visibility="{Binding AddChildMenuVisibility}">
-                                    <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
-                                    </MenuFlyoutItem.Icon>
-                                  </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Sort paths" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
+                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
@@ -220,12 +220,12 @@
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Add path entry" Click="AddChildButton_Click" Visibility="{Binding AddChildMenuVisibility}">
+                                  <MenuFlyoutItem Text="Add entry" Click="AddChildButton_Click" Visibility="{Binding AddChildMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Sort paths" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
+                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
@@ -259,7 +259,7 @@
                             <Button Padding="4" 
                                                         Click="AddChildButton_Click"
                                                         Visibility="{Binding AddChildButtonVisibility}"
-                                                        ToolTipService.ToolTip="Add new variable entry">
+                                                        ToolTipService.ToolTip="Add entry">
                               <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
                             </Button>
 
@@ -283,17 +283,17 @@
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                  <MenuFlyoutItem Text="Sort entrys" Click="SortButton_Click">
+                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink entrys" Click="ShrinkButton_Click">
+                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkButton_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand entrys" Click="ExpandButton_Click">
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandButton_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
                                     </MenuFlyoutItem.Icon>
@@ -465,12 +465,12 @@
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Add path entry" Click="AddChildButton_Click" Visibility="{Binding AddChildMenuVisibility}">
+                                  <MenuFlyoutItem Text="Add entry" Click="AddChildButton_Click" Visibility="{Binding AddChildMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Sort paths" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
+                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
@@ -529,12 +529,12 @@
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Add path entry" Click="AddChildButton_Click" Visibility="{Binding AddChildMenuVisibility}">
+                                  <MenuFlyoutItem Text="Add entry" Click="AddChildButton_Click" Visibility="{Binding AddChildMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Sort paths" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
+                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
@@ -599,18 +599,18 @@
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                  <MenuFlyoutItem Text="Sort paths" Click="SortButton_Click">
+                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutSeparator/>
-                                  <MenuFlyoutItem Text="Shrink paths" Click="ShrinkButton_Click">
+                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkButton_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;" Foreground="#8764B8"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand paths" Click="ExpandButton_Click">
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandButton_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;" Foreground="#00B7C3"/>
                                     </MenuFlyoutItem.Icon>
