@@ -156,6 +156,7 @@
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
+                                  <MenuFlyoutSeparator Visibility="{Binding DeleteButtonVisibility}"/>
                                   <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
@@ -230,6 +231,7 @@
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
+                                  <MenuFlyoutSeparator Visibility="{Binding DeleteButtonVisibility}"/>
                                   <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
@@ -485,6 +487,7 @@
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
+                                  <MenuFlyoutSeparator Visibility="{Binding DeleteButtonVisibility}"/>
                                   <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
@@ -559,6 +562,7 @@
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
+                                  <MenuFlyoutSeparator Visibility="{Binding DeleteButtonVisibility}"/>
                                   <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
