@@ -82,7 +82,11 @@ public class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility EditButtonVisibility => (!IsChild && Children.Count > 0) || IsReadOnly || (IsSystemVariable && !IsAdmin)
+    public Visibility EditButtonVisibility => (!IsChild && Children.Count > 0) || IsReadOnly
+        ? Visibility.Collapsed 
+        : Visibility.Visible;
+    
+    public Visibility EditMenuVisibility => (!IsChild && Children.Count > 0) || IsReadOnly || (IsSystemVariable && !IsAdmin)
         ? Visibility.Collapsed 
         : Visibility.Visible;
     
@@ -90,7 +94,7 @@ public class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Collapsed
         : Visibility.Visible;
     
-    public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsChild || Children.Count == 0) && !(IsSystemVariable && !IsAdmin)) 
+    public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsChild || Children.Count == 0)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
