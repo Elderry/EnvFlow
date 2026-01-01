@@ -67,7 +67,7 @@ public class EnvVariableItem : INotifyPropertyChanged
     
     // Context menu visibility
     public Visibility CopyNameVisibility => !IsChild ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility CopyValueInNameColumnVisibility => (IsChild || Children.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility CopyValueInNameColumnVisibility => Visibility.Visible;
     
     public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing) 
         ? Visibility.Visible 
