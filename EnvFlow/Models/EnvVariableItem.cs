@@ -71,10 +71,10 @@ public class EnvVariableItem : INotifyPropertyChanged
     public Visibility CopyNameVisibility => !IsChild ? Visibility.Visible : Visibility.Collapsed;
     public Visibility CopyValueInNameColumnVisibility => Visibility.Visible;
     
-    public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !(IsSystemVariable && !IsAdmin)) 
+    public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
-    public Visibility SortButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly && !(IsSystemVariable && !IsAdmin)) 
+    public Visibility SortButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
