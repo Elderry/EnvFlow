@@ -24,7 +24,7 @@
       </Grid.ColumnDefinitions>
 
       <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-        <FontIcon Glyph="&#xE74C;" FontSize="20" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+        <Image Source="app.ico" Width="20" Height="20"/>
         <TextBlock Text="EnvFlow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
       </StackPanel>
     </Grid>

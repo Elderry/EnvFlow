@@ -33,6 +33,9 @@ public sealed partial class MainWindow : Window
             var appWindow = this.AppWindow;
             appWindow.Resize(new Windows.Graphics.SizeInt32(1400, 800));
 
+            // Set window icon
+            appWindow.SetIcon(System.IO.Path.Combine(AppContext.BaseDirectory, "app.ico"));
+
             // Customize title bar
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(CustomTitleBar);
