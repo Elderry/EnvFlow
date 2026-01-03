@@ -1,14 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+
+using EnvFlow.Dialogs;
+using EnvFlow.Helpers;
+using EnvFlow.ViewModels;
+
+using Microsoft.UI.Input;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Input;
-using EnvFlow.ViewModels;
-using EnvFlow.Helpers;
-using EnvFlow.Dialogs;
+
+using Windows.Graphics;
+using Windows.UI;
 
 namespace EnvFlow;
 
@@ -23,47 +30,36 @@ public sealed partial class MainWindow : Window
 
     public MainWindow()
     {
-        try
-        {
-            this.InitializeComponent();
-            ViewModel = new MainWindowViewModel();
-            Title = "EnvFlow - Environment Variable Editor";
-            
-            // Set window size
-            var appWindow = this.AppWindow;
-            appWindow.Resize(new Windows.Graphics.SizeInt32(1400, 800));
+        InitializeComponent();
+        ViewModel = new MainWindowViewModel();
+        Title = "EnvFlow - Environment Variable Editor";
 
-            // Set window icon
-            appWindow.SetIcon(System.IO.Path.Combine(AppContext.BaseDirectory, "app.ico"));
+        // Set window size
+        AppWindow appWindow = AppWindow;
+        appWindow.Resize(new SizeInt32(2400, 1600));
 
-            // Customize title bar
-            ExtendsContentIntoTitleBar = true;
-            SetTitleBar(CustomTitleBar);
+        // Set window icon
+        appWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "app.ico"));
 
-            var titleBar = AppWindow.TitleBar;
-            titleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
-            titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
-            titleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
-            titleBar.ButtonInactiveForegroundColor = Windows.UI.Color.FromArgb(255, 102, 102, 102);
+        // Customize title bar
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(CustomTitleBar);
 
-            // Set splitter cursor
-            SplitterGrid.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
+        AppWindowTitleBar titleBar = AppWindow.TitleBar;
+        titleBar.ButtonForegroundColor = Color.FromArgb(255, 0, 0, 0);
 
-            // Set column splitter cursors
-            UserColumnSplitter.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
-            SystemColumnSplitter.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
+        // Set splitter cursor
+        SplitterGrid.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
 
-            // Update status bar
-            UpdateStatusBar();
-            
-            // Update UI based on admin status
-            UpdateAdminUI();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error initializing window: {ex}");
-            throw;
-        }
+        // Set column splitter cursors
+        UserColumnSplitter.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
+        SystemColumnSplitter.Cursor = InputSystemCursor.Create(InputSystemCursorShape.SizeWestEast);
+
+        // Update status bar
+        UpdateStatusBar();
+
+        // Update UI based on admin status
+        UpdateAdminUI();
     }
 
     private void UpdateStatusBar()

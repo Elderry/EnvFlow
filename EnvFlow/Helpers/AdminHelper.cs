@@ -8,35 +8,21 @@ public static class AdminHelper
 {
     public static bool IsRunningAsAdmin()
     {
-        try
-        {
-            var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-        catch
-        {
-            return false;
-        }
+        WindowsIdentity identity = WindowsIdentity.GetCurrent();
+        WindowsPrincipal principal = new(identity);
+        return principal.IsInRole(WindowsBuiltInRole.Administrator);
     }
 
     public static void RestartAsAdmin()
     {
-        try
+        ProcessStartInfo processInfo = new ProcessStartInfo
         {
-            var processInfo = new ProcessStartInfo
-            {
-                FileName = Environment.ProcessPath ?? Process.GetCurrentProcess().MainModule?.FileName ?? "",
-                UseShellExecute = true,
-                Verb = "runas" // Run as administrator
-            };
-            
-            Process.Start(processInfo);
-            Environment.Exit(0);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Failed to restart as admin: {ex.Message}");
-        }
+            FileName = Environment.ProcessPath ?? Process.GetCurrentProcess().MainModule?.FileName ?? "",
+            UseShellExecute = true,
+            Verb = "runas" // Run as administrator
+        };
+
+        Process.Start(processInfo);
+        Environment.Exit(0);
     }
 }
