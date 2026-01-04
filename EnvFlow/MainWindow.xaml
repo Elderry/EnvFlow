@@ -185,9 +185,9 @@
                                                                   FontSize="16" 
                                                                   Foreground="{Binding IconColor}"/>
 
-                              <TextBlock Text="{Binding DisplayName}" 
+                              <TextBlock Text="{Binding Name}" 
                                                                    VerticalAlignment="Center"
-                                                                   Visibility="{Binding DisplayNameVisibility}"/>
+                                                                   Visibility="{Binding NameVisibility}"/>
                             </StackPanel>
 
                             <!-- Edit TextBox for child items -->
@@ -516,9 +516,9 @@
                                                                   FontSize="16" 
                                                                   Foreground="{Binding IconColor}"/>
 
-                              <TextBlock Text="{Binding DisplayName}" 
+                              <TextBlock Text="{Binding Name}" 
                                                                    VerticalAlignment="Center"
-                                                                   Visibility="{Binding DisplayNameVisibility}"/>
+                                                                   Visibility="{Binding NameVisibility}"/>
                             </StackPanel>
 
                             <!-- Edit TextBox for child items -->

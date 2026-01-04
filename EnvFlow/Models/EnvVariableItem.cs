@@ -19,7 +19,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
 
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
-    public string DisplayName { get; set; } = string.Empty;
+
     public string Icon { get; set; } = AppIcons.Tag;
     public Brush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
     public ObservableCollection<EnvVariableItem> Children { get; set; } = [];
@@ -29,7 +29,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
     public bool IsSystemVariable { get; set; } = false; // Track if this is a system variable
     public bool IsAdmin { get; set; } = false; // Track if user has admin privileges
     public bool IsExpanded { get; set; } = false; // Track expand/collapse state
-    public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
 
     public bool IsEditing
     {
@@ -42,7 +41,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
             OnPropertyChanged(nameof(EditVisibility));
             OnPropertyChanged(nameof(ChildEditVisibility));
             OnPropertyChanged(nameof(ValueDisplayVisibility));
-            OnPropertyChanged(nameof(DisplayNameVisibility));
             OnPropertyChanged(nameof(AddChildButtonVisibility));
             OnPropertyChanged(nameof(SortButtonVisibility));
         }
@@ -58,13 +56,14 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         }
     }
 
+    public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
     public Visibility DisplayVisibility => IsEditing ? Visibility.Collapsed : Visibility.Visible;
     public Visibility EditVisibility => (IsEditing && !IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ChildEditVisibility => (IsEditing && IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed || IsEntry) 
         ? Visibility.Collapsed 
         : Visibility.Visible;
-    public Visibility DisplayNameVisibility => (IsEntry && IsEditing) ? Visibility.Collapsed : Visibility.Visible;
+
     public Visibility ColumnSeparatorVisibility => (IsEntry || Children.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility IsChildVisibility => IsEntry ? Visibility.Visible : Visibility.Collapsed;
     
@@ -118,7 +117,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
     {
         Name = name;
         Value = value;
-        DisplayName = name;
         IsEntry = false;
         IsReadOnly = isReadOnly;
 
@@ -184,7 +182,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         {
             Name = value,
             Value = value,
-            DisplayName = value,
             IsEntry = true,
             IsValid = exists,
             Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,

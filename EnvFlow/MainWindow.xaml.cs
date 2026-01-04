@@ -191,7 +191,7 @@ public sealed partial class MainWindow : Window
         // Enter inline edit mode
         _currentlyEditingItem = ViewModel.SelectedUserVariable;
         ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.IsEntry 
-            ? ViewModel.SelectedUserVariable.DisplayName 
+            ? ViewModel.SelectedUserVariable.Name 
             : ViewModel.SelectedUserVariable.Value;
         ViewModel.SelectedUserVariable.IsEditing = true;
         ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
@@ -223,7 +223,7 @@ public sealed partial class MainWindow : Window
         // Enter inline edit mode
         _currentlyEditingItem = ViewModel.SelectedSystemVariable;
         ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.IsEntry 
-            ? ViewModel.SelectedSystemVariable.DisplayName 
+            ? ViewModel.SelectedSystemVariable.Name 
             : ViewModel.SelectedSystemVariable.Value;
         ViewModel.SelectedSystemVariable.IsEditing = true;
         ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
@@ -459,7 +459,7 @@ public sealed partial class MainWindow : Window
             if (parentItem == null) return;
             
             dialog.ConfigureForPathEntry(parentItem.Name, isEditMode: true);
-            dialog.VariableValue = item.DisplayName;
+            dialog.VariableValue = item.Name;
             
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(dialog.VariableValue))
@@ -469,7 +469,7 @@ public sealed partial class MainWindow : Window
                     var service = new Services.EnvironmentVariableService();
                     
                     // Update the path in the parent's value
-                    var paths = parentItem.Children.Select(c => c == item ? dialog.VariableValue.Trim() : c.DisplayName).ToList();
+                    var paths = parentItem.Children.Select(c => c == item ? dialog.VariableValue.Trim() : c.Name).ToList();
                     string newValue = string.Join(";", paths);
                     
                     ViewModel.StatusMessage = $"Updating path entry in {parentItem.Name}";
@@ -559,7 +559,7 @@ public sealed partial class MainWindow : Window
         try
         {
             var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-            dataPackage.SetText(item.IsEntry ? item.DisplayName : item.Value);
+            dataPackage.SetText(item.IsEntry ? item.Name : item.Value);
             Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
             
             ViewModel.StatusMessage = "Value copied to clipboard";
@@ -696,7 +696,7 @@ public sealed partial class MainWindow : Window
 
         // Enter edit mode
         _currentlyEditingItem = item;
-        item.EditValue = item.IsEntry ? item.DisplayName : item.Value;
+        item.EditValue = item.IsEntry ? item.Name : item.Value;
         item.IsEditing = true;
     }
 
@@ -758,7 +758,7 @@ public sealed partial class MainWindow : Window
         }
 
         // Check if value changed
-        string originalValue = item.IsEntry ? item.DisplayName : item.Value;
+        string originalValue = item.IsEntry ? item.Name : item.Value;
         if (item.EditValue == originalValue)
             return;
 
@@ -802,7 +802,7 @@ public sealed partial class MainWindow : Window
             if (item.IsEntry && parentVariable != null)
             {
                 // Update the child and reconstruct the parent PATH variable
-                var paths = parentVariable.Children.Select(c => c == item ? item.EditValue : c.DisplayName).ToList();
+                var paths = parentVariable.Children.Select(c => c == item ? item.EditValue : c.Name).ToList();
                 string newValue = string.Join(";", paths);
                 
                 ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} path entry in {parentVariable.Name}";
@@ -877,7 +877,7 @@ public sealed partial class MainWindow : Window
                 var service = new Services.EnvironmentVariableService();
                 
                 // Add the new path to the existing paths
-                var existingPaths = parentItem.Children.Select(c => c.DisplayName).ToList();
+                var existingPaths = parentItem.Children.Select(c => c.Name).ToList();
                 existingPaths.Add(dialog.VariableValue.Trim());
                 string newValue = string.Join(";", existingPaths);
                 
@@ -921,7 +921,7 @@ public sealed partial class MainWindow : Window
             var service = new Services.EnvironmentVariableService();
             
             // Get all paths and sort them
-            var paths = parentItem.Children.Select(c => c.DisplayName.Trim()).ToList();
+            var paths = parentItem.Children.Select(c => c.Name.Trim()).ToList();
             paths.Sort(StringComparer.OrdinalIgnoreCase);
             
             // Save the sorted value
@@ -1000,7 +1000,7 @@ public sealed partial class MainWindow : Window
             
             foreach (var child in parentItem.Children)
             {
-                var path = child.DisplayName.Trim();
+                var path = child.Name;
                 var expandedPath = Environment.ExpandEnvironmentVariables(path);
                 
                 // Try to find a matching environment variable
@@ -1084,7 +1084,7 @@ public sealed partial class MainWindow : Window
             
             foreach (var child in parentItem.Children)
             {
-                var path = child.DisplayName.Trim();
+                var path = child.Name;
                 var expandedPath = Environment.ExpandEnvironmentVariables(path);
                 expandedPaths.Add(expandedPath);
             }
@@ -1307,7 +1307,7 @@ public sealed partial class MainWindow : Window
         var confirmDialog = new ContentDialog
         {
             Title = "Confirm Delete",
-            Content = $"Are you sure you want to delete this path entry?\n\n{childItem.DisplayName}",
+            Content = $"Are you sure you want to delete this entry?\n\n{childItem.Name}",
             PrimaryButtonText = "Delete",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close,
@@ -1322,7 +1322,7 @@ public sealed partial class MainWindow : Window
                 var service = new Services.EnvironmentVariableService();
 
                 // Remove the child and reconstruct the parent PATH variable
-                var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.DisplayName).ToList();
+                var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
                 string newValue = string.Join(";", paths);
 
                 ViewModel.StatusMessage = $"Removing path entry from {parentVariable.Name}";
@@ -1384,7 +1384,7 @@ public sealed partial class MainWindow : Window
         var confirmDialog = new ContentDialog
         {
             Title = "Confirm Delete",
-            Content = $"Are you sure you want to delete this path entry?\n\n{childItem.DisplayName}",
+            Content = $"Are you sure you want to delete this entry?\n\n{childItem.Name}",
             PrimaryButtonText = "Delete",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close,
@@ -1399,7 +1399,7 @@ public sealed partial class MainWindow : Window
                 var service = new Services.EnvironmentVariableService();
 
                 // Remove the child and reconstruct the parent PATH variable
-                var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.DisplayName).ToList();
+                var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
                 string newValue = string.Join(";", paths);
 
                 ViewModel.StatusMessage = $"Removing path entry from {parentVariable.Name}";
