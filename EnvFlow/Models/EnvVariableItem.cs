@@ -40,7 +40,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
             OnPropertyChanged(nameof(NameVisibility));
             OnPropertyChanged(nameof(EditVisibility));
             OnPropertyChanged(nameof(ChildEditVisibility));
-            OnPropertyChanged(nameof(ValueDisplayVisibility));
+            OnPropertyChanged(nameof(ValueVisibility));
             OnPropertyChanged(nameof(AddChildButtonVisibility));
             OnPropertyChanged(nameof(SortButtonVisibility));
         }
@@ -56,13 +56,10 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         }
     }
 
-    public Visibility NameVisibility => IsEditing ? Visibility.Collapsed : Visibility.Visible;
-    public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
+    public Visibility NameVisibility => (IsEditing && IsEntry) ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility ValueVisibility => (IsEditing || IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility EditVisibility => (IsEditing && !IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ChildEditVisibility => (IsEditing && IsEntry) ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed || IsEntry) 
-        ? Visibility.Collapsed 
-        : Visibility.Visible;
 
     public Visibility ColumnSeparatorVisibility => (IsEntry || Children.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility IsChildVisibility => IsEntry ? Visibility.Visible : Visibility.Collapsed;
@@ -107,7 +104,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public bool IsComposite => !IsEntry && Children.Count > 0;
+    public bool IsComposite => Children.Count > 0;
 
     public EnvVariableItem()
     {
@@ -135,11 +132,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
             {
                 Children.Add(CreateVarEntry(entry));
             }
-
-            ValueVisibility = Visibility.Collapsed;
-
-            // Notify AddChildButtonVisibility to update
-            OnPropertyChanged(nameof(AddChildButtonVisibility));
         }
         else if (isPathLike)
         {
@@ -159,13 +151,11 @@ public partial class EnvVariableItem : INotifyPropertyChanged
                 Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : AppIcons.Error;
                 IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
             }
-            ValueVisibility = Visibility.Visible;
         }
         else
         {
             Icon = AppIcons.Tag;
             IconColor = new SolidColorBrush(IsReadOnly ? Colors.Gray : Colors.DeepSkyBlue);
-            ValueVisibility = Visibility.Visible;
         }
     }
 
@@ -186,7 +176,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
             IsValid = exists,
             Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,
             IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : isPathLike ? Colors.Crimson : Colors.DeepSkyBlue),
-            ValueVisibility = Visibility.Collapsed,
             IsSystemVariable = IsSystemVariable
         };
     }

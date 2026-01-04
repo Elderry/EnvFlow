@@ -210,7 +210,7 @@
                                                                Foreground="Gray"
                                                                VerticalAlignment="Center"
                                                                TextTrimming="CharacterEllipsis"
-                                                               Visibility="{Binding ValueDisplayVisibility}">
+                                                               Visibility="{Binding ValueVisibility}">
                               <TextBlock.ContextFlyout>
                                 <MenuFlyout>
                                   <MenuFlyoutItem Text="Copy name" Click="CopyName_Click">
@@ -541,7 +541,7 @@
                                                                Foreground="Gray"
                                                                VerticalAlignment="Center"
                                                                TextTrimming="CharacterEllipsis"
-                                                               Visibility="{Binding ValueDisplayVisibility}">
+                                                               Visibility="{Binding ValueVisibility}">
                               <TextBlock.ContextFlyout>
                                 <MenuFlyout>
                                   <MenuFlyoutItem Text="Copy name" Click="CopyName_Click">
