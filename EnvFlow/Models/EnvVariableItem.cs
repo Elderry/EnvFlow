@@ -42,7 +42,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
             OnPropertyChanged(nameof(ChildEditVisibility));
             OnPropertyChanged(nameof(ValueVisibility));
             OnPropertyChanged(nameof(AddChildButtonVisibility));
-            OnPropertyChanged(nameof(SortButtonVisibility));
         }
     }
 
@@ -56,23 +55,19 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         }
     }
 
+    // Tree view item visibility
     public Visibility NameVisibility => (IsEditing && IsEntry) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility ValueVisibility => (IsEditing || IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility EditVisibility => (IsEditing && !IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ChildEditVisibility => (IsEditing && IsEntry) ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ColumnSeparatorVisibility => (IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
 
-    public Visibility ColumnSeparatorVisibility => (IsEntry || Children.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
-    public Visibility IsChildVisibility => IsEntry ? Visibility.Visible : Visibility.Collapsed;
+    // Hover button visibility
+    public Visibility AddChildButtonVisibility => IsComposite ? Visibility.Visible : Visibility.Collapsed;
     
     // Context menu visibility
     public Visibility CopyNameVisibility => !IsEntry ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility CopyValueInNameColumnVisibility => Visibility.Visible;
-    
-    public Visibility AddChildButtonVisibility => (!IsEntry && Children.Count > 0 && !IsEditing) 
-        ? Visibility.Visible 
-        : Visibility.Collapsed;
-    
-    public Visibility AddChildMenuVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !(IsSystemVariable && !AdminHelper.IsAdmin())) 
+    public Visibility AddChildMenuVisibility => (IsComposite && !(IsSystemVariable && !AdminHelper.IsAdmin())) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
