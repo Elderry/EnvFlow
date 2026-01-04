@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 
 using EnvFlow.Constants;
+using EnvFlow.Helpers;
 
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -27,7 +28,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
     public bool IsValid { get; set; } = true;
     public bool IsReadOnly { get; set; } = false; // For volatile environment variables
     public bool IsSystemVariable { get; set; } = false; // Track if this is a system variable
-    public bool IsAdmin { get; set; } = false; // Track if user has admin privileges
     public bool IsExpanded { get; set; } = false; // Track expand/collapse state
 
     public bool IsEditing
@@ -75,7 +75,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility AddChildMenuVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !(IsSystemVariable && !IsAdmin)) 
+    public Visibility AddChildMenuVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !(IsSystemVariable && !AdminHelper.IsAdmin())) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
@@ -83,7 +83,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility SortMenuVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !IsReadOnly && !(IsSystemVariable && !IsAdmin)) 
+    public Visibility SortMenuVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !IsReadOnly && !(IsSystemVariable && !AdminHelper.IsAdmin())) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
@@ -95,11 +95,11 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Collapsed 
         : Visibility.Visible;
     
-    public Visibility EditMenuVisibility => (!IsEntry && Children.Count > 0) || IsReadOnly || (IsSystemVariable && !IsAdmin)
+    public Visibility EditMenuVisibility => (!IsEntry && Children.Count > 0) || IsReadOnly || (IsSystemVariable && !AdminHelper.IsAdmin())
         ? Visibility.Collapsed 
         : Visibility.Visible;
     
-    public Visibility DeleteButtonVisibility => IsReadOnly || (IsSystemVariable && !IsAdmin)
+    public Visibility DeleteButtonVisibility => IsReadOnly || (IsSystemVariable && !AdminHelper.IsAdmin())
         ? Visibility.Collapsed
         : Visibility.Visible;
     
@@ -187,8 +187,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
             Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,
             IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : isPathLike ? Colors.Crimson : Colors.DeepSkyBlue),
             ValueVisibility = Visibility.Collapsed,
-            IsSystemVariable = IsSystemVariable,
-            IsAdmin = IsAdmin
+            IsSystemVariable = IsSystemVariable
         };
     }
 
@@ -197,7 +196,6 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         foreach (var child in Children)
         {
             child.IsSystemVariable = IsSystemVariable;
-            child.IsAdmin = IsAdmin;
         }
     }
 

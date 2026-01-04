@@ -6,16 +6,20 @@ namespace EnvFlow.Helpers;
 
 public static class AdminHelper
 {
-    public static bool IsRunningAsAdmin()
+    private static readonly bool _isRunningAsAdmin;
+
+    static AdminHelper()
     {
         WindowsIdentity identity = WindowsIdentity.GetCurrent();
         WindowsPrincipal principal = new(identity);
-        return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        _isRunningAsAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
     }
+
+    public static bool IsAdmin() => _isRunningAsAdmin;
 
     public static void RestartAsAdmin()
     {
-        ProcessStartInfo processInfo = new ProcessStartInfo
+        ProcessStartInfo processInfo = new()
         {
             FileName = Environment.ProcessPath ?? Process.GetCurrentProcess().MainModule?.FileName ?? "",
             UseShellExecute = true,

@@ -98,7 +98,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public MainWindowViewModel()
     {
         _envService = new EnvironmentVariableService();
-        IsAdmin = AdminHelper.IsRunningAsAdmin();
+        IsAdmin = AdminHelper.IsAdmin();
         LoadVariables();
     }
 
@@ -140,8 +140,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
             var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isVolatile)
             {
                 IsExpanded = expandedStates.Contains(kvp.Key),
-                IsSystemVariable = isSystemVariable,
-                IsAdmin = IsAdmin
+                IsSystemVariable = isSystemVariable
             };
             
             // Update children with parent's properties
