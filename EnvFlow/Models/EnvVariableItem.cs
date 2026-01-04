@@ -37,7 +37,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         {
             _isEditing = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(DisplayVisibility));
+            OnPropertyChanged(nameof(NameVisibility));
             OnPropertyChanged(nameof(EditVisibility));
             OnPropertyChanged(nameof(ChildEditVisibility));
             OnPropertyChanged(nameof(ValueDisplayVisibility));
@@ -56,8 +56,8 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         }
     }
 
+    public Visibility NameVisibility => IsEditing ? Visibility.Collapsed : Visibility.Visible;
     public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
-    public Visibility DisplayVisibility => IsEditing ? Visibility.Collapsed : Visibility.Visible;
     public Visibility EditVisibility => (IsEditing && !IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ChildEditVisibility => (IsEditing && IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed || IsEntry) 
@@ -172,7 +172,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
     private EnvVariableItem CreateVarEntry(string value)
     {
         // Expand for validation purposes only
-        var expanded = Environment.ExpandEnvironmentVariables(value);
+        string expanded = Environment.ExpandEnvironmentVariables(value);
         bool isPathLike = expanded.Contains('\\') || expanded.Contains('/') || expanded.Contains(':');
         bool isFolder = Directory.Exists(expanded);
         bool isFile = File.Exists(expanded);

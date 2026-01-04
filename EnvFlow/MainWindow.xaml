@@ -458,10 +458,10 @@
                       <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
                         <Grid HorizontalAlignment="Stretch">
                           <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="250"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="250"/> <!-- Name Column -->
+                            <ColumnDefinition Width="Auto"/> <!-- Column Separator -->
+                            <ColumnDefinition Width="*"/> <!-- Value Column -->
+                            <ColumnDefinition Width="Auto"/> <!-- Hover Buttons -->
                           </Grid.ColumnDefinitions>
 
                           <!-- Name Column - spans all columns for composite variables -->
