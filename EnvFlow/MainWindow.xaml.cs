@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using EnvFlow.Dialogs;
 using EnvFlow.Helpers;
+using EnvFlow.Models;
 using EnvFlow.ViewModels;
 
 using Microsoft.UI.Input;
@@ -189,7 +190,7 @@ public sealed partial class MainWindow : Window
 
         // Enter inline edit mode
         _currentlyEditingItem = ViewModel.SelectedUserVariable;
-        ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.IsChild 
+        ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.IsEntry 
             ? ViewModel.SelectedUserVariable.DisplayName 
             : ViewModel.SelectedUserVariable.Value;
         ViewModel.SelectedUserVariable.IsEditing = true;
@@ -221,7 +222,7 @@ public sealed partial class MainWindow : Window
 
         // Enter inline edit mode
         _currentlyEditingItem = ViewModel.SelectedSystemVariable;
-        ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.IsChild 
+        ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.IsEntry 
             ? ViewModel.SelectedSystemVariable.DisplayName 
             : ViewModel.SelectedSystemVariable.Value;
         ViewModel.SelectedSystemVariable.IsEditing = true;
@@ -239,7 +240,7 @@ public sealed partial class MainWindow : Window
         }
 
         // Check if this is a child item
-        if (ViewModel.SelectedUserVariable.IsChild)
+        if (ViewModel.SelectedUserVariable.IsEntry)
         {
             await DeleteChildEntry(ViewModel.SelectedUserVariable, false);
             return;
@@ -280,7 +281,7 @@ public sealed partial class MainWindow : Window
         }
 
         // Check if this is a child item
-        if (ViewModel.SelectedSystemVariable.IsChild)
+        if (ViewModel.SelectedSystemVariable.IsEntry)
         {
             await DeleteChildEntry(ViewModel.SelectedSystemVariable, true);
             return;
@@ -424,7 +425,7 @@ public sealed partial class MainWindow : Window
         }
 
         // Open VariableEditorDialog for editing
-        if (item.IsChild)
+        if (item.IsEntry)
         {
             // For child items, open dialog in path entry mode
             var dialog = new Dialogs.VariableEditorDialog
@@ -558,7 +559,7 @@ public sealed partial class MainWindow : Window
         try
         {
             var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-            dataPackage.SetText(item.IsChild ? item.DisplayName : item.Value);
+            dataPackage.SetText(item.IsEntry ? item.DisplayName : item.Value);
             Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
             
             ViewModel.StatusMessage = "Value copied to clipboard";
@@ -607,7 +608,7 @@ public sealed partial class MainWindow : Window
         }
 
         // Check if this is a child item
-        if (item.IsChild)
+        if (item.IsEntry)
         {
             await DeleteChildEntry(item, isSystemVariable);
             return;
@@ -695,7 +696,7 @@ public sealed partial class MainWindow : Window
 
         // Enter edit mode
         _currentlyEditingItem = item;
-        item.EditValue = item.IsChild ? item.DisplayName : item.Value;
+        item.EditValue = item.IsEntry ? item.DisplayName : item.Value;
         item.IsEditing = true;
     }
 
@@ -757,7 +758,7 @@ public sealed partial class MainWindow : Window
         }
 
         // Check if value changed
-        string originalValue = item.IsChild ? item.DisplayName : item.Value;
+        string originalValue = item.IsEntry ? item.DisplayName : item.Value;
         if (item.EditValue == originalValue)
             return;
 
@@ -765,7 +766,7 @@ public sealed partial class MainWindow : Window
         bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
         EnvVariableItem? parentVariable = null;
         
-        if (item.IsChild)
+        if (item.IsEntry)
         {
             // Find parent variable
             foreach (var userVar in ViewModel.UserVariables)
@@ -798,7 +799,7 @@ public sealed partial class MainWindow : Window
         {
             var service = new Services.EnvironmentVariableService();
             
-            if (item.IsChild && parentVariable != null)
+            if (item.IsEntry && parentVariable != null)
             {
                 // Update the child and reconstruct the parent PATH variable
                 var paths = parentVariable.Children.Select(c => c == item ? item.EditValue : c.DisplayName).ToList();
@@ -970,7 +971,7 @@ public sealed partial class MainWindow : Window
             // Add all read-only variables (volatile, system-defined)
             foreach (var item in ViewModel.UserVariables)
             {
-                if (!item.IsChild && !string.IsNullOrEmpty(item.Value) && item.IsReadOnly)
+                if (!item.IsEntry && !string.IsNullOrEmpty(item.Value) && item.IsReadOnly)
                 {
                     // Get the environment variable from the current process (fully expanded)
                     var varValue = Environment.GetEnvironmentVariable(item.Name);
@@ -983,7 +984,7 @@ public sealed partial class MainWindow : Window
             
             foreach (var item in ViewModel.SystemVariables)
             {
-                if (!item.IsChild && !string.IsNullOrEmpty(item.Value) && item.IsReadOnly)
+                if (!item.IsEntry && !string.IsNullOrEmpty(item.Value) && item.IsReadOnly)
                 {
                     // Get the environment variable from the current process (fully expanded)
                     var varValue = Environment.GetEnvironmentVariable(item.Name);
@@ -1135,7 +1136,7 @@ public sealed partial class MainWindow : Window
             // Add all read-only variables (volatile, system-defined)
             foreach (var userVar in ViewModel.UserVariables)
             {
-                if (!userVar.IsChild && !string.IsNullOrEmpty(userVar.Value) && userVar.IsReadOnly)
+                if (!userVar.IsEntry && !string.IsNullOrEmpty(userVar.Value) && userVar.IsReadOnly)
                 {
                     // Get the environment variable from the current process (fully expanded)
                     var varValue = Environment.GetEnvironmentVariable(userVar.Name);
@@ -1148,7 +1149,7 @@ public sealed partial class MainWindow : Window
             
             foreach (var sysVar in ViewModel.SystemVariables)
             {
-                if (!sysVar.IsChild && !string.IsNullOrEmpty(sysVar.Value) && sysVar.IsReadOnly)
+                if (!sysVar.IsEntry && !string.IsNullOrEmpty(sysVar.Value) && sysVar.IsReadOnly)
                 {
                     // Get the environment variable from the current process (fully expanded)
                     var varValue = Environment.GetEnvironmentVariable(sysVar.Name);
@@ -1262,7 +1263,7 @@ public sealed partial class MainWindow : Window
         if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem childItem)
             return;
 
-        if (!childItem.IsChild)
+        if (!childItem.IsEntry)
             return;
 
         // Find parent variable
@@ -1589,7 +1590,7 @@ public sealed partial class MainWindow : Window
         if (sender is StackPanel stackPanel && stackPanel.DataContext is EnvVariableItem item)
         {
             // All child items (leaf entries) span all columns
-            if (item.IsChild)
+            if (item.IsEntry)
             {
                 // Find the parent Grid and make it span all columns
                 if (stackPanel.Parent is Grid parentGrid)

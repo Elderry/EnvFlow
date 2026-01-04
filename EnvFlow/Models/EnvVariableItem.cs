@@ -3,14 +3,16 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+
 using EnvFlow.Constants;
+
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
-namespace EnvFlow;
+namespace EnvFlow.Models;
 
-public class EnvVariableItem : INotifyPropertyChanged
+public partial class EnvVariableItem : INotifyPropertyChanged
 {
     private bool _isEditing;
     private string _editValue = string.Empty;
@@ -18,17 +20,16 @@ public class EnvVariableItem : INotifyPropertyChanged
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
-    public string Icon { get; set; } = AppIcons.Library;
+    public string Icon { get; set; } = AppIcons.Tag;
     public Brush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
-    public ObservableCollection<EnvVariableItem> Children { get; set; } = new();
-    public bool IsPathEntry { get; set; }
+    public ObservableCollection<EnvVariableItem> Children { get; set; } = [];
+    public bool IsEntry { get; set; }
     public bool IsValid { get; set; } = true;
     public bool IsReadOnly { get; set; } = false; // For volatile environment variables
     public bool IsSystemVariable { get; set; } = false; // Track if this is a system variable
     public bool IsAdmin { get; set; } = false; // Track if user has admin privileges
     public bool IsExpanded { get; set; } = false; // Track expand/collapse state
     public Visibility ValueVisibility { get; set; } = Visibility.Collapsed;
-    public bool IsChild => IsPathEntry; // Path entries are children of the parent variable
 
     public bool IsEditing
     {
@@ -58,32 +59,32 @@ public class EnvVariableItem : INotifyPropertyChanged
     }
 
     public Visibility DisplayVisibility => IsEditing ? Visibility.Collapsed : Visibility.Visible;
-    public Visibility EditVisibility => (IsEditing && !IsChild) ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility ChildEditVisibility => (IsEditing && IsChild) ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed || IsChild) 
+    public Visibility EditVisibility => (IsEditing && !IsEntry) ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ChildEditVisibility => (IsEditing && IsEntry) ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ValueDisplayVisibility => (IsEditing || ValueVisibility == Visibility.Collapsed || IsEntry) 
         ? Visibility.Collapsed 
         : Visibility.Visible;
-    public Visibility DisplayNameVisibility => (IsChild && IsEditing) ? Visibility.Collapsed : Visibility.Visible;
-    public Visibility ColumnSeparatorVisibility => (IsChild || Children.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
-    public Visibility IsChildVisibility => IsChild ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility DisplayNameVisibility => (IsEntry && IsEditing) ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility ColumnSeparatorVisibility => (IsEntry || Children.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility IsChildVisibility => IsEntry ? Visibility.Visible : Visibility.Collapsed;
     
     // Context menu visibility
-    public Visibility CopyNameVisibility => !IsChild ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility CopyNameVisibility => !IsEntry ? Visibility.Visible : Visibility.Collapsed;
     public Visibility CopyValueInNameColumnVisibility => Visibility.Visible;
     
-    public Visibility AddChildButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing) 
+    public Visibility AddChildButtonVisibility => (!IsEntry && Children.Count > 0 && !IsEditing) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility AddChildMenuVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !(IsSystemVariable && !IsAdmin)) 
+    public Visibility AddChildMenuVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !(IsSystemVariable && !IsAdmin)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility SortButtonVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly) 
+    public Visibility SortButtonVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !IsReadOnly) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility SortMenuVisibility => (!IsChild && Children.Count > 0 && !IsEditing && !IsReadOnly && !(IsSystemVariable && !IsAdmin)) 
+    public Visibility SortMenuVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !IsReadOnly && !(IsSystemVariable && !IsAdmin)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
@@ -91,11 +92,11 @@ public class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public Visibility EditButtonVisibility => (!IsChild && Children.Count > 0) || IsReadOnly
+    public Visibility EditButtonVisibility => (!IsEntry && Children.Count > 0) || IsReadOnly
         ? Visibility.Collapsed 
         : Visibility.Visible;
     
-    public Visibility EditMenuVisibility => (!IsChild && Children.Count > 0) || IsReadOnly || (IsSystemVariable && !IsAdmin)
+    public Visibility EditMenuVisibility => (!IsEntry && Children.Count > 0) || IsReadOnly || (IsSystemVariable && !IsAdmin)
         ? Visibility.Collapsed 
         : Visibility.Visible;
     
@@ -103,11 +104,11 @@ public class EnvVariableItem : INotifyPropertyChanged
         ? Visibility.Collapsed
         : Visibility.Visible;
     
-    public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsChild || Children.Count == 0)) 
+    public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsEntry || Children.Count == 0)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
     
-    public bool IsComposite => !IsChild && Children.Count > 0;
+    public bool IsComposite => !IsEntry && Children.Count > 0;
 
     public EnvVariableItem()
     {
@@ -118,7 +119,7 @@ public class EnvVariableItem : INotifyPropertyChanged
         Name = name;
         Value = value;
         DisplayName = name;
-        IsPathEntry = false;
+        IsEntry = false;
         IsReadOnly = isReadOnly;
 
         bool isPathLike = value.Contains('\\') || value.Contains('/') || value.Contains(':');
@@ -184,7 +185,7 @@ public class EnvVariableItem : INotifyPropertyChanged
             Name = value,
             Value = value,
             DisplayName = value,
-            IsPathEntry = true,
+            IsEntry = true,
             IsValid = exists,
             Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,
             IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : isPathLike ? Colors.Crimson : Colors.DeepSkyBlue),

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using EnvFlow.Services;
 using EnvFlow.Helpers;
+using EnvFlow.Models;
 
 namespace EnvFlow.ViewModels;
 
@@ -167,19 +168,19 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     public void EditUserVariable()
     {
-        if (SelectedUserVariable == null || SelectedUserVariable.IsChild) return;
+        if (SelectedUserVariable == null || SelectedUserVariable.IsEntry) return;
         // Will be called from UI
     }
 
     public void EditSystemVariable()
     {
-        if (!IsAdmin || SelectedSystemVariable == null || SelectedSystemVariable.IsChild) return;
+        if (!IsAdmin || SelectedSystemVariable == null || SelectedSystemVariable.IsEntry) return;
         // Will be called from UI
     }
 
     public void DeleteUserVariable()
     {
-        if (SelectedUserVariable == null || SelectedUserVariable.IsChild) return;
+        if (SelectedUserVariable == null || SelectedUserVariable.IsEntry) return;
         
         try
         {
@@ -195,7 +196,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     public void DeleteSystemVariable()
     {
-        if (!IsAdmin || SelectedSystemVariable == null || SelectedSystemVariable.IsChild) return;
+        if (!IsAdmin || SelectedSystemVariable == null || SelectedSystemVariable.IsEntry) return;
         
         try
         {
