@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,7 +13,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 
-using Windows.Graphics;
 using Windows.UI;
 
 namespace EnvFlow;
@@ -34,14 +32,7 @@ public sealed partial class MainWindow : Window
         ViewModel = new MainWindowViewModel();
         Title = "EnvFlow - Environment Variable Editor";
 
-        // Set window size
-        AppWindow appWindow = AppWindow;
-        appWindow.Resize(new SizeInt32(2400, 1600));
-
-        // Set window icon
-        appWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "app.ico"));
-
-        // Customize title bar
+        // Setup title bar
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(CustomTitleBar);
 
