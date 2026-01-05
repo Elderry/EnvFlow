@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Microsoft.Win32;
 
 namespace EnvFlow.Services;
@@ -15,57 +16,38 @@ public class EnvironmentVariableService
 
     public Dictionary<string, string> GetUserVariables(out HashSet<string> volatileVariables)
     {
-        var variables = new Dictionary<string, string>();
+        Dictionary<string, string> variables = [];
         volatileVariables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        
-        try
+
+        // First, read from registry to get unexpanded values
+        using RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Environment");
+        if (key != null)
         {
-            // First, read from registry to get unexpanded values
-            using var key = Registry.CurrentUser.OpenSubKey(@"Environment");
-            if (key != null)
+            foreach (string valueName in key.GetValueNames())
             {
-                foreach (var valueName in key.GetValueNames())
-                {
-                    var value = key.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
-                    if (value != null)
-                    {
-                        variables[valueName] = value.ToString()!;
-                    }
-                }
-            }
-            
-            // Also read volatile environment variables (like APPDATA, TEMP, USERPROFILE)
-            using var volatileKey = Registry.CurrentUser.OpenSubKey(@"Volatile Environment");
-            if (volatileKey != null)
-            {
-                foreach (var valueName in volatileKey.GetValueNames())
-                {
-                    // Only add if not already in registry variables
-                    if (!variables.ContainsKey(valueName))
-                    {
-                        var value = volatileKey.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
-                        if (value != null)
-                        {
-                            variables[valueName] = value.ToString()!;
-                            volatileVariables.Add(valueName); // Mark as volatile
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception)
-        {
-            // Fallback to Environment API if registry access fails
-            foreach (var k in Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User).Keys)
-            {
-                var value = Environment.GetEnvironmentVariable(k.ToString()!, EnvironmentVariableTarget.User);
+                object value = key.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
                 if (value != null)
                 {
-                    variables[k.ToString()!] = value;
+                    variables[valueName] = value.ToString()!;
                 }
             }
         }
-        
+
+        // Also read volatile environment variables (like APPDATA, TEMP, USERPROFILE)
+        using RegistryKey? volatileKey = Registry.CurrentUser.OpenSubKey(@"Volatile Environment");
+        if (volatileKey != null)
+        {
+            foreach (string valueName in volatileKey.GetValueNames())
+            {
+                object value = volatileKey.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
+                if (value != null)
+                {
+                    variables[valueName] = value.ToString()!;
+                    volatileVariables.Add(valueName); // Mark as volatile
+                }
+            }
+        }
+
         return variables;
     }
 
