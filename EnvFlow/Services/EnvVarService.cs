@@ -7,7 +7,7 @@ using Microsoft.Win32;
 
 namespace EnvFlow.Services;
 
-public class EnvironmentVariableService
+public class EnvVarService
 {
     public Dictionary<string, string> GetUserVariables()
     {

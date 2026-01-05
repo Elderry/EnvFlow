@@ -12,18 +12,18 @@ namespace EnvFlow.ViewModels;
 
 public class MainWindowViewModel : INotifyPropertyChanged
 {
-    private readonly EnvironmentVariableService _envService;
+    private readonly EnvVarService _envService;
     private string _statusMessage = "Ready";
     private int _userVariableCount;
     private int _systemVariableCount;
     private bool _isAdmin;
-    private EnvVariableItem? _selectedUserVariable;
-    private EnvVariableItem? _selectedSystemVariable;
+    private EnvVarItem? _selectedUserVariable;
+    private EnvVarItem? _selectedSystemVariable;
 
-    public ObservableCollection<EnvVariableItem> UserVariables { get; } = new();
-    public ObservableCollection<EnvVariableItem> SystemVariables { get; } = new();
+    public ObservableCollection<EnvVarItem> UserVariables { get; } = new();
+    public ObservableCollection<EnvVarItem> SystemVariables { get; } = new();
 
-    public EnvVariableItem? SelectedUserVariable
+    public EnvVarItem? SelectedUserVariable
     {
         get => _selectedUserVariable;
         set
@@ -35,7 +35,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public EnvVariableItem? SelectedSystemVariable
+    public EnvVarItem? SelectedSystemVariable
     {
         get => _selectedSystemVariable;
         set
@@ -97,7 +97,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     public MainWindowViewModel()
     {
-        _envService = new EnvironmentVariableService();
+        _envService = new EnvVarService();
         IsAdmin = AdminHelper.IsAdmin();
         LoadVariables();
     }
@@ -119,7 +119,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         StatusMessage = $"Loaded {UserVariableCount} user and {SystemVariableCount} system variables";
     }
 
-    private void UpdateVariableCollection(ObservableCollection<EnvVariableItem> collection, 
+    private void UpdateVariableCollection(ObservableCollection<EnvVarItem> collection, 
         Dictionary<string, string> newVars, HashSet<string> volatileVars, bool isSystemVariable)
     {
         // Save expanded state before clearing
@@ -137,7 +137,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         foreach (var kvp in sortedVars)
         {
             bool isVolatile = volatileVars.Contains(kvp.Key);
-            var newItem = new EnvVariableItem(kvp.Key, kvp.Value, isVolatile)
+            var newItem = new EnvVarItem(kvp.Key, kvp.Value, isVolatile)
             {
                 IsExpanded = expandedStates.Contains(kvp.Key),
                 IsSystemVariable = isSystemVariable

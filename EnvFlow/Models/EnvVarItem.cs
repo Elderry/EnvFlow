@@ -13,7 +13,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace EnvFlow.Models;
 
-public partial class EnvVariableItem : INotifyPropertyChanged
+public partial class EnvVarItem : INotifyPropertyChanged
 {
     private bool _isEditing;
     private string _editValue = string.Empty;
@@ -23,7 +23,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
 
     public string Icon { get; set; } = AppIcons.Tag;
     public Brush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
-    public ObservableCollection<EnvVariableItem> Children { get; set; } = [];
+    public ObservableCollection<EnvVarItem> Children { get; set; } = [];
     public bool IsEntry { get; set; }
     public bool IsValid { get; set; } = true;
     public bool IsReadOnly { get; set; } = false; // For volatile environment variables
@@ -101,11 +101,11 @@ public partial class EnvVariableItem : INotifyPropertyChanged
     
     public bool IsComposite => Children.Count > 0;
 
-    public EnvVariableItem()
+    public EnvVarItem()
     {
     }
 
-    public EnvVariableItem(string name, string value, bool isReadOnly = false)
+    public EnvVarItem(string name, string value, bool isReadOnly = false)
     {
         Name = name;
         Value = value;
@@ -154,7 +154,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         }
     }
 
-    private EnvVariableItem CreateVarEntry(string value)
+    private EnvVarItem CreateVarEntry(string value)
     {
         // Expand for validation purposes only
         string expanded = Environment.ExpandEnvironmentVariables(value);
@@ -163,7 +163,7 @@ public partial class EnvVariableItem : INotifyPropertyChanged
         bool isFile = File.Exists(expanded);
         bool exists = isFolder || isFile;
 
-        return new EnvVariableItem
+        return new EnvVarItem
         {
             Name = value,
             Value = value,

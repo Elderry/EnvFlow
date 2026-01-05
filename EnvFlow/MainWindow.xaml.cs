@@ -21,7 +21,7 @@ namespace EnvFlow;
 public sealed partial class MainWindow : Window
 {
     public MainWindowViewModel ViewModel { get; }
-    private EnvVariableItem? _currentlyEditingItem;
+    private EnvVarItem? _currentlyEditingItem;
     private bool _isSplitterDragging = false;
     private double _splitterStartX;
     private TreeViewItem? _currentFlyoutTreeItem = null;
@@ -88,7 +88,7 @@ public sealed partial class MainWindow : Window
 
     private void UserEnvTreeView_SelectionChanged(object sender, TreeViewSelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count > 0 && e.AddedItems[0] is EnvVariableItem item)
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is EnvVarItem item)
         {
             ViewModel.SelectedUserVariable = item;
         }
@@ -100,7 +100,7 @@ public sealed partial class MainWindow : Window
 
     private void SystemEnvTreeView_SelectionChanged(object sender, TreeViewSelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count > 0 && e.AddedItems[0] is EnvVariableItem item)
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is EnvVarItem item)
         {
             ViewModel.SelectedSystemVariable = item;
         }
@@ -124,7 +124,7 @@ public sealed partial class MainWindow : Window
             try
             {
                 ViewModel.StatusMessage = $"Adding user variable: {dialog.VariableName}";
-                var service = new Services.EnvironmentVariableService();
+                var service = new Services.EnvVarService();
                 service.SetUserVariable(dialog.VariableName, dialog.VariableValue);
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
@@ -159,7 +159,7 @@ public sealed partial class MainWindow : Window
             try
             {
                 ViewModel.StatusMessage = $"Adding system variable: {dialog.VariableName}";
-                var service = new Services.EnvironmentVariableService();
+                var service = new Services.EnvVarService();
                 service.SetSystemVariable(dialog.VariableName, dialog.VariableValue);
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
@@ -391,7 +391,7 @@ public sealed partial class MainWindow : Window
 
     private async void EditItemButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem item)
+        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem item)
             return;
 
         // Check if the variable is read-only
@@ -434,7 +434,7 @@ public sealed partial class MainWindow : Window
             };
             
             // Find parent variable
-            EnvVariableItem? parentItem = null;
+            EnvVarItem? parentItem = null;
             foreach (var userVar in ViewModel.UserVariables)
             {
                 if (userVar.Children.Contains(item))
@@ -466,7 +466,7 @@ public sealed partial class MainWindow : Window
             {
                 try
                 {
-                    var service = new Services.EnvironmentVariableService();
+                    var service = new Services.EnvVarService();
                     
                     // Update the path in the parent's value
                     var paths = parentItem.Children.Select(c => c == item ? dialog.VariableValue.Trim() : c.Name).ToList();
@@ -508,7 +508,7 @@ public sealed partial class MainWindow : Window
             {
                 try
                 {
-                    var service = new Services.EnvironmentVariableService();
+                    var service = new Services.EnvVarService();
                     
                     ViewModel.StatusMessage = $"Updating {item.Name}";
                     
@@ -532,7 +532,7 @@ public sealed partial class MainWindow : Window
 
     private void CopyName_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem item)
             return;
 
         try
@@ -553,7 +553,7 @@ public sealed partial class MainWindow : Window
 
     private void CopyValue_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem item)
             return;
 
         try
@@ -574,7 +574,7 @@ public sealed partial class MainWindow : Window
 
     private async void DeleteItemButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem item)
+        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem item)
             return;
 
         // Check if the variable is read-only
@@ -645,7 +645,7 @@ public sealed partial class MainWindow : Window
     private async void TreeViewItem_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
     {
         // Get the data context (EnvVariableItem) from the tapped element
-        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem item)
+        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem item)
             return;
 
         // Prevent event from bubbling up
@@ -712,7 +712,7 @@ public sealed partial class MainWindow : Window
 
     private void EditTextBox_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
     {
-        if (sender is not TextBox textBox || textBox.DataContext is not EnvVariableItem item)
+        if (sender is not TextBox textBox || textBox.DataContext is not EnvVarItem item)
             return;
 
         if (e.Key == Windows.System.VirtualKey.Enter)
@@ -738,13 +738,13 @@ public sealed partial class MainWindow : Window
     private void EditTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
         // Save when focus is lost
-        if (sender is TextBox textBox && textBox.DataContext is EnvVariableItem item)
+        if (sender is TextBox textBox && textBox.DataContext is EnvVarItem item)
         {
             SaveInlineEdit(item);
         }
     }
 
-    private void SaveInlineEdit(EnvVariableItem item)
+    private void SaveInlineEdit(EnvVarItem item)
     {
         if (!item.IsEditing) return;
 
@@ -764,7 +764,7 @@ public sealed partial class MainWindow : Window
 
         // Determine if this is a user or system variable (or child of one)
         bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
-        EnvVariableItem? parentVariable = null;
+        EnvVarItem? parentVariable = null;
         
         if (item.IsEntry)
         {
@@ -797,7 +797,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvironmentVariableService();
+            var service = new Services.EnvVarService();
             
             if (item.IsEntry && parentVariable != null)
             {
@@ -833,13 +833,13 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private bool IsInUserTreeView(EnvVariableItem item)
+    private bool IsInUserTreeView(EnvVarItem item)
     {
         // Check if the item exists in the user variables collection
         return ViewModel.UserVariables.Any(v => v == item || v.Children.Contains(item));
     }
 
-    private EnvVariableItem? GetParentVariable(EnvVariableItem childItem, bool isUserVariable)
+    private EnvVarItem? GetParentVariable(EnvVarItem childItem, bool isUserVariable)
     {
         var collection = isUserVariable ? ViewModel.UserVariables : ViewModel.SystemVariables;
         return collection.FirstOrDefault(v => v.Children.Contains(childItem));
@@ -847,7 +847,7 @@ public sealed partial class MainWindow : Window
 
     private async void AddChildButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem parentItem)
+        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem parentItem)
             return;
 
         // Determine if this is a user or system variable
@@ -874,7 +874,7 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                var service = new Services.EnvironmentVariableService();
+                var service = new Services.EnvVarService();
                 
                 // Add the new path to the existing paths
                 var existingPaths = parentItem.Children.Select(c => c.Name).ToList();
@@ -902,7 +902,7 @@ public sealed partial class MainWindow : Window
 
     private async void SortButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem parentItem)
+        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem parentItem)
             return;
 
         // Determine if this is a user or system variable
@@ -918,7 +918,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvironmentVariableService();
+            var service = new Services.EnvVarService();
             
             // Get all paths and sort them
             var paths = parentItem.Children.Select(c => c.Name.Trim()).ToList();
@@ -947,7 +947,7 @@ public sealed partial class MainWindow : Window
 
     private async void ShrinkButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem parentItem)
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem parentItem)
             return;
 
         // Determine if this is a user or system variable
@@ -963,7 +963,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvironmentVariableService();
+            var service = new Services.EnvVarService();
             
             // Get all environment variables for substitution
             var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1061,7 +1061,7 @@ public sealed partial class MainWindow : Window
 
     private async void ExpandButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem parentItem)
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem parentItem)
             return;
 
         // Determine if this is a user or system variable
@@ -1077,7 +1077,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvironmentVariableService();
+            var service = new Services.EnvVarService();
             
             // Expand all paths
             var expandedPaths = new List<string>();
@@ -1112,7 +1112,7 @@ public sealed partial class MainWindow : Window
 
     private async void ShrinkValueButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem item)
             return;
 
         // Determine if this is a user or system variable
@@ -1128,7 +1128,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvironmentVariableService();
+            var service = new Services.EnvVarService();
             
             // Get all environment variables for substitution
             var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1219,7 +1219,7 @@ public sealed partial class MainWindow : Window
 
     private async void ExpandValueButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVariableItem item)
+        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem item)
             return;
 
         // Determine if this is a user or system variable
@@ -1235,7 +1235,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvironmentVariableService();
+            var service = new Services.EnvVarService();
             
             // Expand the value
             var expandedValue = Environment.ExpandEnvironmentVariables(item.Value);
@@ -1260,14 +1260,14 @@ public sealed partial class MainWindow : Window
 
     private async void DeleteChildButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVariableItem childItem)
+        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem childItem)
             return;
 
         if (!childItem.IsEntry)
             return;
 
         // Find parent variable
-        EnvVariableItem? parentVariable = null;
+        EnvVarItem? parentVariable = null;
         bool isSystemVariable = false;
 
         foreach (var userVar in ViewModel.UserVariables)
@@ -1319,7 +1319,7 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                var service = new Services.EnvironmentVariableService();
+                var service = new Services.EnvVarService();
 
                 // Remove the child and reconstruct the parent PATH variable
                 var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
@@ -1344,10 +1344,10 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async Task DeleteChildEntry(EnvVariableItem childItem, bool isSystemVariable)
+    private async Task DeleteChildEntry(EnvVarItem childItem, bool isSystemVariable)
     {
         // Find parent variable
-        EnvVariableItem? parentVariable = null;
+        EnvVarItem? parentVariable = null;
 
         foreach (var userVar in ViewModel.UserVariables)
         {
@@ -1396,7 +1396,7 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                var service = new Services.EnvironmentVariableService();
+                var service = new Services.EnvVarService();
 
                 // Remove the child and reconstruct the parent PATH variable
                 var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
@@ -1587,7 +1587,7 @@ public sealed partial class MainWindow : Window
 
     private void NameColumn_Loaded(object sender, RoutedEventArgs e)
     {
-        if (sender is StackPanel stackPanel && stackPanel.DataContext is EnvVariableItem item)
+        if (sender is StackPanel stackPanel && stackPanel.DataContext is EnvVarItem item)
         {
             // All child items (leaf entries) span all columns
             if (item.IsEntry)
@@ -1629,7 +1629,7 @@ public sealed partial class MainWindow : Window
             return;
 
         // Check if this is a system variable and disable if not admin
-        if (button.DataContext is EnvVariableItem item && item.IsSystemVariable && !ViewModel.IsAdmin)
+        if (button.DataContext is EnvVarItem item && item.IsSystemVariable && !ViewModel.IsAdmin)
         {
             button.IsEnabled = false;
         }
