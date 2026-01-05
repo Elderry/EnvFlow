@@ -105,7 +105,7 @@ public partial class EnvVarItem : INotifyPropertyChanged
     {
     }
 
-    public EnvVarItem(string name, string value, bool isReadOnly = false)
+    public EnvVarItem(string name, string value, bool isReadOnly = false, bool isSystemVariable = false)
     {
         Name = name;
         Value = value;
@@ -180,6 +180,7 @@ public partial class EnvVarItem : INotifyPropertyChanged
         foreach (var child in Children)
         {
             child.IsSystemVariable = IsSystemVariable;
+            child.IsReadOnly = IsReadOnly;
         }
     }
 

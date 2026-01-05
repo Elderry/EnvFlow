@@ -3,63 +3,30 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using EnvFlow.Models;
+
 using Microsoft.Win32;
 
 namespace EnvFlow.Services;
 
 public class EnvVarService
 {
-    public Dictionary<string, string> GetUserVariables()
+    public List<EnvVarItem> GetUserVariables()
     {
-        return GetUserVariables(out _);
+        List<EnvVarItem> items = new List<EnvVarItem>();
+
+        // Read from registry to get unexpanded values
+        ReadRegistryVariables(Registry.CurrentUser, @"Environment", items, isSystemVariable: false, isReadOnly: false);
+        
+        // Read volatile environment variables (like APPDATA, TEMP, USERPROFILE)
+        ReadRegistryVariables(Registry.CurrentUser, @"Volatile Environment", items, isSystemVariable: false, isReadOnly: true);
+
+        return items;
     }
 
-    public Dictionary<string, string> GetUserVariables(out HashSet<string> volatileVariables)
+    public List<EnvVarItem> GetSystemVariables()
     {
-        Dictionary<string, string> variables = [];
-        volatileVariables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        // First, read from registry to get unexpanded values
-        using RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Environment");
-        if (key != null)
-        {
-            foreach (string valueName in key.GetValueNames())
-            {
-                object value = key.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
-                if (value != null)
-                {
-                    variables[valueName] = value.ToString()!;
-                }
-            }
-        }
-
-        // Also read volatile environment variables (like APPDATA, TEMP, USERPROFILE)
-        using RegistryKey? volatileKey = Registry.CurrentUser.OpenSubKey(@"Volatile Environment");
-        if (volatileKey != null)
-        {
-            foreach (string valueName in volatileKey.GetValueNames())
-            {
-                object value = volatileKey.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
-                if (value != null)
-                {
-                    variables[valueName] = value.ToString()!;
-                    volatileVariables.Add(valueName); // Mark as volatile
-                }
-            }
-        }
-
-        return variables;
-    }
-
-    public Dictionary<string, string> GetSystemVariables()
-    {
-        return GetSystemVariables(out _);
-    }
-
-    public Dictionary<string, string> GetSystemVariables(out HashSet<string> volatileVariables)
-    {
-        var variables = new Dictionary<string, string>();
-        volatileVariables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var items = new List<EnvVarItem>();
         
         try
         {
@@ -72,7 +39,9 @@ public class EnvVarService
                     var value = key.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
                     if (value != null)
                     {
-                        variables[valueName] = value.ToString()!;
+                        var item = new EnvVarItem(valueName, value.ToString()!, isReadOnly: false);
+                        item.IsSystemVariable = true;
+                        items.Add(item);
                     }
                 }
             }
@@ -81,13 +50,14 @@ public class EnvVarService
             // These include ProgramFiles, SystemRoot, etc. that Windows computes at runtime
             var processVars = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
             var machineVars = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
+            var existingNames = new HashSet<string>(items.Select(i => i.Name), StringComparer.OrdinalIgnoreCase);
             
             foreach (var key2 in processVars.Keys)
             {
                 var keyName = key2.ToString()!;
                 
                 // If it's in process but not in Machine registry, it's a dynamic system variable
-                if (!machineVars.Contains(keyName) && !variables.ContainsKey(keyName))
+                if (!machineVars.Contains(keyName) && !existingNames.Contains(keyName))
                 {
                     var value = processVars[keyName]?.ToString();
                     if (value != null)
@@ -95,8 +65,9 @@ public class EnvVarService
                         // Filter to only system-level dynamic variables (not user or process specific)
                         if (IsDynamicSystemVariable(keyName))
                         {
-                            variables[keyName] = value;
-                            volatileVariables.Add(keyName); // Mark as volatile/dynamic
+                            var item = new EnvVarItem(keyName, value, isReadOnly: true);
+                            item.IsSystemVariable = true;
+                            items.Add(item);
                         }
                     }
                 }
@@ -107,7 +78,25 @@ public class EnvVarService
             // May require admin privileges
         }
         
-        return variables;
+        return items;
+    }
+
+    private void ReadRegistryVariables(RegistryKey rootKey, string subKeyPath, List<EnvVarItem> items, bool isSystemVariable, bool isReadOnly)
+    {
+        using RegistryKey? key = rootKey.OpenSubKey(subKeyPath);
+        if (key != null)
+        {
+            foreach (string valueName in key.GetValueNames())
+            {
+                object value = key.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
+                if (value != null)
+                {
+                    var item = new EnvVarItem(valueName, value.ToString()!, isReadOnly);
+                    item.IsSystemVariable = isSystemVariable;
+                    items.Add(item);
+                }
+            }
+        }
     }
 
     private bool IsDynamicSystemVariable(string varName)

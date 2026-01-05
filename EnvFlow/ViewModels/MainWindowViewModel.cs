@@ -107,20 +107,19 @@ public class MainWindowViewModel : INotifyPropertyChanged
         StatusMessage = "Loading environment variables...";
 
         // Load user variables - update in place to avoid blink
-        var userVars = _envService.GetUserVariables(out var volatileVariables);
-        UpdateVariableCollection(UserVariables, userVars, volatileVariables, isSystemVariable: false);
+        var userVars = _envService.GetUserVariables();
+        UpdateVariableCollection(UserVariables, userVars);
         UserVariableCount = userVars.Count;
 
         // Load system variables - update in place to avoid blink
-        var systemVars = _envService.GetSystemVariables(out var systemVolatileVariables);
-        UpdateVariableCollection(SystemVariables, systemVars, systemVolatileVariables, isSystemVariable: true);
+        var systemVars = _envService.GetSystemVariables();
+        UpdateVariableCollection(SystemVariables, systemVars);
         SystemVariableCount = systemVars.Count;
 
         StatusMessage = $"Loaded {UserVariableCount} user and {SystemVariableCount} system variables";
     }
 
-    private void UpdateVariableCollection(ObservableCollection<EnvVarItem> collection, 
-        Dictionary<string, string> newVars, HashSet<string> volatileVars, bool isSystemVariable)
+    private void UpdateVariableCollection(ObservableCollection<EnvVarItem> collection, List<EnvVarItem> newItems)
     {
         // Save expanded state before clearing
         var expandedStates = collection
@@ -132,21 +131,17 @@ public class MainWindowViewModel : INotifyPropertyChanged
         collection.Clear();
 
         // Add all variables in sorted order
-        var sortedVars = newVars.OrderBy(v => v.Key);
+        var sortedItems = newItems.OrderBy(v => v.Name);
         
-        foreach (var kvp in sortedVars)
+        foreach (var item in sortedItems)
         {
-            bool isVolatile = volatileVars.Contains(kvp.Key);
-            var newItem = new EnvVarItem(kvp.Key, kvp.Value, isVolatile)
-            {
-                IsExpanded = expandedStates.Contains(kvp.Key),
-                IsSystemVariable = isSystemVariable
-            };
+            // Restore expanded state
+            item.IsExpanded = expandedStates.Contains(item.Name);
             
             // Update children with parent's properties
-            newItem.UpdateChildrenProperties();
+            item.UpdateChildrenProperties();
             
-            collection.Add(newItem);
+            collection.Add(item);
         }
     }
 
