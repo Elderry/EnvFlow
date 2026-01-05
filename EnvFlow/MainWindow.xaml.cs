@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EnvFlow.Dialogs;
 using EnvFlow.Helpers;
 using EnvFlow.Models;
+using EnvFlow.Services;
 using EnvFlow.ViewModels;
 
 using Microsoft.UI.Input;
@@ -21,16 +22,18 @@ namespace EnvFlow;
 public sealed partial class MainWindow : Window
 {
     public MainWindowViewModel ViewModel { get; }
+    private readonly EnvVarService _envService;
     private EnvVarItem? _currentlyEditingItem;
     private bool _isSplitterDragging = false;
     private double _splitterStartX;
     private TreeViewItem? _currentFlyoutTreeItem = null;
     private double _nameColumnWidth = 250;
 
-    public MainWindow()
+    public MainWindow(MainWindowViewModel viewModel, EnvVarService envService)
     {
         InitializeComponent();
-        ViewModel = new MainWindowViewModel();
+        ViewModel = viewModel;
+        _envService = envService;
         Title = "EnvFlow - Environment Variable Editor";
 
         // Setup title bar
@@ -124,8 +127,8 @@ public sealed partial class MainWindow : Window
             try
             {
                 ViewModel.StatusMessage = $"Adding user variable: {dialog.VariableName}";
-                var service = new Services.EnvVarService();
-                service.SetUserVariable(dialog.VariableName, dialog.VariableValue);
+                
+                _envService.SetUserVariable(dialog.VariableName, dialog.VariableValue);
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
                 ViewModel.StatusMessage = $"Added user variable: {dialog.VariableName}";
@@ -159,8 +162,8 @@ public sealed partial class MainWindow : Window
             try
             {
                 ViewModel.StatusMessage = $"Adding system variable: {dialog.VariableName}";
-                var service = new Services.EnvVarService();
-                service.SetSystemVariable(dialog.VariableName, dialog.VariableValue);
+                
+                _envService.SetSystemVariable(dialog.VariableName, dialog.VariableValue);
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
                 ViewModel.StatusMessage = $"Added system variable: {dialog.VariableName}";
@@ -466,7 +469,7 @@ public sealed partial class MainWindow : Window
             {
                 try
                 {
-                    var service = new Services.EnvVarService();
+                    
                     
                     // Update the path in the parent's value
                     var paths = parentItem.Children.Select(c => c == item ? dialog.VariableValue.Trim() : c.Name).ToList();
@@ -475,9 +478,9 @@ public sealed partial class MainWindow : Window
                     ViewModel.StatusMessage = $"Updating path entry in {parentItem.Name}";
                     
                     if (isSystemVariable)
-                        service.SetSystemVariable(parentItem.Name, newValue);
+                        _envService.SetSystemVariable(parentItem.Name, newValue);
                     else
-                        service.SetUserVariable(parentItem.Name, newValue);
+                        _envService.SetUserVariable(parentItem.Name, newValue);
                     
                     ViewModel.RefreshVariables();
                     UpdateStatusBar();
@@ -508,14 +511,14 @@ public sealed partial class MainWindow : Window
             {
                 try
                 {
-                    var service = new Services.EnvVarService();
+                    
                     
                     ViewModel.StatusMessage = $"Updating {item.Name}";
                     
                     if (isSystemVariable)
-                        service.SetSystemVariable(item.Name, dialog.VariableValue);
+                        _envService.SetSystemVariable(item.Name, dialog.VariableValue);
                     else
-                        service.SetUserVariable(item.Name, dialog.VariableValue);
+                        _envService.SetUserVariable(item.Name, dialog.VariableValue);
                     
                     ViewModel.RefreshVariables();
                     UpdateStatusBar();
@@ -797,7 +800,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvVarService();
+            
             
             if (item.IsEntry && parentVariable != null)
             {
@@ -808,18 +811,18 @@ public sealed partial class MainWindow : Window
                 ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} path entry in {parentVariable.Name}";
                 
                 if (isSystemVariable)
-                    service.SetSystemVariable(parentVariable.Name, newValue);
+                    _envService.SetSystemVariable(parentVariable.Name, newValue);
                 else
-                    service.SetUserVariable(parentVariable.Name, newValue);
+                    _envService.SetUserVariable(parentVariable.Name, newValue);
             }
             else
             {
                 ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} variable: {item.Name}";
                 
                 if (isSystemVariable)
-                    service.SetSystemVariable(item.Name, item.EditValue);
+                    _envService.SetSystemVariable(item.Name, item.EditValue);
                 else
-                    service.SetUserVariable(item.Name, item.EditValue);
+                    _envService.SetUserVariable(item.Name, item.EditValue);
             }
 
             ViewModel.RefreshVariables();
@@ -874,7 +877,7 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                var service = new Services.EnvVarService();
+                
                 
                 // Add the new path to the existing paths
                 var existingPaths = parentItem.Children.Select(c => c.Name).ToList();
@@ -884,9 +887,9 @@ public sealed partial class MainWindow : Window
                 ViewModel.StatusMessage = $"Adding path entry to {parentItem.Name}";
                 
                 if (isSystemVariable)
-                    service.SetSystemVariable(parentItem.Name, newValue);
+                    _envService.SetSystemVariable(parentItem.Name, newValue);
                 else
-                    service.SetUserVariable(parentItem.Name, newValue);
+                    _envService.SetUserVariable(parentItem.Name, newValue);
                 
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
@@ -918,7 +921,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvVarService();
+            
             
             // Get all paths and sort them
             var paths = parentItem.Children.Select(c => c.Name.Trim()).ToList();
@@ -930,9 +933,9 @@ public sealed partial class MainWindow : Window
             ViewModel.StatusMessage = $"Sorting {parentItem.Name}";
             
             if (isSystemVariable)
-                service.SetSystemVariable(parentItem.Name, newValue);
+                _envService.SetSystemVariable(parentItem.Name, newValue);
             else
-                service.SetUserVariable(parentItem.Name, newValue);
+                _envService.SetUserVariable(parentItem.Name, newValue);
             
             ViewModel.RefreshVariables();
             UpdateStatusBar();
@@ -963,7 +966,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvVarService();
+            
             
             // Get all environment variables for substitution
             var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1044,9 +1047,9 @@ public sealed partial class MainWindow : Window
             ViewModel.StatusMessage = $"Shrinking {parentItem.Name}";
             
             if (isSystemVariable)
-                service.SetSystemVariable(parentItem.Name, newValue);
+                _envService.SetSystemVariable(parentItem.Name, newValue);
             else
-                service.SetUserVariable(parentItem.Name, newValue);
+                _envService.SetUserVariable(parentItem.Name, newValue);
             
             ViewModel.RefreshVariables();
             UpdateStatusBar();
@@ -1077,7 +1080,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvVarService();
+            
             
             // Expand all paths
             var expandedPaths = new List<string>();
@@ -1095,9 +1098,9 @@ public sealed partial class MainWindow : Window
             ViewModel.StatusMessage = $"Expanding {parentItem.Name}";
             
             if (isSystemVariable)
-                service.SetSystemVariable(parentItem.Name, newValue);
+                _envService.SetSystemVariable(parentItem.Name, newValue);
             else
-                service.SetUserVariable(parentItem.Name, newValue);
+                _envService.SetUserVariable(parentItem.Name, newValue);
             
             ViewModel.RefreshVariables();
             UpdateStatusBar();
@@ -1128,7 +1131,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvVarService();
+            
             
             // Get all environment variables for substitution
             var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -1202,9 +1205,9 @@ public sealed partial class MainWindow : Window
             ViewModel.StatusMessage = $"Shrinking {item.Name}";
             
             if (isSystemVariable)
-                service.SetSystemVariable(item.Name, shrunkValue);
+                _envService.SetSystemVariable(item.Name, shrunkValue);
             else
-                service.SetUserVariable(item.Name, shrunkValue);
+                _envService.SetUserVariable(item.Name, shrunkValue);
             
             ViewModel.RefreshVariables();
             UpdateStatusBar();
@@ -1235,7 +1238,7 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            var service = new Services.EnvVarService();
+            
             
             // Expand the value
             var expandedValue = Environment.ExpandEnvironmentVariables(item.Value);
@@ -1243,9 +1246,9 @@ public sealed partial class MainWindow : Window
             ViewModel.StatusMessage = $"Expanding {item.Name}";
             
             if (isSystemVariable)
-                service.SetSystemVariable(item.Name, expandedValue);
+                _envService.SetSystemVariable(item.Name, expandedValue);
             else
-                service.SetUserVariable(item.Name, expandedValue);
+                _envService.SetUserVariable(item.Name, expandedValue);
             
             ViewModel.RefreshVariables();
             UpdateStatusBar();
@@ -1319,7 +1322,7 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                var service = new Services.EnvVarService();
+                
 
                 // Remove the child and reconstruct the parent PATH variable
                 var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
@@ -1328,9 +1331,9 @@ public sealed partial class MainWindow : Window
                 ViewModel.StatusMessage = $"Removing path entry from {parentVariable.Name}";
 
                 if (isSystemVariable)
-                    service.SetSystemVariable(parentVariable.Name, newValue);
+                    _envService.SetSystemVariable(parentVariable.Name, newValue);
                 else
-                    service.SetUserVariable(parentVariable.Name, newValue);
+                    _envService.SetUserVariable(parentVariable.Name, newValue);
 
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
@@ -1396,7 +1399,7 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                var service = new Services.EnvVarService();
+                
 
                 // Remove the child and reconstruct the parent PATH variable
                 var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
@@ -1405,9 +1408,9 @@ public sealed partial class MainWindow : Window
                 ViewModel.StatusMessage = $"Removing path entry from {parentVariable.Name}";
 
                 if (isSystemVariable)
-                    service.SetSystemVariable(parentVariable.Name, newValue);
+                    _envService.SetSystemVariable(parentVariable.Name, newValue);
                 else
-                    service.SetUserVariable(parentVariable.Name, newValue);
+                    _envService.SetUserVariable(parentVariable.Name, newValue);
 
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();

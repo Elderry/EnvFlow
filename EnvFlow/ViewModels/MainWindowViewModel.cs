@@ -95,9 +95,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     public string AdminStatusText => IsAdmin ? "Administrator" : "Standard User";
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(EnvVarService envService)
     {
-        _envService = new EnvVarService();
+        _envService = envService;
         IsAdmin = AdminHelper.IsAdmin();
         LoadVariables();
     }
