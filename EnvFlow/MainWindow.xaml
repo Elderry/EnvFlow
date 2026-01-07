@@ -174,7 +174,7 @@
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandButton_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -249,7 +249,7 @@
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandButton_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -307,7 +307,7 @@
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandButton_Click">
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -328,7 +328,7 @@
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -505,7 +505,7 @@
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandButton_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -580,7 +580,7 @@
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandButton_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -645,7 +645,7 @@
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandButton_Click">
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -667,7 +667,7 @@
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandValueButton_Click">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>

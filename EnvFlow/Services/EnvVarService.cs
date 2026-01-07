@@ -62,15 +62,34 @@ public class EnvVarService
         return map;
     }
 
-    public static IReadOnlyList<string> ShrinkEntries(IEnumerable<string> entries, IReadOnlyDictionary<string, string> variables)
+    public static List<string> ShrinkEntries(IEnumerable<string> entries, Dictionary<string, string> variables)
     {
-        var result = new List<string>();
-        foreach (var entry in entries)
-            result.Add(ShrinkValue(entry, variables, excludeVariableName: null));
+        List<string> result = [];
+        foreach (string entry in entries)
+        {
+            result.Add(ShrinkValue(entry, variables));
+        }
+
         return result;
     }
 
-    public static string ShrinkValue(string value, IReadOnlyDictionary<string, string> variables, string? excludeVariableName)
+    public static List<string> ExpandEntries(IEnumerable<string> entries)
+    {
+        List<string> result = [];
+        foreach (string entry in entries)
+        {
+            result.Add(ExpandValue(entry));
+        }
+
+        return result;
+    }
+
+    public static string ExpandValue(string value)
+    {
+        return string.IsNullOrEmpty(value) ? value : Environment.ExpandEnvironmentVariables(value);
+    }
+
+    public static string ShrinkValue(string value, Dictionary<string, string> variableSource)
     {
         if (string.IsNullOrEmpty(value))
         {
@@ -82,27 +101,28 @@ public class EnvVarService
         string? bestMatch = null;
         int longestMatchLength = 0;
 
-        foreach (KeyValuePair<string, string> pair in variables)
+        foreach (KeyValuePair<string, string> pair in variableSource)
         {
-            if (!string.IsNullOrEmpty(excludeVariableName) && pair.Key.Equals(excludeVariableName, StringComparison.OrdinalIgnoreCase))
+            string sourceValue = pair.Value.TrimEnd('\\');
+            if (sourceValue.Length == 0)
+            {
                 continue;
+            }
 
-            var varValue = pair.Value.TrimEnd('\\');
-            if (varValue.Length == 0)
-                continue;
-
-            if (expandedValue.StartsWith(varValue, StringComparison.OrdinalIgnoreCase) && varValue.Length > longestMatchLength)
+            if (expandedValue.StartsWith(sourceValue, StringComparison.OrdinalIgnoreCase) && sourceValue.Length > longestMatchLength)
             {
                 bestMatch = pair.Key;
-                longestMatchLength = varValue.Length;
+                longestMatchLength = sourceValue.Length;
             }
         }
 
         if (bestMatch == null)
+        {
             return value;
+        }
 
-        var matchedValue = variables[bestMatch].TrimEnd('\\');
-        var remainder = expandedValue.Substring(matchedValue.Length).TrimStart('\\');
+        string matchedValue = variableSource[bestMatch].TrimEnd('\\');
+        string remainder = expandedValue[matchedValue.Length..].TrimStart('\\');
         return string.IsNullOrEmpty(remainder)
             ? $"%{bestMatch}%"
             : $"%{bestMatch}%\\{remainder}";

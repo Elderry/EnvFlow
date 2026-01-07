@@ -4,13 +4,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using EnvFlow.Services;
+
 using EnvFlow.Helpers;
 using EnvFlow.Models;
+using EnvFlow.Services;
 
 namespace EnvFlow.ViewModels;
 
-public class MainWindowViewModel : INotifyPropertyChanged
+public partial class MainWindowViewModel : INotifyPropertyChanged
 {
     private readonly EnvVarService _envService;
     private string _statusMessage = "Ready";
@@ -222,7 +223,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         }
         else
         {
-            shrunkValue = EnvVarService.ShrinkValue(item.Value, shrinkVars, excludeVariableName: item.Name);
+            shrunkValue = EnvVarService.ShrinkValue(item.Value, shrinkVars);
         }
 
         _envService.SetVariable(
@@ -232,6 +233,37 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
         RefreshVariables();
         StatusMessage = $"Shrunk value in {item.Name}";
+    }
+
+    public void Expand(EnvVarItem item)
+    {
+        if (item.IsSystemVariable && !IsAdmin)
+        {
+            StatusMessage = "Administrator privileges required to modify system variables";
+            return;
+        }
+
+        string expandedValue;
+        if (item.IsComposite)
+        {
+            IEnumerable<string> entries = item.Children.Select(c => c.Name);
+            IReadOnlyList<string> expandedEntries = EnvVarService.ExpandEntries(entries);
+            expandedValue = string.Join(";", expandedEntries);
+        }
+        else
+        {
+            expandedValue = EnvVarService.ExpandValue(item.Value);
+        }
+
+        _envService.SetVariable(
+            item.IsSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+            item.Name,
+            expandedValue);
+
+        RefreshVariables();
+        StatusMessage = item.IsComposite
+            ? $"Expanded paths in {item.Name}"
+            : $"Expanded value in {item.Name}";
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

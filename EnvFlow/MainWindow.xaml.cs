@@ -955,96 +955,11 @@ public sealed partial class MainWindow : Window
         UpdateStatusBar();
     }
 
-    private async void ExpandButton_Click(object sender, RoutedEventArgs e)
+    private void ExpandMenuItem_Click(object sender, RoutedEventArgs _)
     {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem parentItem)
-            return;
-
-        // Determine if this is a user or system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(parentItem);
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
-            UpdateStatusBar();
-            return;
-        }
-
-        try
-        {
-
-
-            // Expand all paths
-            var expandedPaths = new List<string>();
-
-            foreach (var child in parentItem.Children)
-            {
-                var path = child.Name;
-                var expandedPath = Environment.ExpandEnvironmentVariables(path);
-                expandedPaths.Add(expandedPath);
-            }
-
-            // Save the expanded value
-            string newValue = string.Join(";", expandedPaths);
-
-            ViewModel.StatusMessage = $"Expanding {parentItem.Name}";
-
-            if (isSystemVariable)
-                _envService.SetVariable(EnvironmentVariableTarget.Machine, parentItem.Name, newValue);
-            else
-                _envService.SetVariable(EnvironmentVariableTarget.User, parentItem.Name, newValue);
-
-            ViewModel.RefreshVariables();
-            UpdateStatusBar();
-            ViewModel.StatusMessage = $"Expanded paths in {parentItem.Name}";
-        }
-        catch (Exception ex)
-        {
-            ViewModel.StatusMessage = $"Error expanding: {ex.Message}";
-            UpdateStatusBar();
-        }
-    }
-
-    private async void ExpandValueButton_Click(object sender, RoutedEventArgs e)
-    {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem item)
-            return;
-
-        // Determine if this is a user or system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
-            UpdateStatusBar();
-            return;
-        }
-
-        try
-        {
-
-
-            // Expand the value
-            var expandedValue = Environment.ExpandEnvironmentVariables(item.Value);
-
-            ViewModel.StatusMessage = $"Expanding {item.Name}";
-
-            if (isSystemVariable)
-                _envService.SetVariable(EnvironmentVariableTarget.Machine, item.Name, expandedValue);
-            else
-                _envService.SetVariable(EnvironmentVariableTarget.User, item.Name, expandedValue);
-
-            ViewModel.RefreshVariables();
-            UpdateStatusBar();
-            ViewModel.StatusMessage = $"Expanded value in {item.Name}";
-        }
-        catch (Exception ex)
-        {
-            ViewModel.StatusMessage = $"Error expanding: {ex.Message}";
-            UpdateStatusBar();
-        }
+        EnvVarItem item = ((sender as MenuFlyoutItem)?.DataContext as EnvVarItem)!;
+        ViewModel.Expand(item);
+        UpdateStatusBar();
     }
 
     private async void DeleteChildButton_Click(object sender, RoutedEventArgs e)
