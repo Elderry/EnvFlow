@@ -109,17 +109,17 @@ public class MainWindowViewModel : INotifyPropertyChanged
         // Load user variables - update in place to avoid blink
         var userVars = _envService.GetUserVariables();
         UpdateVariableCollection(UserVariables, userVars);
-        UserVariableCount = userVars.Count;
+        UserVariableCount = userVars.Count();
 
         // Load system variables - update in place to avoid blink
         var systemVars = _envService.GetSystemVariables();
         UpdateVariableCollection(SystemVariables, systemVars);
-        SystemVariableCount = systemVars.Count;
+        SystemVariableCount = systemVars.Count();
 
         StatusMessage = $"Loaded {UserVariableCount} user and {SystemVariableCount} system variables";
     }
 
-    private void UpdateVariableCollection(ObservableCollection<EnvVarItem> collection, List<EnvVarItem> newItems)
+    private void UpdateVariableCollection(ObservableCollection<EnvVarItem> collection, IEnumerable<EnvVarItem> newItems)
     {
         // Save expanded state before clearing
         var expandedStates = collection
