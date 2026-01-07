@@ -11,11 +11,22 @@ namespace EnvFlow.Services;
 
 public class EnvVarService
 {
-    public IEnumerable<EnvVarItem> GetUserVariables() =>
-        ReadRegistryVariables(Registry.CurrentUser, @"Environment", isSystemVariable: false, isReadOnly: false)
-            .Concat(ReadRegistryVariables(Registry.CurrentUser, @"Volatile Environment", isSystemVariable: false, isReadOnly: true));
+    private List<EnvVarItem>? _cachedUserVariables;
 
-    public IEnumerable<EnvVarItem> GetSystemVariables()
+    public List<EnvVarItem> GetUserVariables()
+    {
+        if (_cachedUserVariables != null)
+            return _cachedUserVariables;
+
+        var items = ReadRegistryVariables(Registry.CurrentUser, @"Environment", isSystemVariable: false, isReadOnly: false)
+            .Concat(ReadRegistryVariables(Registry.CurrentUser, @"Volatile Environment", isSystemVariable: false, isReadOnly: true))
+            .ToList();
+
+        _cachedUserVariables = items;
+        return items;
+    }
+
+    public List<EnvVarItem> GetSystemVariables()
     {
         // Read from registry to get unexpanded values (editable variables)
         var items = ReadRegistryVariables(Registry.LocalMachine, @"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", isSystemVariable: true, isReadOnly: false);
@@ -24,7 +35,7 @@ public class EnvVarService
         // These include ProgramFiles, SystemRoot, etc. that Windows computes at runtime
         var dynamicVars = GetDynamicSystemVariables(items);
         
-        return items.Concat(dynamicVars);
+        return items.Concat(dynamicVars).ToList();
     }
 
     private IEnumerable<EnvVarItem> GetDynamicSystemVariables(IEnumerable<EnvVarItem> existingItems)
