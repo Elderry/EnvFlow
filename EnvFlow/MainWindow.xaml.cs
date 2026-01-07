@@ -127,8 +127,8 @@ public sealed partial class MainWindow : Window
             try
             {
                 ViewModel.StatusMessage = $"Adding user variable: {dialog.VariableName}";
-                
-                _envService.SetUserVariable(dialog.VariableName, dialog.VariableValue);
+
+                _envService.SetVariable(EnvironmentVariableTarget.User, dialog.VariableName, dialog.VariableValue);
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
                 ViewModel.StatusMessage = $"Added user variable: {dialog.VariableName}";
@@ -162,8 +162,8 @@ public sealed partial class MainWindow : Window
             try
             {
                 ViewModel.StatusMessage = $"Adding system variable: {dialog.VariableName}";
-                
-                _envService.SetSystemVariable(dialog.VariableName, dialog.VariableValue);
+
+                _envService.SetVariable(EnvironmentVariableTarget.Machine, dialog.VariableName, dialog.VariableValue);
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
                 ViewModel.StatusMessage = $"Added system variable: {dialog.VariableName}";
@@ -193,8 +193,8 @@ public sealed partial class MainWindow : Window
 
         // Enter inline edit mode
         _currentlyEditingItem = ViewModel.SelectedUserVariable;
-        ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.IsEntry 
-            ? ViewModel.SelectedUserVariable.Name 
+        ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.IsEntry
+            ? ViewModel.SelectedUserVariable.Name
             : ViewModel.SelectedUserVariable.Value;
         ViewModel.SelectedUserVariable.IsEditing = true;
         ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
@@ -225,8 +225,8 @@ public sealed partial class MainWindow : Window
 
         // Enter inline edit mode
         _currentlyEditingItem = ViewModel.SelectedSystemVariable;
-        ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.IsEntry 
-            ? ViewModel.SelectedSystemVariable.Name 
+        ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.IsEntry
+            ? ViewModel.SelectedSystemVariable.Name
             : ViewModel.SelectedSystemVariable.Value;
         ViewModel.SelectedSystemVariable.IsEditing = true;
         ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
@@ -347,7 +347,7 @@ public sealed partial class MainWindow : Window
             {
                 parent = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(parent);
             }
-            
+
             if (parent is TreeViewItem treeViewItem)
             {
                 _currentFlyoutTreeItem = treeViewItem;
@@ -435,7 +435,7 @@ public sealed partial class MainWindow : Window
             {
                 XamlRoot = this.Content.XamlRoot
             };
-            
+
             // Find parent variable
             EnvVarItem? parentItem = null;
             foreach (var userVar in ViewModel.UserVariables)
@@ -446,7 +446,7 @@ public sealed partial class MainWindow : Window
                     break;
                 }
             }
-            
+
             if (parentItem == null)
             {
                 foreach (var sysVar in ViewModel.SystemVariables)
@@ -458,30 +458,30 @@ public sealed partial class MainWindow : Window
                     }
                 }
             }
-            
+
             if (parentItem == null) return;
-            
+
             dialog.ConfigureForPathEntry(parentItem.Name, isEditMode: true);
             dialog.VariableValue = item.Name;
-            
+
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(dialog.VariableValue))
             {
                 try
                 {
-                    
-                    
+
+
                     // Update the path in the parent's value
                     var paths = parentItem.Children.Select(c => c == item ? dialog.VariableValue.Trim() : c.Name).ToList();
                     string newValue = string.Join(";", paths);
-                    
+
                     ViewModel.StatusMessage = $"Updating path entry in {parentItem.Name}";
-                    
+
                     if (isSystemVariable)
-                        _envService.SetSystemVariable(parentItem.Name, newValue);
+                        _envService.SetVariable(EnvironmentVariableTarget.Machine, parentItem.Name, newValue);
                     else
-                        _envService.SetUserVariable(parentItem.Name, newValue);
-                    
+                        _envService.SetVariable(EnvironmentVariableTarget.User, parentItem.Name, newValue);
+
                     ViewModel.RefreshVariables();
                     UpdateStatusBar();
                     ViewModel.StatusMessage = $"Updated path entry in {parentItem.Name}";
@@ -502,24 +502,24 @@ public sealed partial class MainWindow : Window
                 Title = "Edit Variable",
                 IsEditMode = true
             };
-            
+
             dialog.VariableName = item.Name;
             dialog.VariableValue = item.Value;
-            
+
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
                 try
                 {
-                    
-                    
+
+
                     ViewModel.StatusMessage = $"Updating {item.Name}";
-                    
+
                     if (isSystemVariable)
-                        _envService.SetSystemVariable(item.Name, dialog.VariableValue);
+                        _envService.SetVariable(EnvironmentVariableTarget.Machine, item.Name, dialog.VariableValue);
                     else
-                        _envService.SetUserVariable(item.Name, dialog.VariableValue);
-                    
+                        _envService.SetVariable(EnvironmentVariableTarget.User, item.Name, dialog.VariableValue);
+
                     ViewModel.RefreshVariables();
                     UpdateStatusBar();
                     ViewModel.StatusMessage = $"Updated {item.Name}";
@@ -543,7 +543,7 @@ public sealed partial class MainWindow : Window
             var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
             dataPackage.SetText(item.Name);
             Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
-            
+
             ViewModel.StatusMessage = "Name copied to clipboard";
             UpdateStatusBar();
         }
@@ -564,7 +564,7 @@ public sealed partial class MainWindow : Window
             var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
             dataPackage.SetText(item.IsEntry ? item.Name : item.Value);
             Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
-            
+
             ViewModel.StatusMessage = "Value copied to clipboard";
             UpdateStatusBar();
         }
@@ -729,7 +729,7 @@ public sealed partial class MainWindow : Window
             // Cancel editing
             e.Handled = true;
             item.IsEditing = false;
-            
+
             // Clear currently editing item
             if (_currentlyEditingItem == item)
             {
@@ -753,7 +753,7 @@ public sealed partial class MainWindow : Window
 
         // Exit edit mode
         item.IsEditing = false;
-        
+
         // Clear currently editing item
         if (_currentlyEditingItem == item)
         {
@@ -768,7 +768,7 @@ public sealed partial class MainWindow : Window
         // Determine if this is a user or system variable (or child of one)
         bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
         EnvVarItem? parentVariable = null;
-        
+
         if (item.IsEntry)
         {
             // Find parent variable
@@ -781,7 +781,7 @@ public sealed partial class MainWindow : Window
                     break;
                 }
             }
-            
+
             if (parentVariable == null)
             {
                 foreach (var sysVar in ViewModel.SystemVariables)
@@ -794,35 +794,35 @@ public sealed partial class MainWindow : Window
                     }
                 }
             }
-            
+
             if (parentVariable == null) return;
         }
 
         try
         {
-            
-            
+
+
             if (item.IsEntry && parentVariable != null)
             {
                 // Update the child and reconstruct the parent PATH variable
                 var paths = parentVariable.Children.Select(c => c == item ? item.EditValue : c.Name).ToList();
                 string newValue = string.Join(";", paths);
-                
+
                 ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} path entry in {parentVariable.Name}";
-                
+
                 if (isSystemVariable)
-                    _envService.SetSystemVariable(parentVariable.Name, newValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.Machine, parentVariable.Name, newValue);
                 else
-                    _envService.SetUserVariable(parentVariable.Name, newValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.User, parentVariable.Name, newValue);
             }
             else
             {
                 ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} variable: {item.Name}";
-                
+
                 if (isSystemVariable)
-                    _envService.SetSystemVariable(item.Name, item.EditValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.Machine, item.Name, item.EditValue);
                 else
-                    _envService.SetUserVariable(item.Name, item.EditValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.User, item.Name, item.EditValue);
             }
 
             ViewModel.RefreshVariables();
@@ -869,7 +869,7 @@ public sealed partial class MainWindow : Window
         {
             XamlRoot = this.Content.XamlRoot
         };
-        
+
         dialog.ConfigureForPathEntry(parentItem.Name);
 
         var result = await dialog.ShowAsync();
@@ -877,20 +877,20 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                
-                
+
+
                 // Add the new path to the existing paths
                 var existingPaths = parentItem.Children.Select(c => c.Name).ToList();
                 existingPaths.Add(dialog.VariableValue.Trim());
                 string newValue = string.Join(";", existingPaths);
-                
+
                 ViewModel.StatusMessage = $"Adding path entry to {parentItem.Name}";
-                
+
                 if (isSystemVariable)
-                    _envService.SetSystemVariable(parentItem.Name, newValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.Machine, parentItem.Name, newValue);
                 else
-                    _envService.SetUserVariable(parentItem.Name, newValue);
-                
+                    _envService.SetVariable(EnvironmentVariableTarget.User, parentItem.Name, newValue);
+
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
                 ViewModel.StatusMessage = $"Added path entry to {parentItem.Name}";
@@ -921,22 +921,22 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            
-            
+
+
             // Get all paths and sort them
             var paths = parentItem.Children.Select(c => c.Name.Trim()).ToList();
             paths.Sort(StringComparer.OrdinalIgnoreCase);
-            
+
             // Save the sorted value
             string newValue = string.Join(";", paths);
-            
+
             ViewModel.StatusMessage = $"Sorting {parentItem.Name}";
-            
+
             if (isSystemVariable)
-                _envService.SetSystemVariable(parentItem.Name, newValue);
+                _envService.SetVariable(EnvironmentVariableTarget.Machine, parentItem.Name, newValue);
             else
-                _envService.SetUserVariable(parentItem.Name, newValue);
-            
+                _envService.SetVariable(EnvironmentVariableTarget.User, parentItem.Name, newValue);
+
             ViewModel.RefreshVariables();
             UpdateStatusBar();
             ViewModel.StatusMessage = $"Sorted {parentItem.Name}";
@@ -948,118 +948,11 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void ShrinkButton_Click(object sender, RoutedEventArgs e)
+    private void ShrinkMenuItem_Click(object sender, RoutedEventArgs _)
     {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem parentItem)
-            return;
-
-        // Determine if this is a user or system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(parentItem);
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
-            UpdateStatusBar();
-            return;
-        }
-
-        try
-        {
-            
-            
-            // Get all environment variables for substitution
-            var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            
-            // Add all read-only variables (volatile, system-defined)
-            foreach (var item in ViewModel.UserVariables)
-            {
-                if (!item.IsEntry && !string.IsNullOrEmpty(item.Value) && item.IsReadOnly)
-                {
-                    // Get the environment variable from the current process (fully expanded)
-                    var varValue = Environment.GetEnvironmentVariable(item.Name);
-                    if (!string.IsNullOrEmpty(varValue))
-                    {
-                        allVars[item.Name] = varValue;
-                    }
-                }
-            }
-            
-            foreach (var item in ViewModel.SystemVariables)
-            {
-                if (!item.IsEntry && !string.IsNullOrEmpty(item.Value) && item.IsReadOnly)
-                {
-                    // Get the environment variable from the current process (fully expanded)
-                    var varValue = Environment.GetEnvironmentVariable(item.Name);
-                    if (!string.IsNullOrEmpty(varValue))
-                    {
-                        allVars[item.Name] = varValue;
-                    }
-                }
-            }
-            
-            // Shrink paths by replacing with variable references
-            var shrunkPaths = new List<string>();
-            
-            foreach (var child in parentItem.Children)
-            {
-                var path = child.Name;
-                var expandedPath = Environment.ExpandEnvironmentVariables(path);
-                
-                // Try to find a matching environment variable
-                string? bestMatch = null;
-                int longestMatchLength = 0;
-                
-                foreach (var kvp in allVars)
-                {
-                    var varValue = kvp.Value.TrimEnd('\\');
-                    
-                    // Check if path starts with this variable's value
-                    if (expandedPath.StartsWith(varValue, StringComparison.OrdinalIgnoreCase) && 
-                        varValue.Length > longestMatchLength)
-                    {
-                        bestMatch = kvp.Key;
-                        longestMatchLength = varValue.Length;
-                    }
-                }
-                
-                // Replace with variable reference if found
-                string shrunkPath;
-                if (bestMatch != null)
-                {
-                    var varValue = allVars[bestMatch].TrimEnd('\\');
-                    var remainder = expandedPath.Substring(varValue.Length).TrimStart('\\');
-                    shrunkPath = string.IsNullOrEmpty(remainder) 
-                        ? $"%{bestMatch}%" 
-                        : $"%{bestMatch}%\\{remainder}";
-                }
-                else
-                {
-                    shrunkPath = path;
-                }
-                
-                shrunkPaths.Add(shrunkPath);
-            }
-            
-            // Save the shrunk value
-            string newValue = string.Join(";", shrunkPaths);
-            
-            ViewModel.StatusMessage = $"Shrinking {parentItem.Name}";
-            
-            if (isSystemVariable)
-                _envService.SetSystemVariable(parentItem.Name, newValue);
-            else
-                _envService.SetUserVariable(parentItem.Name, newValue);
-            
-            ViewModel.RefreshVariables();
-            UpdateStatusBar();
-            ViewModel.StatusMessage = $"Shrunk paths in {parentItem.Name}";
-        }
-        catch (Exception ex)
-        {
-            ViewModel.StatusMessage = $"Error shrinking: {ex.Message}";
-            UpdateStatusBar();
-        }
+        EnvVarItem item = ((sender as MenuFlyoutItem)?.DataContext as EnvVarItem)!;
+        ViewModel.Shrink(item);
+        UpdateStatusBar();
     }
 
     private async void ExpandButton_Click(object sender, RoutedEventArgs e)
@@ -1080,28 +973,28 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            
-            
+
+
             // Expand all paths
             var expandedPaths = new List<string>();
-            
+
             foreach (var child in parentItem.Children)
             {
                 var path = child.Name;
                 var expandedPath = Environment.ExpandEnvironmentVariables(path);
                 expandedPaths.Add(expandedPath);
             }
-            
+
             // Save the expanded value
             string newValue = string.Join(";", expandedPaths);
-            
+
             ViewModel.StatusMessage = $"Expanding {parentItem.Name}";
-            
+
             if (isSystemVariable)
-                _envService.SetSystemVariable(parentItem.Name, newValue);
+                _envService.SetVariable(EnvironmentVariableTarget.Machine, parentItem.Name, newValue);
             else
-                _envService.SetUserVariable(parentItem.Name, newValue);
-            
+                _envService.SetVariable(EnvironmentVariableTarget.User, parentItem.Name, newValue);
+
             ViewModel.RefreshVariables();
             UpdateStatusBar();
             ViewModel.StatusMessage = $"Expanded paths in {parentItem.Name}";
@@ -1109,113 +1002,6 @@ public sealed partial class MainWindow : Window
         catch (Exception ex)
         {
             ViewModel.StatusMessage = $"Error expanding: {ex.Message}";
-            UpdateStatusBar();
-        }
-    }
-
-    private async void ShrinkValueButton_Click(object sender, RoutedEventArgs e)
-    {
-        if ((sender as MenuFlyoutItem)?.DataContext is not EnvVarItem item)
-            return;
-
-        // Determine if this is a user or system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
-            UpdateStatusBar();
-            return;
-        }
-
-        try
-        {
-            
-            
-            // Get all environment variables for substitution
-            var allVars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            
-            // Add all read-only variables (volatile, system-defined)
-            foreach (var userVar in ViewModel.UserVariables)
-            {
-                if (!userVar.IsEntry && !string.IsNullOrEmpty(userVar.Value) && userVar.IsReadOnly)
-                {
-                    // Get the environment variable from the current process (fully expanded)
-                    var varValue = Environment.GetEnvironmentVariable(userVar.Name);
-                    if (!string.IsNullOrEmpty(varValue))
-                    {
-                        allVars[userVar.Name] = varValue;
-                    }
-                }
-            }
-            
-            foreach (var sysVar in ViewModel.SystemVariables)
-            {
-                if (!sysVar.IsEntry && !string.IsNullOrEmpty(sysVar.Value) && sysVar.IsReadOnly)
-                {
-                    // Get the environment variable from the current process (fully expanded)
-                    var varValue = Environment.GetEnvironmentVariable(sysVar.Name);
-                    if (!string.IsNullOrEmpty(varValue))
-                    {
-                        allVars[sysVar.Name] = varValue;
-                    }
-                }
-            }
-            
-            // Expand the current value
-            var expandedValue = Environment.ExpandEnvironmentVariables(item.Value);
-            
-            // Try to find a matching environment variable
-            string? bestMatch = null;
-            int longestMatchLength = 0;
-            
-            foreach (var kvp in allVars)
-            {
-                // Skip the variable itself
-                if (kvp.Key.Equals(item.Name, StringComparison.OrdinalIgnoreCase))
-                    continue;
-                    
-                var varValue = kvp.Value.TrimEnd('\\');
-                
-                // Check if value starts with this variable's value
-                if (expandedValue.StartsWith(varValue, StringComparison.OrdinalIgnoreCase) && 
-                    varValue.Length > longestMatchLength)
-                {
-                    bestMatch = kvp.Key;
-                    longestMatchLength = varValue.Length;
-                }
-            }
-            
-            // Replace with variable reference if found
-            string shrunkValue;
-            if (bestMatch != null)
-            {
-                var varValue = allVars[bestMatch].TrimEnd('\\');
-                var remainder = expandedValue.Substring(varValue.Length).TrimStart('\\');
-                shrunkValue = string.IsNullOrEmpty(remainder) 
-                    ? $"%{bestMatch}%" 
-                    : $"%{bestMatch}%\\{remainder}";
-            }
-            else
-            {
-                shrunkValue = item.Value;
-            }
-            
-            ViewModel.StatusMessage = $"Shrinking {item.Name}";
-            
-            if (isSystemVariable)
-                _envService.SetSystemVariable(item.Name, shrunkValue);
-            else
-                _envService.SetUserVariable(item.Name, shrunkValue);
-            
-            ViewModel.RefreshVariables();
-            UpdateStatusBar();
-            ViewModel.StatusMessage = $"Shrunk value in {item.Name}";
-        }
-        catch (Exception ex)
-        {
-            ViewModel.StatusMessage = $"Error shrinking: {ex.Message}";
             UpdateStatusBar();
         }
     }
@@ -1238,18 +1024,18 @@ public sealed partial class MainWindow : Window
 
         try
         {
-            
-            
+
+
             // Expand the value
             var expandedValue = Environment.ExpandEnvironmentVariables(item.Value);
-            
+
             ViewModel.StatusMessage = $"Expanding {item.Name}";
-            
+
             if (isSystemVariable)
-                _envService.SetSystemVariable(item.Name, expandedValue);
+                _envService.SetVariable(EnvironmentVariableTarget.Machine, item.Name, expandedValue);
             else
-                _envService.SetUserVariable(item.Name, expandedValue);
-            
+                _envService.SetVariable(EnvironmentVariableTarget.User, item.Name, expandedValue);
+
             ViewModel.RefreshVariables();
             UpdateStatusBar();
             ViewModel.StatusMessage = $"Expanded value in {item.Name}";
@@ -1322,7 +1108,7 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                
+
 
                 // Remove the child and reconstruct the parent PATH variable
                 var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
@@ -1331,9 +1117,9 @@ public sealed partial class MainWindow : Window
                 ViewModel.StatusMessage = $"Removing path entry from {parentVariable.Name}";
 
                 if (isSystemVariable)
-                    _envService.SetSystemVariable(parentVariable.Name, newValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.Machine, parentVariable.Name, newValue);
                 else
-                    _envService.SetUserVariable(parentVariable.Name, newValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.User, parentVariable.Name, newValue);
 
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
@@ -1399,7 +1185,7 @@ public sealed partial class MainWindow : Window
         {
             try
             {
-                
+
 
                 // Remove the child and reconstruct the parent PATH variable
                 var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
@@ -1408,9 +1194,9 @@ public sealed partial class MainWindow : Window
                 ViewModel.StatusMessage = $"Removing path entry from {parentVariable.Name}";
 
                 if (isSystemVariable)
-                    _envService.SetSystemVariable(parentVariable.Name, newValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.Machine, parentVariable.Name, newValue);
                 else
-                    _envService.SetUserVariable(parentVariable.Name, newValue);
+                    _envService.SetVariable(EnvironmentVariableTarget.User, parentVariable.Name, newValue);
 
                 ViewModel.RefreshVariables();
                 UpdateStatusBar();
@@ -1452,17 +1238,17 @@ public sealed partial class MainWindow : Window
         {
             var currentPoint = e.GetCurrentPoint(null).Position.X;
             var delta = currentPoint - _splitterStartX;
-            
+
             // Get the parent grid
             if (splitter.Parent is Grid parentGrid && parentGrid.ColumnDefinitions.Count >= 3)
             {
                 var leftColumn = parentGrid.ColumnDefinitions[0];
                 var rightColumn = parentGrid.ColumnDefinitions[2];
-                
+
                 // Calculate new widths
                 var leftWidth = leftColumn.ActualWidth + delta;
                 var rightWidth = rightColumn.ActualWidth - delta;
-                
+
                 // Enforce minimum widths
                 if (leftWidth >= 300 && rightWidth >= 300)
                 {
@@ -1481,21 +1267,21 @@ public sealed partial class MainWindow : Window
         {
             _isSplitterDragging = false;
             splitter.ReleasePointerCaptures();
-            
+
             // Convert pixel widths back to star sizing for responsive behavior
             if (splitter.Parent is Grid parentGrid && parentGrid.ColumnDefinitions.Count >= 3)
             {
                 var leftColumn = parentGrid.ColumnDefinitions[0];
                 var rightColumn = parentGrid.ColumnDefinitions[2];
-                
+
                 var totalWidth = leftColumn.ActualWidth + rightColumn.ActualWidth;
                 var leftRatio = leftColumn.ActualWidth / totalWidth;
                 var rightRatio = rightColumn.ActualWidth / totalWidth;
-                
+
                 leftColumn.Width = new GridLength(leftRatio, GridUnitType.Star);
                 rightColumn.Width = new GridLength(rightRatio, GridUnitType.Star);
             }
-            
+
             e.Handled = true;
         }
     }
@@ -1505,7 +1291,7 @@ public sealed partial class MainWindow : Window
     private double _columnSplitterStartX;
     private double _columnSplitterStartWidth;
     private ColumnDefinition? _resizingColumn;
-    
+
     private void ColumnSplitter_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
     {
         if (sender is UIElement splitter)
@@ -1513,12 +1299,12 @@ public sealed partial class MainWindow : Window
             _isColumnSplitterDragging = true;
             var point = e.GetCurrentPoint(null);  // Get screen coordinates
             _columnSplitterStartX = point.Position.X;
-            
+
             // Determine which column to resize based on Tag
             var tag = (sender as FrameworkElement)?.Tag as string;
             _resizingColumn = tag == "User" ? UserNameColumn : SystemNameColumn;
             _columnSplitterStartWidth = _resizingColumn.ActualWidth;  // Use ActualWidth for current rendered width
-            
+
             splitter.CapturePointer(e.Pointer);
             e.Handled = true;
         }
@@ -1531,18 +1317,18 @@ public sealed partial class MainWindow : Window
             var point = e.GetCurrentPoint(null);  // Get screen coordinates
             var currentX = point.Position.X;
             var delta = currentX - _columnSplitterStartX;
-            
+
             var newWidth = _columnSplitterStartWidth + delta;
             if (newWidth >= 100 && newWidth <= 600)  // Min and max width constraints
             {
                 _resizingColumn.Width = new GridLength(newWidth);
-                
+
                 // Update all TreeViewItem column widths to match
                 var tag = (sender as FrameworkElement)?.Tag as string;
                 var treeView = tag == "User" ? UserEnvTreeView : SystemEnvTreeView;
                 UpdateTreeViewColumnWidths(treeView, newWidth);
             }
-            
+
             e.Handled = true;
         }
     }
@@ -1550,10 +1336,10 @@ public sealed partial class MainWindow : Window
     private void UpdateTreeViewColumnWidths(TreeView treeView, double width)
     {
         _nameColumnWidth = width;
-        
+
         // Recursively update all TreeViewItems
         UpdateContainersColumnWidth(treeView, width);
-        
+
         // Force layout update
         treeView.UpdateLayout();
     }
@@ -1564,14 +1350,14 @@ public sealed partial class MainWindow : Window
         for (int i = 0; i < count; i++)
         {
             var child = VisualTreeHelper.GetChild(parent, i);
-            
+
             // If we find a Grid with exactly 4 column definitions (our item template structure)
             if (child is Grid grid && grid.ColumnDefinitions.Count == 4)
             {
                 // Update the first column (Name column)
                 grid.ColumnDefinitions[0].Width = new GridLength(width);
             }
-            
+
             // Continue searching deeper
             UpdateContainersColumnWidth(child, width);
         }
@@ -1614,7 +1400,7 @@ public sealed partial class MainWindow : Window
         if (!ViewModel.IsAdmin)
         {
             var grayBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 160, 160, 160));
-            
+
             foreach (var child in panel.Children)
             {
                 if (child is Button button && button.Content is FontIcon icon)

@@ -132,15 +132,15 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
         // Add all variables in sorted order
         var sortedItems = newItems.OrderBy(v => v.Name);
-        
+
         foreach (var item in sortedItems)
         {
             // Restore expanded state
             item.IsExpanded = expandedStates.Contains(item.Name);
-            
+
             // Update children with parent's properties
             item.UpdateChildrenProperties();
-            
+
             collection.Add(item);
         }
     }
@@ -175,10 +175,10 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public void DeleteUserVariable()
     {
         if (SelectedUserVariable == null || SelectedUserVariable.IsEntry) return;
-        
+
         try
         {
-            _envService.DeleteUserVariable(SelectedUserVariable.Name);
+            _envService.DeleteVariable(EnvironmentVariableTarget.User, SelectedUserVariable.Name);
             StatusMessage = $"Deleted user variable: {SelectedUserVariable.Name}";
             LoadVariables();
         }
@@ -191,10 +191,10 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public void DeleteSystemVariable()
     {
         if (!IsAdmin || SelectedSystemVariable == null || SelectedSystemVariable.IsEntry) return;
-        
+
         try
         {
-            _envService.DeleteSystemVariable(SelectedSystemVariable.Name);
+            _envService.DeleteVariable(EnvironmentVariableTarget.Machine, SelectedSystemVariable.Name);
             StatusMessage = $"Deleted system variable: {SelectedSystemVariable.Name}";
             LoadVariables();
         }
@@ -202,6 +202,36 @@ public class MainWindowViewModel : INotifyPropertyChanged
         {
             StatusMessage = $"Error deleting variable: {ex.Message}";
         }
+    }
+
+    public void Shrink(EnvVarItem item)
+    {
+        if (item.IsSystemVariable && !IsAdmin)
+        {
+            StatusMessage = "Administrator privileges required to modify system variables";
+            return;
+        }
+
+        Dictionary<string, string> shrinkVars = EnvVarService.BuildShrinkVariableMap([.. UserVariables, .. SystemVariables]);
+        string shrunkValue = string.Empty;
+        if (item.IsComposite)
+        {
+            IEnumerable<string> entries = item.Children.Select(c => c.Name);
+            IReadOnlyList<string> shrunkEntries = EnvVarService.ShrinkEntries(entries, shrinkVars);
+            shrunkValue = string.Join(";", shrunkEntries);
+        }
+        else
+        {
+            shrunkValue = EnvVarService.ShrinkValue(item.Value, shrinkVars, excludeVariableName: item.Name);
+        }
+
+        _envService.SetVariable(
+            item.IsSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+            item.Name,
+            shrunkValue);
+
+        RefreshVariables();
+        StatusMessage = $"Shrunk value in {item.Name}";
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

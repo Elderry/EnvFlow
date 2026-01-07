@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 using EnvFlow.Models;
 
@@ -47,6 +48,65 @@ public class EnvVarService
                 isReadOnly: false),
             ..GetDynamicSystemVariables()
         ];
+
+    public static Dictionary<string, string> BuildShrinkVariableMap(IEnumerable<EnvVarItem> variables)
+    {
+        Dictionary<string, string> map = [];
+
+        foreach (EnvVarItem item in variables.Where(variable => variable.IsReadOnly))
+        {
+            string value = Environment.GetEnvironmentVariable(item.Name, EnvironmentVariableTarget.Process)!;
+            map[item.Name] = value;
+        }
+
+        return map;
+    }
+
+    public static IReadOnlyList<string> ShrinkEntries(IEnumerable<string> entries, IReadOnlyDictionary<string, string> variables)
+    {
+        var result = new List<string>();
+        foreach (var entry in entries)
+            result.Add(ShrinkValue(entry, variables, excludeVariableName: null));
+        return result;
+    }
+
+    public static string ShrinkValue(string value, IReadOnlyDictionary<string, string> variables, string? excludeVariableName)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        string expandedValue = Environment.ExpandEnvironmentVariables(value);
+
+        string? bestMatch = null;
+        int longestMatchLength = 0;
+
+        foreach (KeyValuePair<string, string> pair in variables)
+        {
+            if (!string.IsNullOrEmpty(excludeVariableName) && pair.Key.Equals(excludeVariableName, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var varValue = pair.Value.TrimEnd('\\');
+            if (varValue.Length == 0)
+                continue;
+
+            if (expandedValue.StartsWith(varValue, StringComparison.OrdinalIgnoreCase) && varValue.Length > longestMatchLength)
+            {
+                bestMatch = pair.Key;
+                longestMatchLength = varValue.Length;
+            }
+        }
+
+        if (bestMatch == null)
+            return value;
+
+        var matchedValue = variables[bestMatch].TrimEnd('\\');
+        var remainder = expandedValue.Substring(matchedValue.Length).TrimStart('\\');
+        return string.IsNullOrEmpty(remainder)
+            ? $"%{bestMatch}%"
+            : $"%{bestMatch}%\\{remainder}";
+    }
 
     private static List<EnvVarItem> GetDynamicSystemVariables()
     {
@@ -115,88 +175,62 @@ public class EnvVarService
         }
     }
 
-    public void SetUserVariable(string name, string value)
+    public void SetVariable(EnvironmentVariableTarget target, string name, string value)
     {
-        using var key = Registry.CurrentUser.OpenSubKey(@"Environment", true);
-        if (key != null)
+        using RegistryKey key = target switch
         {
-            var valueKind = IsExpandableString(value) ? RegistryValueKind.ExpandString : RegistryValueKind.String;
-            key.SetValue(name, value, valueKind);
-        }
+            EnvironmentVariableTarget.User => Registry.CurrentUser.OpenSubKey(@"Environment", writable: true)!,
+            EnvironmentVariableTarget.Machine => Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", writable: true)!,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, "Only User and Machine targets are supported")
+        };
+
+        RegistryValueKind valueKind = IsExpandable(value) ? RegistryValueKind.ExpandString : RegistryValueKind.String;
+        key.SetValue(name, value, valueKind);
 
         // Notify system of environment change
         NotifyEnvironmentChange();
     }
 
-    public void SetSystemVariable(string name, string value)
+    public void DeleteVariable(EnvironmentVariableTarget target, string name)
     {
-        using var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", true);
-        if (key != null)
+        using RegistryKey key = target switch
         {
-            var valueKind = IsExpandableString(value) ? RegistryValueKind.ExpandString : RegistryValueKind.String;
-            key.SetValue(name, value, valueKind);
-        }
+            EnvironmentVariableTarget.User => Registry.CurrentUser.OpenSubKey(@"Environment", writable: true)!,
+            EnvironmentVariableTarget.Machine => Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", writable: true)!,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, "Only User and Machine targets are supported")
+        };
+
+        key.DeleteValue(name, false);
 
         // Notify system of environment change
         NotifyEnvironmentChange();
     }
 
-    public void DeleteUserVariable(string name)
-    {
-        using var key = Registry.CurrentUser.OpenSubKey(@"Environment", true);
-        if (key != null)
-        {
-            key.DeleteValue(name, false);
-        }
-
-        // Notify system of environment change
-        NotifyEnvironmentChange();
-    }
-
-    public void DeleteSystemVariable(string name)
-    {
-        using var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", true);
-        if (key != null)
-        {
-            key.DeleteValue(name, false);
-        }
-
-        // Notify system of environment change
-        NotifyEnvironmentChange();
-    }
-
-    private bool IsExpandableString(string value)
+    private static bool IsExpandable(string value)
     {
         // Check if the value contains environment variable references like %USERPROFILE%, %SystemRoot%, etc.
         return value.Contains('%');
     }
 
-    private void NotifyEnvironmentChange()
+    private static void NotifyEnvironmentChange()
     {
         // This notifies Windows that environment variables have changed
         // so other processes can pick up the changes
-        try
-        {
-            const int HWND_BROADCAST = 0xffff;
-            const int WM_SETTINGCHANGE = 0x001A;
+        const int HWND_BROADCAST = 0xffff;
+        const int WM_SETTINGCHANGE = 0x001A;
 
-            // Using P/Invoke to notify system
-            SendMessageTimeout(
-                (IntPtr)HWND_BROADCAST,
-                WM_SETTINGCHANGE,
-                IntPtr.Zero,
-                "Environment",
-                SendMessageTimeoutFlags.SMTO_ABORTIFHUNG,
-                5000,
-                out _);
-        }
-        catch
-        {
-            // Ignore errors in notification
-        }
+        // Using P/Invoke to notify system
+        SendMessageTimeout(
+            HWND_BROADCAST,
+            WM_SETTINGCHANGE,
+            IntPtr.Zero,
+            "Environment",
+            SendMessageTimeoutFlags.SMTO_ABORTIFHUNG,
+            5000,
+            out _);
     }
 
-    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, SetLastError = true)]
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern IntPtr SendMessageTimeout(
         IntPtr hWnd,
         int Msg,
