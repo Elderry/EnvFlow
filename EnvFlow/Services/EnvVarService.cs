@@ -11,84 +11,76 @@ namespace EnvFlow.Services;
 
 public class EnvVarService
 {
-    private List<EnvVarItem>? _cachedUserVariables;
+    /// <summary>
+    /// Dynamic / computed Windows environment variables we surface as read-only system vars.
+    /// Source: Microsoft Learn (USMT) "Recognized environment variables"
+    /// https://learn.microsoft.com/en-us/windows/deployment/usmt/usmt-recognized-environment-variables
+    /// </summary>
+    private static readonly string[] DynamicSystemVariableNames =
+    [
+        "ALLUSERSPROFILE",
+        "CommonProgramFiles",
+        "CommonProgramFiles(X86)",
+        "CommonProgramW6432",
+        "COMPUTERNAME",
+        "ProgramData",
+        "ProgramFiles",
+        "ProgramFiles(X86)",
+        "ProgramW6432",
+        "PUBLIC",
+        "SystemDrive",
+        "SystemRoot"
+    ];
 
-    public List<EnvVarItem> GetUserVariables()
+    public List<EnvVarItem> GetUserVariables() =>
+        [
+            ..ReadRegistryVariables(Registry.CurrentUser, @"Environment", isSystemVariable: false, isReadOnly: false),
+            ..ReadRegistryVariables(Registry.CurrentUser, @"Volatile Environment", isSystemVariable: false, isReadOnly: true)
+        ];
+
+    public List<EnvVarItem> GetSystemVariables() =>
+        [
+            ..ReadRegistryVariables(
+                Registry.LocalMachine,
+                @"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
+                isSystemVariable: true,
+                isReadOnly: false),
+            ..GetDynamicSystemVariables()
+        ];
+
+    private static List<EnvVarItem> GetDynamicSystemVariables()
     {
-        if (_cachedUserVariables != null)
-            return _cachedUserVariables;
-
-        var items = ReadRegistryVariables(Registry.CurrentUser, @"Environment", isSystemVariable: false, isReadOnly: false)
-            .Concat(ReadRegistryVariables(Registry.CurrentUser, @"Volatile Environment", isSystemVariable: false, isReadOnly: true))
-            .ToList();
-
-        _cachedUserVariables = items;
+        List<EnvVarItem> items = [];
+        foreach (string name in DynamicSystemVariableNames)
+        {
+            string? value = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
+            if (value != null)
+            {
+                items.Add(new EnvVarItem(name, value, isReadOnly: true, isSystemVariable: true));
+            }
+        }
         return items;
     }
 
-    public List<EnvVarItem> GetSystemVariables()
+    private static List<EnvVarItem> ReadRegistryVariables(RegistryKey rootKey, string subKeyPath, bool isSystemVariable, bool isReadOnly)
     {
-        // Read from registry to get unexpanded values (editable variables)
-        var items = ReadRegistryVariables(Registry.LocalMachine, @"SYSTEM\CurrentControlSet\Control\Session Manager\Environment", isSystemVariable: true, isReadOnly: false);
-        
-        // Also get dynamic system variables from the current process environment
-        // These include ProgramFiles, SystemRoot, etc. that Windows computes at runtime
-        var dynamicVars = GetDynamicSystemVariables(items);
-        
-        return items.Concat(dynamicVars).ToList();
-    }
-
-    private IEnumerable<EnvVarItem> GetDynamicSystemVariables(IEnumerable<EnvVarItem> existingItems)
-    {
-        var processVars = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
-        var machineVars = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
-        var existingNames = new HashSet<string>(existingItems.Select(i => i.Name), StringComparer.OrdinalIgnoreCase);
-        
-        foreach (var key in processVars.Keys)
-        {
-            var keyName = key.ToString()!;
-            
-            // If it's in process but not in Machine registry, it's a dynamic system variable
-            if (!machineVars.Contains(keyName) && !existingNames.Contains(keyName))
-            {
-                var value = processVars[keyName]?.ToString();
-                if (value != null && IsDynamicSystemVariable(keyName))
-                {
-                    yield return new EnvVarItem(keyName, value, isReadOnly: true, isSystemVariable: true);
-                }
-            }
-        }
-    }
-
-    private IEnumerable<EnvVarItem> ReadRegistryVariables(RegistryKey rootKey, string subKeyPath, bool isSystemVariable, bool isReadOnly)
-    {
+        List<EnvVarItem> items = [];
         using RegistryKey? key = rootKey.OpenSubKey(subKeyPath);
-        if (key != null)
+
+        if (key == null)
         {
-            foreach (string valueName in key.GetValueNames())
+            return items;
+        }
+
+        foreach (string valueName in key.GetValueNames())
+        {
+            object? value = key.GetValue(valueName, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
+            if (value != null)
             {
-                object value = key.GetValue(valueName, "", RegistryValueOptions.DoNotExpandEnvironmentNames);
-                if (value != null)
-                {
-                    var item = new EnvVarItem(valueName, value.ToString()!, isReadOnly);
-                    item.IsSystemVariable = isSystemVariable;
-                    yield return item;
-                }
+                items.Add(new EnvVarItem(valueName, value.ToString()!, isReadOnly, isSystemVariable));
             }
         }
-    }
-
-    private bool IsDynamicSystemVariable(string varName)
-    {
-        // Known dynamic system variables that Windows provides
-        var dynamicVars = new[]
-        {
-            "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432",
-            "CommonProgramFiles", "CommonProgramFiles(x86)", "CommonProgramW6432",
-            "SystemRoot", "SystemDrive", "windir", "ProgramData"
-        };
-        
-        return dynamicVars.Contains(varName, StringComparer.OrdinalIgnoreCase);
+        return items;
     }
 
     public List<string> ParsePathVariable(string pathValue)
@@ -131,7 +123,7 @@ public class EnvVarService
             var valueKind = IsExpandableString(value) ? RegistryValueKind.ExpandString : RegistryValueKind.String;
             key.SetValue(name, value, valueKind);
         }
-        
+
         // Notify system of environment change
         NotifyEnvironmentChange();
     }
@@ -144,7 +136,7 @@ public class EnvVarService
             var valueKind = IsExpandableString(value) ? RegistryValueKind.ExpandString : RegistryValueKind.String;
             key.SetValue(name, value, valueKind);
         }
-        
+
         // Notify system of environment change
         NotifyEnvironmentChange();
     }
@@ -156,7 +148,7 @@ public class EnvVarService
         {
             key.DeleteValue(name, false);
         }
-        
+
         // Notify system of environment change
         NotifyEnvironmentChange();
     }
@@ -168,7 +160,7 @@ public class EnvVarService
         {
             key.DeleteValue(name, false);
         }
-        
+
         // Notify system of environment change
         NotifyEnvironmentChange();
     }
@@ -187,7 +179,7 @@ public class EnvVarService
         {
             const int HWND_BROADCAST = 0xffff;
             const int WM_SETTINGCHANGE = 0x001A;
-            
+
             // Using P/Invoke to notify system
             SendMessageTimeout(
                 (IntPtr)HWND_BROADCAST,
