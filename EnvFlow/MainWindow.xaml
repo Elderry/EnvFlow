@@ -138,7 +138,7 @@
                             <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Loaded="NameColumn_Loaded">
                               <StackPanel.ContextFlyout>
                                 <MenuFlyout>
-                                  <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameVisibility}">
+                                  <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
@@ -159,22 +159,32 @@
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
+                                      <FontIcon Glyph="&#xE8CB;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkEntriesMenuVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE73F;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandMenuVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE740;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandEntriesMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -234,7 +244,7 @@
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>

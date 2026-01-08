@@ -42,10 +42,9 @@ public partial class EnvVarItem : INotifyPropertyChanged
             OnPropertyChanged(nameof(ChildEditVisibility));
             OnPropertyChanged(nameof(ValueVisibility));
             OnPropertyChanged(nameof(AddChildButtonVisibility));
-            OnPropertyChanged(nameof(SortButtonVisibility));
             OnPropertyChanged(nameof(SortMenuVisibility));
-            OnPropertyChanged(nameof(MoreOptionsVisibility));
-            OnPropertyChanged(nameof(MoreOptionsMenuButtonVisibility));
+            OnPropertyChanged(nameof(SortMenuVisibility));
+            OnPropertyChanged(nameof(MoreOptionsButtonVisibility));
         }
     }
 
@@ -59,6 +58,9 @@ public partial class EnvVarItem : INotifyPropertyChanged
         }
     }
 
+    public bool IsLimitAccess => IsSystemVariable && !AdminHelper.IsAdmin();
+    public bool IsComposite => Children.Count > 0;
+
     // Tree view item visibility
     public Visibility NameVisibility => (IsEditing && IsEntry) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility ValueVisibility => (IsEditing || IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
@@ -67,48 +69,47 @@ public partial class EnvVarItem : INotifyPropertyChanged
     public Visibility ColumnSeparatorVisibility => (IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
 
     // Hover button visibility
-    public Visibility AddChildButtonVisibility => IsComposite ? Visibility.Visible : Visibility.Collapsed;
-    
-    // Context menu visibility
-    public Visibility CopyNameVisibility => !IsEntry ? Visibility.Visible : Visibility.Collapsed;
-    public Visibility AddChildMenuVisibility => (IsComposite && !(IsSystemVariable && !AdminHelper.IsAdmin())) 
-        ? Visibility.Visible 
+    public Visibility AddChildButtonVisibility => !IsReadOnly && IsComposite
+        ? Visibility.Visible
         : Visibility.Collapsed;
-    
-    public Visibility SortButtonVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !IsReadOnly) 
-        ? Visibility.Visible 
+    public Visibility EditButtonVisibility => !IsReadOnly && !IsComposite
+        ? Visibility.Visible
         : Visibility.Collapsed;
-    
-    public Visibility SortMenuVisibility => (!IsEntry && Children.Count > 0 && !IsEditing && !IsReadOnly && !(IsSystemVariable && !AdminHelper.IsAdmin())) 
-        ? Visibility.Visible 
+    public Visibility DeleteButtonVisibility => !IsReadOnly
+        ? Visibility.Visible
         : Visibility.Collapsed;
-    
-    public Visibility HoverButtonsVisibility => !IsReadOnly 
-        ? Visibility.Visible 
-        : Visibility.Collapsed;
-    
-    public Visibility EditButtonVisibility => (!IsEntry && Children.Count > 0) || IsReadOnly
-        ? Visibility.Collapsed 
-        : Visibility.Visible;
-    
-    public Visibility EditMenuVisibility => (!IsEntry && Children.Count > 0) || IsReadOnly || (IsSystemVariable && !AdminHelper.IsAdmin())
-        ? Visibility.Collapsed 
-        : Visibility.Visible;
-    
-    public Visibility DeleteButtonVisibility => IsReadOnly || (IsSystemVariable && !AdminHelper.IsAdmin())
-        ? Visibility.Collapsed
-        : Visibility.Visible;
-    
-    public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsEntry || Children.Count == 0)) 
-        ? Visibility.Visible 
+    public Visibility MoreOptionsButtonVisibility => !IsReadOnly
+        ? Visibility.Visible
         : Visibility.Collapsed;
 
-    public Visibility MoreOptionsMenuButtonVisibility =>
-        SortButtonVisibility == Visibility.Visible || MoreOptionsVisibility == Visibility.Visible
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-    
-    public bool IsComposite => Children.Count > 0;
+    // Context menu visibility
+    public Visibility CopyNameMenuVisibility => !IsEntry
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+    public Visibility AddChildMenuVisibility => !IsReadOnly && IsComposite && !IsLimitAccess
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+    public Visibility EditMenuVisibility => !IsReadOnly && !IsComposite && !IsLimitAccess
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+    public Visibility DeleteMenuVisibility => !IsReadOnly && !IsLimitAccess
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+    public Visibility SortMenuVisibility => !IsReadOnly && IsComposite && !IsLimitAccess
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+    public Visibility ShrinkMenuVisibility => !IsReadOnly && !IsComposite && !IsLimitAccess
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+    public Visibility ShrinkEntriesMenuVisibility => !IsReadOnly && IsComposite && !IsLimitAccess
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+    public Visibility ExpandMenuVisibility => !IsReadOnly && !IsComposite && !IsLimitAccess
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+    public Visibility ExpandEntriesMenuVisibility => !IsReadOnly && IsComposite && !IsLimitAccess
+        ? Visibility.Visible
+        : Visibility.Collapsed;
 
     public EnvVarItem()
     {
@@ -120,6 +121,7 @@ public partial class EnvVarItem : INotifyPropertyChanged
         Value = value;
         IsEntry = false;
         IsReadOnly = isReadOnly;
+        IsSystemVariable = isSystemVariable;
 
         bool isPathLike = value.Contains('\\') || value.Contains('/') || value.Contains(':');
         bool isMultiValue = value.Contains(';');
@@ -151,7 +153,7 @@ public partial class EnvVarItem : INotifyPropertyChanged
                 var expandedValue = Environment.ExpandEnvironmentVariables(value);
                 bool isFolder = Directory.Exists(expandedValue);
                 bool isFile = File.Exists(expandedValue);
-				bool exists =  isFolder || isFile;
+                bool exists = isFolder || isFile;
                 Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : AppIcons.Error;
                 IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
             }
