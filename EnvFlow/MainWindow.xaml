@@ -254,12 +254,12 @@
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -295,37 +295,38 @@
                             </Button>
                             <Button Padding="4" 
                                                         Click="DeleteItemButton_Click"
+                                                        Visibility="{Binding DeleteButtonVisibility}"
                                                         ToolTipService.ToolTip="Delete">
                               <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
                             </Button>
 
                             <Button Padding="4"
-                                                        Visibility="{Binding MoreOptionsMenuButtonVisibility}"
+                                                        Visibility="{Binding MoreOptionsButtonVisibility}"
                                                         ToolTipService.ToolTip="More options">
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
                                   <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
+                                      <FontIcon Glyph="&#xE8CB;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click" Visibility="{Binding SortMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click" Visibility="{Binding SortMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkEntriesMenuVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE73F;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding MoreOptionsVisibility}">
-                                    <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;"/>
-                                    </MenuFlyoutItem.Icon>
-                                  </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding MoreOptionsVisibility}">
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandEntriesMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
