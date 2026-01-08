@@ -289,46 +289,33 @@
                               <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
                             </Button>
 
-                            <!-- More Options Menu for composite variables -->
                             <Button Padding="4"
-                                                        x:Name="MoreOptionsButton"
-                                                        Visibility="{Binding SortButtonVisibility}"
+                                                        Visibility="{Binding MoreOptionsMenuButtonVisibility}"
                                                         ToolTipService.ToolTip="More options">
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click">
+                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click">
+                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click">
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                </MenuFlyout>
-                              </Button.Flyout>
-                            </Button>
-
-                            <!-- More Options Menu for non-composite variables -->
-                            <Button Padding="4"
-                                                        Visibility="{Binding MoreOptionsVisibility}"
-                                                        ToolTipService.ToolTip="More options">
-                              <FontIcon Glyph="&#xE712;" FontSize="12"/>
-                              <Button.Flyout>
-                                <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding MoreOptionsVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding MoreOptionsVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -626,48 +613,34 @@
                               <FontIcon x:Name="DeleteIcon" Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
                             </Button>
 
-                            <!-- More Options Menu for composite variables -->
                             <Button Padding="4"
-                                                        x:Name="MoreOptionsButton"
-                                                        Visibility="{Binding SortButtonVisibility}"
+                                                        Visibility="{Binding MoreOptionsMenuButtonVisibility}"
                                                         Loaded="MoreOptionsButton_Loaded"
                                                         ToolTipService.ToolTip="More options">
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click">
+                                  <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click">
+                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click">
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                </MenuFlyout>
-                              </Button.Flyout>
-                            </Button>
-
-                            <!-- More Options Menu for non-composite variables -->
-                            <Button Padding="4"
-                                                        Visibility="{Binding MoreOptionsVisibility}"
-                                                        Loaded="MoreOptionsButton_Loaded"
-                                                        ToolTipService.ToolTip="More options">
-                              <FontIcon Glyph="&#xE712;" FontSize="12"/>
-                              <Button.Flyout>
-                                <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
-                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding MoreOptionsVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding MoreOptionsVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>

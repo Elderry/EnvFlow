@@ -42,6 +42,10 @@ public partial class EnvVarItem : INotifyPropertyChanged
             OnPropertyChanged(nameof(ChildEditVisibility));
             OnPropertyChanged(nameof(ValueVisibility));
             OnPropertyChanged(nameof(AddChildButtonVisibility));
+            OnPropertyChanged(nameof(SortButtonVisibility));
+            OnPropertyChanged(nameof(SortMenuVisibility));
+            OnPropertyChanged(nameof(MoreOptionsVisibility));
+            OnPropertyChanged(nameof(MoreOptionsMenuButtonVisibility));
         }
     }
 
@@ -98,6 +102,11 @@ public partial class EnvVarItem : INotifyPropertyChanged
     public Visibility MoreOptionsVisibility => (!IsReadOnly && (IsEntry || Children.Count == 0)) 
         ? Visibility.Visible 
         : Visibility.Collapsed;
+
+    public Visibility MoreOptionsMenuButtonVisibility =>
+        SortButtonVisibility == Visibility.Visible || MoreOptionsVisibility == Visibility.Visible
+            ? Visibility.Visible
+            : Visibility.Collapsed;
     
     public bool IsComposite => Children.Count > 0;
 
