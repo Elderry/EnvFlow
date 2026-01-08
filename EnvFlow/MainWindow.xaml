@@ -148,7 +148,7 @@
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutSeparator Visibility="{Binding DeleteButtonVisibility}"/>
+                                  <MenuFlyoutSeparator Visibility="{Binding DeleteMenuVisibility}"/>
                                   <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
@@ -467,17 +467,17 @@
                             <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System" Loaded="NameColumn_Loaded">
                               <StackPanel.ContextFlyout>
                                 <MenuFlyout>
-                                  <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameVisibility}">
+                                  <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Copy value" Click="CopyValue_Click" Visibility="{Binding CopyValueInNameColumnVisibility}">
+                                  <MenuFlyoutItem Text="Copy value" Click="CopyValue_Click">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutSeparator Visibility="{Binding DeleteButtonVisibility}"/>
+                                  <MenuFlyoutSeparator Visibility="{Binding DeleteMenuVisibility}"/>
                                   <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
@@ -488,45 +488,54 @@
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
+                                      <FontIcon Glyph="&#xE8CB;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkEntriesMenuVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE73F;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandMenuVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE740;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandEntriesMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                 </MenuFlyout>
                               </StackPanel.ContextFlyout>
-                              <FontIcon Glyph="{Binding Icon}" 
-                                                                  FontSize="16" 
-                                                                  Foreground="{Binding IconColor}"/>
-
-                              <TextBlock Text="{Binding Name}" 
-                                                                   VerticalAlignment="Center"
-                                                                   Visibility="{Binding NameVisibility}"/>
+                              <FontIcon Glyph="{Binding Icon}"
+                                        FontSize="16"
+                                        Foreground="{Binding IconColor}"/>
+                              <TextBlock Text="{Binding Name}"
+                                         VerticalAlignment="Center"
+                                         Visibility="{Binding NameVisibility}"/>
                             </StackPanel>
 
                             <!-- Edit TextBox for child items -->
                             <TextBox x:Name="ChildEditTextBox"
-                                                             Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                             Visibility="{Binding ChildEditVisibility}"
-                                                             KeyDown="EditTextBox_KeyDown"
-                                                             LostFocus="EditTextBox_LostFocus"
-                                                             Loaded="EditTextBox_Loaded"
-                                                             Margin="32,0,0,0"/>
+                                     Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Visibility="{Binding ChildEditVisibility}"
+                                     KeyDown="EditTextBox_KeyDown"
+                                     LostFocus="EditTextBox_LostFocus"
+                                     Loaded="EditTextBox_Loaded"
+                                     Margin="32,0,0,0"/>
                           </Grid>
 
                           <!-- Column Separator -->
@@ -552,13 +561,13 @@
                                       <FontIcon Glyph="&#xE8C8;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutSeparator Visibility="{Binding DeleteButtonVisibility}"/>
+                                  <MenuFlyoutSeparator Visibility="{Binding DeleteMenuVisibility}"/>
                                   <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteButtonVisibility}">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
@@ -570,15 +579,15 @@
                                   </MenuFlyoutItem>
                                   <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
+                                      <FontIcon Glyph="&#xE8CB;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -589,69 +598,68 @@
 
                             <!-- Edit Mode: Show TextBox -->
                             <TextBox x:Name="EditTextBox"
-                                                             Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                             Visibility="{Binding EditVisibility}"
-                                                             KeyDown="EditTextBox_KeyDown"
-                                                             LostFocus="EditTextBox_LostFocus"
-                                                             Loaded="EditTextBox_Loaded"/>
+                                     Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Visibility="{Binding EditVisibility}"
+                                     KeyDown="EditTextBox_KeyDown"
+                                     LostFocus="EditTextBox_LostFocus"
+                                     Loaded="EditTextBox_Loaded"/>
                           </Grid>
 
                           <!-- Hover Buttons (Right-aligned) -->
                           <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}" Tag="System" Loaded="HoverButtons_Loaded">
                             <!-- Add Child Button for composite variables -->
                             <Button Padding="4" 
-                                                        x:Name="AddChildBtn"
-                                                        Click="AddChildButton_Click"
-                                                        Visibility="{Binding AddChildButtonVisibility}"
-                                                        IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
-                                                        ToolTipService.ToolTip="Add new path entry (requires admin)">
+                                    Click="AddChildButton_Click"
+                                    Visibility="{Binding AddChildButtonVisibility}"
+                                    IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
+                                    ToolTipService.ToolTip="Add new path entry (requires admin)">
                               <FontIcon x:Name="AddChildIcon" Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
                             </Button>
 
                             <Button Padding="4" 
-                                                        x:Name="EditBtn"
-                                                        Click="EditItemButton_Click"
-                                                        Visibility="{Binding EditButtonVisibility}"
-                                                        IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
-                                                        ToolTipService.ToolTip="Edit (requires admin)">
+                                    Click="EditItemButton_Click"
+                                    Visibility="{Binding EditButtonVisibility}"
+                                    IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
+                                    ToolTipService.ToolTip="Edit (requires admin)">
                               <FontIcon x:Name="EditIcon" Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
                             </Button>
                             <Button Padding="4" 
-                                                        x:Name="DeleteBtn"
-                                                        Click="DeleteItemButton_Click"
-                                                        IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
-                                                        ToolTipService.ToolTip="Delete (requires admin)">
+                                    x:Name="DeleteBtn"
+                                    Click="DeleteItemButton_Click"
+                                    Visibility="{Binding DeleteButtonVisibility}"
+                                    IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
+                                    ToolTipService.ToolTip="Delete (requires admin)">
                               <FontIcon x:Name="DeleteIcon" Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
                             </Button>
 
                             <Button Padding="4"
-                                                        Visibility="{Binding MoreOptionsMenuButtonVisibility}"
-                                                        Loaded="MoreOptionsButton_Loaded"
-                                                        ToolTipService.ToolTip="More options">
+                                    Visibility="{Binding MoreOptionsButtonVisibility}"
+                                    Loaded="MoreOptionsButton_Loaded"
+                                    ToolTipService.ToolTip="More options">
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
                                   <MenuFlyoutItem Text="Sort entries" Click="SortButton_Click" Visibility="{Binding SortMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE8CB;" Foreground="#F7B32B"/>
+                                      <FontIcon Glyph="&#xE8CB;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click" Visibility="{Binding SortMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE73F;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click" Visibility="{Binding SortMenuVisibility}">
+                                  <MenuFlyoutItem Text="Shrink entries" Click="ShrinkMenuItem_Click" Visibility="{Binding ShrinkEntriesMenuVisibility}">
+                                    <MenuFlyoutItem.Icon>
+                                      <FontIcon Glyph="&#xE73F;"/>
+                                    </MenuFlyoutItem.Icon>
+                                  </MenuFlyoutItem>
+                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Shrink value" Click="ShrinkMenuItem_Click" Visibility="{Binding MoreOptionsVisibility}">
-                                    <MenuFlyoutItem.Icon>
-                                      <FontIcon Glyph="&#xE73F;"/>
-                                    </MenuFlyoutItem.Icon>
-                                  </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Expand value" Click="ExpandMenuItem_Click" Visibility="{Binding MoreOptionsVisibility}">
+                                  <MenuFlyoutItem Text="Expand entries" Click="ExpandMenuItem_Click" Visibility="{Binding ExpandEntriesMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE740;"/>
                                     </MenuFlyoutItem.Icon>
@@ -674,10 +682,10 @@
 
     <!-- Status Bar -->
     <Border Grid.Row="2" 
-                Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
-                BorderThickness="0,1,0,0"
-                Padding="16,8">
+            Background="{ThemeResource LayerFillColorDefaultBrush}" 
+            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="16,8">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
@@ -685,9 +693,9 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock x:Name="StatusTextBlock"
-                           Grid.Column="0" 
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           VerticalAlignment="Center"/>
+                   Grid.Column="0" 
+                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                   VerticalAlignment="Center"/>
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
           <TextBlock x:Name="UserCountTextBlock" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
