@@ -13,8 +13,10 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 
+using Windows.System;
 using Windows.UI;
 
 namespace EnvFlow;
@@ -475,18 +477,17 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void EditTextBox_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    private void EditTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (sender is not TextBox textBox || textBox.DataContext is not EnvVarItem item)
-            return;
+        EnvVarItem item = ((sender as TextBox)?.DataContext as EnvVarItem)!;
 
-        if (e.Key == Windows.System.VirtualKey.Enter)
+        if (e.Key == VirtualKey.Enter)
         {
             // Save changes
             e.Handled = true;
             SaveInlineEdit(item);
         }
-        else if (e.Key == Windows.System.VirtualKey.Escape)
+        else if (e.Key == VirtualKey.Escape)
         {
             // Cancel editing
             e.Handled = true;
@@ -500,19 +501,17 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    /// <summary>
+    /// Save when focus is lost
+    /// </summary>
     private void EditTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        // Save when focus is lost
-        if (sender is TextBox textBox && textBox.DataContext is EnvVarItem item)
-        {
-            SaveInlineEdit(item);
-        }
+        EnvVarItem item = ((sender as TextBox)?.DataContext as EnvVarItem)!;
+        SaveInlineEdit(item);
     }
 
     private void SaveInlineEdit(EnvVarItem item)
     {
-        if (!item.IsEditing) return;
-
         // Exit edit mode
         item.IsEditing = false;
 
@@ -525,77 +524,24 @@ public sealed partial class MainWindow : Window
         // Check if value changed
         string originalValue = item.IsEntry ? item.Name : item.Value;
         if (item.EditValue == originalValue)
+        {
             return;
+        }
 
-        // Determine if this is a user or system variable (or child of one)
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
-        EnvVarItem? parentVariable = null;
-
+        // Save changes
         if (item.IsEntry)
         {
             // Find parent variable
-            foreach (var userVar in ViewModel.UserVariables)
-            {
-                if (userVar.Children.Contains(item))
-                {
-                    parentVariable = userVar;
-                    isSystemVariable = false;
-                    break;
-                }
-            }
+            EnvVarItem parentVariable = GetParentVariable(item);
 
-            if (parentVariable == null)
-            {
-                foreach (var sysVar in ViewModel.SystemVariables)
-                {
-                    if (sysVar.Children.Contains(item))
-                    {
-                        parentVariable = sysVar;
-                        isSystemVariable = true;
-                        break;
-                    }
-                }
-            }
-
-            if (parentVariable == null) return;
+            ViewModel.UpdateEntry(parentVariable, item, item.EditValue);
         }
-
-        try
+        else
         {
-
-
-            if (item.IsEntry && parentVariable != null)
-            {
-                // Update the child and reconstruct the parent PATH variable
-                var paths = parentVariable.Children.Select(c => c == item ? item.EditValue : c.Name).ToList();
-                string newValue = string.Join(";", paths);
-
-                ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} path entry in {parentVariable.Name}";
-
-                if (isSystemVariable)
-                    _envService.SetVariable(EnvironmentVariableTarget.Machine, parentVariable.Name, newValue);
-                else
-                    _envService.SetVariable(EnvironmentVariableTarget.User, parentVariable.Name, newValue);
-            }
-            else
-            {
-                ViewModel.StatusMessage = $"Updating {(isSystemVariable ? "system" : "user")} variable: {item.Name}";
-
-                if (isSystemVariable)
-                    _envService.SetVariable(EnvironmentVariableTarget.Machine, item.Name, item.EditValue);
-                else
-                    _envService.SetVariable(EnvironmentVariableTarget.User, item.Name, item.EditValue);
-            }
-
-            ViewModel.RefreshVariables();
-            UpdateStatusBar();
-            ViewModel.StatusMessage = $"Updated {(isSystemVariable ? "system" : "user")} variable successfully";
+            ViewModel.UpdateVariable(item, item.EditValue);
         }
-        catch (Exception ex)
-        {
-            ViewModel.StatusMessage = $"Error updating variable: {ex.Message}";
-            UpdateStatusBar();
-        }
+
+        UpdateStatusBar();
     }
 
     private bool IsInUserTreeView(EnvVarItem item)
