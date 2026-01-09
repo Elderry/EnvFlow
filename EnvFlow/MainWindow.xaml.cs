@@ -903,59 +903,21 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void SortButton_Click(object sender, RoutedEventArgs e)
+    private void SortMenu_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem parentItem)
-            return;
-
-        // Determine if this is a user or system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(parentItem);
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
-            UpdateStatusBar();
-            return;
-        }
-
-        try
-        {
-
-
-            // Get all paths and sort them
-            var paths = parentItem.Children.Select(c => c.Name.Trim()).ToList();
-            paths.Sort(StringComparer.OrdinalIgnoreCase);
-
-            // Save the sorted value
-            string newValue = string.Join(";", paths);
-
-            ViewModel.StatusMessage = $"Sorting {parentItem.Name}";
-
-            if (isSystemVariable)
-                _envService.SetVariable(EnvironmentVariableTarget.Machine, parentItem.Name, newValue);
-            else
-                _envService.SetVariable(EnvironmentVariableTarget.User, parentItem.Name, newValue);
-
-            ViewModel.RefreshVariables();
-            UpdateStatusBar();
-            ViewModel.StatusMessage = $"Sorted {parentItem.Name}";
-        }
-        catch (Exception ex)
-        {
-            ViewModel.StatusMessage = $"Error sorting: {ex.Message}";
-            UpdateStatusBar();
-        }
+        EnvVarItem item = ((sender as FrameworkElement)?.DataContext as EnvVarItem)!;
+        ViewModel.Sort(item);
+        UpdateStatusBar();
     }
 
-    private void ShrinkMenuItem_Click(object sender, RoutedEventArgs _)
+    private void ShrinkMenu_Click(object sender, RoutedEventArgs _)
     {
         EnvVarItem item = ((sender as MenuFlyoutItem)?.DataContext as EnvVarItem)!;
         ViewModel.Shrink(item);
         UpdateStatusBar();
     }
 
-    private void ExpandMenuItem_Click(object sender, RoutedEventArgs _)
+    private void ExpandMenu_Click(object sender, RoutedEventArgs _)
     {
         EnvVarItem item = ((sender as MenuFlyoutItem)?.DataContext as EnvVarItem)!;
         ViewModel.Expand(item);

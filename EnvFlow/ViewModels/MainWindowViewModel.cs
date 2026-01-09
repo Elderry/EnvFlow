@@ -266,6 +266,35 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
             : $"Expanded value in {item.Name}";
     }
 
+    public void Sort(EnvVarItem item)
+    {
+        if (item.IsSystemVariable && !IsAdmin)
+        {
+            StatusMessage = "Administrator privileges required to modify system variables";
+            return;
+        }
+
+        if (!item.IsComposite)
+        {
+            return;
+        }
+
+        // Get all paths and sort them
+        List<string> paths = item.Children.Select(c => c.Name).ToList();
+        paths.Sort(StringComparer.OrdinalIgnoreCase);
+
+        // Save the sorted value
+        string newValue = string.Join(";", paths);
+
+        _envService.SetVariable(
+            item.IsSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+            item.Name,
+            newValue);
+
+        item.UpdateValue(newValue);
+        StatusMessage = $"Sorted {item.Name}";
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
