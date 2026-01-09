@@ -21,8 +21,8 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     private EnvVarItem? _selectedUserVariable;
     private EnvVarItem? _selectedSystemVariable;
 
-    public ObservableCollection<EnvVarItem> UserVariables { get; } = new();
-    public ObservableCollection<EnvVarItem> SystemVariables { get; } = new();
+    public ObservableCollection<EnvVarItem> UserVariables { get; } = [];
+    public ObservableCollection<EnvVarItem> SystemVariables { get; } = [];
 
     public EnvVarItem? SelectedUserVariable
     {
@@ -231,7 +231,7 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
             item.Name,
             shrunkValue);
 
-        RefreshVariables();
+        item.UpdateValue(shrunkValue);
         StatusMessage = $"Shrunk value in {item.Name}";
     }
 
@@ -260,7 +260,7 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
             item.Name,
             expandedValue);
 
-        RefreshVariables();
+        item.UpdateValue(expandedValue);
         StatusMessage = item.IsComposite
             ? $"Expanded paths in {item.Name}"
             : $"Expanded value in {item.Name}";

@@ -17,9 +17,18 @@ public partial class EnvVarItem : INotifyPropertyChanged
 {
     private bool _isEditing;
     private string _editValue = string.Empty;
+    private string _value = string.Empty;
 
     public string Name { get; set; } = string.Empty;
-    public string Value { get; set; } = string.Empty;
+    public string Value
+    {
+        get => _value;
+        set
+        {
+            _value = value;
+            OnPropertyChanged();
+        }
+    }
 
     public string Icon { get; set; } = AppIcons.Tag;
     public Brush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
@@ -41,10 +50,6 @@ public partial class EnvVarItem : INotifyPropertyChanged
             OnPropertyChanged(nameof(EditVisibility));
             OnPropertyChanged(nameof(ChildEditVisibility));
             OnPropertyChanged(nameof(ValueVisibility));
-            OnPropertyChanged(nameof(AddChildButtonVisibility));
-            OnPropertyChanged(nameof(SortMenuVisibility));
-            OnPropertyChanged(nameof(SortMenuVisibility));
-            OnPropertyChanged(nameof(MoreOptionsButtonVisibility));
         }
     }
 
@@ -118,10 +123,48 @@ public partial class EnvVarItem : INotifyPropertyChanged
     public EnvVarItem(string name, string value, bool isReadOnly = false, bool isSystemVariable = false)
     {
         Name = name;
-        Value = value;
         IsEntry = false;
         IsReadOnly = isReadOnly;
         IsSystemVariable = isSystemVariable;
+
+        UpdateValue(value);
+    }
+
+    private EnvVarItem CreateEntry(string value)
+    {
+        // Expand for validation purposes only
+        string expanded = Environment.ExpandEnvironmentVariables(value);
+        bool isPathLike = expanded.Contains('\\') || expanded.Contains('/') || expanded.Contains(':');
+        bool isFolder = Directory.Exists(expanded);
+        bool isFile = File.Exists(expanded);
+        bool exists = isFolder || isFile;
+
+        return new EnvVarItem
+        {
+            Name = value,
+            Value = value,
+            IsEntry = true,
+            IsValid = exists,
+            Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,
+            IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : isPathLike ? Colors.Crimson : Colors.DeepSkyBlue),
+            IsReadOnly = IsReadOnly,
+            IsSystemVariable = IsSystemVariable
+        };
+    }
+
+    public void UpdateChildrenProperties()
+    {
+        foreach (var child in Children)
+        {
+            child.IsSystemVariable = IsSystemVariable;
+            child.IsReadOnly = IsReadOnly;
+        }
+    }
+
+    public void UpdateValue(string value)
+    {
+        Value = value;
+        IsEntry = false;
 
         bool isPathLike = value.Contains('\\') || value.Contains('/') || value.Contains(':');
         bool isMultiValue = value.Contains(';');
@@ -132,11 +175,12 @@ public partial class EnvVarItem : INotifyPropertyChanged
             Icon = isPathLike ? AppIcons.Library : AppIcons.DialShape1;
             IconColor = new SolidColorBrush(Colors.Orange);
 
+            Children.Clear();
             // Parse path entries as children
-            var entries = value.Split(';');
-            foreach (var entry in entries)
+            string[] entries = value.Split(';');
+            foreach (string entry in entries)
             {
-                Children.Add(CreateVarEntry(entry));
+                Children.Add(CreateEntry(entry));
             }
         }
         else if (isPathLike)
@@ -162,36 +206,6 @@ public partial class EnvVarItem : INotifyPropertyChanged
         {
             Icon = AppIcons.Tag;
             IconColor = new SolidColorBrush(IsReadOnly ? Colors.Gray : Colors.DeepSkyBlue);
-        }
-    }
-
-    private EnvVarItem CreateVarEntry(string value)
-    {
-        // Expand for validation purposes only
-        string expanded = Environment.ExpandEnvironmentVariables(value);
-        bool isPathLike = expanded.Contains('\\') || expanded.Contains('/') || expanded.Contains(':');
-        bool isFolder = Directory.Exists(expanded);
-        bool isFile = File.Exists(expanded);
-        bool exists = isFolder || isFile;
-
-        return new EnvVarItem
-        {
-            Name = value,
-            Value = value,
-            IsEntry = true,
-            IsValid = exists,
-            Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,
-            IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : isPathLike ? Colors.Crimson : Colors.DeepSkyBlue),
-            IsSystemVariable = IsSystemVariable
-        };
-    }
-
-    public void UpdateChildrenProperties()
-    {
-        foreach (var child in Children)
-        {
-            child.IsSystemVariable = IsSystemVariable;
-            child.IsReadOnly = IsReadOnly;
         }
     }
 
