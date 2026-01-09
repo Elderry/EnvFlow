@@ -326,6 +326,29 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         StatusMessage = $"Removed entry [{entry.Value}] from [{parent.Name}]";
     }
 
+    public void AddVariable(string name, string value, bool isSystemVariable)
+    {
+        _envService.SetVariable(
+            isSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+            name,
+            value);
+
+        EnvVarItem newItem = new(name, value, isReadOnly: false, isSystemVariable: isSystemVariable);
+
+        if (isSystemVariable)
+        {
+            SystemVariables.Add(newItem);
+            SystemVariableCount = SystemVariables.Count;
+        }
+        else
+        {
+            UserVariables.Add(newItem);
+            UserVariableCount = UserVariables.Count;
+        }
+
+        StatusMessage = $"Added {(isSystemVariable ? "system" : "user")} variable: {name}";
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

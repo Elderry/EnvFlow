@@ -115,64 +115,33 @@ public sealed partial class MainWindow : Window
 
     private async void AddUserVariableButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new VariableEditorDialog
+        VariableEditorDialog dialog = new()
         {
             Title = "Add User Variable",
-            XamlRoot = this.Content.XamlRoot
+            XamlRoot = Content.XamlRoot
         };
 
-        var result = await dialog.ShowAsync();
+        ContentDialogResult result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            try
-            {
-                ViewModel.StatusMessage = $"Adding user variable: {dialog.VariableName}";
-
-                _envService.SetVariable(EnvironmentVariableTarget.User, dialog.VariableName, dialog.VariableValue);
-                ViewModel.RefreshVariables();
-                UpdateStatusBar();
-                ViewModel.StatusMessage = $"Added user variable: {dialog.VariableName}";
-            }
-            catch (Exception ex)
-            {
-                ViewModel.StatusMessage = $"Error adding variable: {ex.Message}";
-                UpdateStatusBar();
-            }
+            ViewModel.AddVariable(dialog.VariableName, dialog.VariableValue, isSystemVariable: false);
+            UpdateStatusBar();
         }
     }
 
     private async void AddSystemVariableButton_Click(object sender, RoutedEventArgs e)
     {
-        if (!ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to add system variables";
-            UpdateStatusBar();
-            return;
-        }
-
-        var dialog = new VariableEditorDialog
+        VariableEditorDialog dialog = new()
         {
             Title = "Add System Variable",
-            XamlRoot = this.Content.XamlRoot
+            XamlRoot = Content.XamlRoot
         };
 
-        var result = await dialog.ShowAsync();
+        ContentDialogResult result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            try
-            {
-                ViewModel.StatusMessage = $"Adding system variable: {dialog.VariableName}";
-
-                _envService.SetVariable(EnvironmentVariableTarget.Machine, dialog.VariableName, dialog.VariableValue);
-                ViewModel.RefreshVariables();
-                UpdateStatusBar();
-                ViewModel.StatusMessage = $"Added system variable: {dialog.VariableName}";
-            }
-            catch (Exception ex)
-            {
-                ViewModel.StatusMessage = $"Error adding variable: {ex.Message}";
-                UpdateStatusBar();
-            }
+            ViewModel.AddVariable(dialog.VariableName, dialog.VariableValue, isSystemVariable: true);
+            UpdateStatusBar();
         }
     }
 
