@@ -286,143 +286,49 @@ public sealed partial class MainWindow : Window
         return null;
     }
 
-    private async void EditItemButton_Click(object sender, RoutedEventArgs e)
+    private async void EditButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem item)
-            return;
-
-        // Check if the variable is read-only
-        if (item.IsReadOnly)
-        {
-            ViewModel.StatusMessage = "This is a read-only system-managed variable";
-            UpdateStatusBar();
-            return;
-        }
-
-        // Determine if this is a system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
-        if (!isSystemVariable)
-        {
-            foreach (var sysVar in ViewModel.SystemVariables)
-            {
-                if (sysVar.Children.Contains(item))
-                {
-                    isSystemVariable = true;
-                    break;
-                }
-            }
-        }
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to edit system variables";
-            UpdateStatusBar();
-            return;
-        }
+        EnvVarItem item = ((sender as FrameworkElement)?.DataContext as EnvVarItem)!;
 
         // Open VariableEditorDialog for editing
         if (item.IsEntry)
         {
-            // For child items, open dialog in path entry mode
-            var dialog = new Dialogs.VariableEditorDialog
+            // For entry items, open dialog in entry mode
+            VariableEditorDialog dialog = new()
             {
-                XamlRoot = this.Content.XamlRoot
+                XamlRoot = Content.XamlRoot
             };
 
             // Find parent variable
-            EnvVarItem? parentItem = null;
-            foreach (var userVar in ViewModel.UserVariables)
-            {
-                if (userVar.Children.Contains(item))
-                {
-                    parentItem = userVar;
-                    break;
-                }
-            }
+            EnvVarItem parent = GetParentVariable(item);
 
-            if (parentItem == null)
-            {
-                foreach (var sysVar in ViewModel.SystemVariables)
-                {
-                    if (sysVar.Children.Contains(item))
-                    {
-                        parentItem = sysVar;
-                        break;
-                    }
-                }
-            }
-
-            if (parentItem == null) return;
-
-            dialog.ConfigureForEntry(parentItem.Name, isEditMode: true);
+            dialog.ConfigureForEntry(parent.Name, isEditMode: true);
             dialog.VariableValue = item.Name;
 
-            var result = await dialog.ShowAsync();
+            ContentDialogResult result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(dialog.VariableValue))
             {
-                try
-                {
-
-
-                    // Update the path in the parent's value
-                    var paths = parentItem.Children.Select(c => c == item ? dialog.VariableValue.Trim() : c.Name).ToList();
-                    string newValue = string.Join(";", paths);
-
-                    ViewModel.StatusMessage = $"Updating path entry in {parentItem.Name}";
-
-                    if (isSystemVariable)
-                        _envService.SetVariable(EnvironmentVariableTarget.Machine, parentItem.Name, newValue);
-                    else
-                        _envService.SetVariable(EnvironmentVariableTarget.User, parentItem.Name, newValue);
-
-                    ViewModel.RefreshVariables();
-                    UpdateStatusBar();
-                    ViewModel.StatusMessage = $"Updated path entry in {parentItem.Name}";
-                }
-                catch (Exception ex)
-                {
-                    ViewModel.StatusMessage = $"Error updating path entry: {ex.Message}";
-                    UpdateStatusBar();
-                }
+                ViewModel.UpdateEntry(parent, item, dialog.VariableValue);
+                UpdateStatusBar();
             }
         }
         else
         {
             // For parent/single value items, open dialog in normal mode
-            var dialog = new Dialogs.VariableEditorDialog
+            VariableEditorDialog dialog = new()
             {
-                XamlRoot = this.Content.XamlRoot,
+                XamlRoot = Content.XamlRoot,
                 Title = "Edit Variable",
-                IsEditMode = true
+                IsEditMode = true,
+                VariableName = item.Name,
+                VariableValue = item.Value
             };
 
-            dialog.VariableName = item.Name;
-            dialog.VariableValue = item.Value;
-
-            var result = await dialog.ShowAsync();
+            ContentDialogResult result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                try
-                {
-
-
-                    ViewModel.StatusMessage = $"Updating {item.Name}";
-
-                    if (isSystemVariable)
-                        _envService.SetVariable(EnvironmentVariableTarget.Machine, item.Name, dialog.VariableValue);
-                    else
-                        _envService.SetVariable(EnvironmentVariableTarget.User, item.Name, dialog.VariableValue);
-
-                    ViewModel.RefreshVariables();
-                    UpdateStatusBar();
-                    ViewModel.StatusMessage = $"Updated {item.Name}";
-                }
-                catch (Exception ex)
-                {
-                    ViewModel.StatusMessage = $"Error updating variable: {ex.Message}";
-                    UpdateStatusBar();
-                }
+                ViewModel.UpdateVariable(item, dialog.VariableValue);
+                UpdateStatusBar();
             }
         }
     }
@@ -471,7 +377,7 @@ public sealed partial class MainWindow : Window
 
     private async void DeleteButton_Click(object sender, RoutedEventArgs e)
     {
-        EnvVarItem item = ((sender as MenuFlyoutItem)?.DataContext as EnvVarItem)!;
+        EnvVarItem item = ((sender as FrameworkElement)?.DataContext as EnvVarItem)!;
 
         // Check if this is a child item
         if (item.IsEntry)

@@ -326,6 +326,33 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         StatusMessage = $"Removed entry [{entry.Value}] from [{parent.Name}]";
     }
 
+    public void UpdateVariable(EnvVarItem item, string value)
+    {
+        _envService.SetVariable(
+                item.IsSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+                item.Name,
+                value);
+
+        item.UpdateValue(value);
+        StatusMessage = $"Updated {item.Name}";
+    }
+
+    public void UpdateEntry(EnvVarItem parent, EnvVarItem entry, string value)
+    {
+        List<string> entries = parent.Children
+            .Select(c => c == entry ? value : c.Name)
+            .ToList();
+        string newValue = string.Join(";", entries);
+
+        _envService.SetVariable(
+            parent.IsSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+            parent.Name,
+            newValue);
+
+        parent.UpdateValue(newValue);
+        StatusMessage = $"Updated entry in {parent.Name}";
+    }
+
     public void AddVariable(string name, string value, bool isSystemVariable)
     {
         _envService.SetVariable(

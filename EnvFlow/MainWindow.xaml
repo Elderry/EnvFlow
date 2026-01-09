@@ -149,7 +149,7 @@
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutSeparator Visibility="{Binding DeleteMenuVisibility}"/>
-                                  <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Edit" Click="EditButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
@@ -234,7 +234,7 @@
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutSeparator Visibility="{Binding DeleteButtonVisibility}"/>
-                                  <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Edit" Click="EditButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
@@ -281,28 +281,28 @@
                           <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}">
                             <!-- Add Child Button for composite variables -->
                             <Button Padding="4" 
-                                                        Click="AddEntryButton_Click"
-                                                        Visibility="{Binding AddChildButtonVisibility}"
-                                                        ToolTipService.ToolTip="Add entry">
+                                    Click="AddEntryButton_Click"
+                                    Visibility="{Binding AddChildButtonVisibility}"
+                                    ToolTipService.ToolTip="Add entry">
                               <FontIcon Glyph="&#xE710;" FontSize="12" Foreground="#107C10"/>
                             </Button>
 
                             <Button Padding="4" 
-                                                        Click="EditItemButton_Click"
-                                                        Visibility="{Binding EditButtonVisibility}"
-                                                        ToolTipService.ToolTip="Edit">
+                                    Click="EditButton_Click"
+                                    Visibility="{Binding EditButtonVisibility}"
+                                    ToolTipService.ToolTip="Edit">
                               <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
                             </Button>
                             <Button Padding="4" 
-                                                        Click="DeleteButton_Click"
-                                                        Visibility="{Binding DeleteButtonVisibility}"
-                                                        ToolTipService.ToolTip="Delete">
+                                    Click="DeleteButton_Click"
+                                    Visibility="{Binding DeleteButtonVisibility}"
+                                    ToolTipService.ToolTip="Delete">
                               <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
                             </Button>
 
                             <Button Padding="4"
-                                                        Visibility="{Binding MoreOptionsButtonVisibility}"
-                                                        ToolTipService.ToolTip="More options">
+                                    Visibility="{Binding MoreOptionsButtonVisibility}"
+                                    ToolTipService.ToolTip="More options">
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>
                                 <MenuFlyout Opening="MenuFlyout_Opening" Closed="MenuFlyout_Closed">
@@ -478,7 +478,7 @@
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutSeparator Visibility="{Binding DeleteMenuVisibility}"/>
-                                  <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Edit" Click="EditButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
@@ -562,7 +562,7 @@
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
                                   <MenuFlyoutSeparator Visibility="{Binding DeleteMenuVisibility}"/>
-                                  <MenuFlyoutItem Text="Edit" Click="EditItemButton_Click" Visibility="{Binding EditMenuVisibility}">
+                                  <MenuFlyoutItem Text="Edit" Click="EditButton_Click" Visibility="{Binding EditMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
@@ -617,7 +617,7 @@
                             </Button>
 
                             <Button Padding="4" 
-                                    Click="EditItemButton_Click"
+                                    Click="EditButton_Click"
                                     Visibility="{Binding EditButtonVisibility}"
                                     IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
                                     ToolTipService.ToolTip="Edit (requires admin)">
