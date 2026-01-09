@@ -159,7 +159,7 @@
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteMenuVisibility}">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteButton_Click" Visibility="{Binding DeleteMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
@@ -244,7 +244,7 @@
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteMenuVisibility}">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteButton_Click" Visibility="{Binding DeleteMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
@@ -294,7 +294,7 @@
                               <FontIcon Glyph="&#xE104;" FontSize="12" Foreground="#0078D4"/>
                             </Button>
                             <Button Padding="4" 
-                                                        Click="DeleteItemButton_Click"
+                                                        Click="DeleteButton_Click"
                                                         Visibility="{Binding DeleteButtonVisibility}"
                                                         ToolTipService.ToolTip="Delete">
                               <FontIcon Glyph="&#xE107;" FontSize="12" Foreground="#E81123"/>
@@ -488,7 +488,7 @@
                                       <FontIcon Glyph="&#xE710;" Foreground="#107C10"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteMenuVisibility}">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteButton_Click" Visibility="{Binding DeleteMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
@@ -567,7 +567,7 @@
                                       <FontIcon Glyph="&#xE104;" Foreground="#0078D4"/>
                                     </MenuFlyoutItem.Icon>
                                   </MenuFlyoutItem>
-                                  <MenuFlyoutItem Text="Delete" Click="DeleteItemButton_Click" Visibility="{Binding DeleteMenuVisibility}">
+                                  <MenuFlyoutItem Text="Delete" Click="DeleteButton_Click" Visibility="{Binding DeleteMenuVisibility}">
                                     <MenuFlyoutItem.Icon>
                                       <FontIcon Glyph="&#xE107;" Foreground="#E81123"/>
                                     </MenuFlyoutItem.Icon>
@@ -625,7 +625,7 @@
                             </Button>
                             <Button Padding="4" 
                                     x:Name="DeleteBtn"
-                                    Click="DeleteItemButton_Click"
+                                    Click="DeleteButton_Click"
                                     Visibility="{Binding DeleteButtonVisibility}"
                                     IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.IsAdmin}"
                                     ToolTipService.ToolTip="Delete (requires admin)">

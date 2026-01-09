@@ -173,36 +173,25 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         // Will be called from UI
     }
 
-    public void DeleteUserVariable()
+    public void Delete(EnvVarItem item)
     {
-        if (SelectedUserVariable == null || SelectedUserVariable.IsEntry) return;
+        _envService.DeleteVariable(
+            item.IsSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+            item.Name);
 
-        try
+        // Remove from collection instead of reloading
+        if (item.IsSystemVariable)
         {
-            _envService.DeleteVariable(EnvironmentVariableTarget.User, SelectedUserVariable.Name);
-            StatusMessage = $"Deleted user variable: {SelectedUserVariable.Name}";
-            LoadVariables();
+            SystemVariables.Remove(item);
+            SystemVariableCount = SystemVariables.Count;
         }
-        catch (Exception ex)
+        else
         {
-            StatusMessage = $"Error deleting variable: {ex.Message}";
+            UserVariables.Remove(item);
+            UserVariableCount = UserVariables.Count;
         }
-    }
 
-    public void DeleteSystemVariable()
-    {
-        if (!IsAdmin || SelectedSystemVariable == null || SelectedSystemVariable.IsEntry) return;
-
-        try
-        {
-            _envService.DeleteVariable(EnvironmentVariableTarget.Machine, SelectedSystemVariable.Name);
-            StatusMessage = $"Deleted system variable: {SelectedSystemVariable.Name}";
-            LoadVariables();
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"Error deleting variable: {ex.Message}";
-        }
+        StatusMessage = $"Deleted {(item.IsSystemVariable ? "system" : "user")} variable: {item.Name}";
     }
 
     public void Shrink(EnvVarItem item)
@@ -320,6 +309,21 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
 
         item.UpdateValue(newValue);
         StatusMessage = $"Added path entry to {item.Name}";
+    }
+
+    public void DeleteEntry(EnvVarItem parent, EnvVarItem entry)
+    {
+        // Remove the child and reconstruct the parent PATH variable
+        List<string> entries = parent.Children.Where(c => c != entry).Select(c => c.Name).ToList();
+        string newValue = string.Join(";", entries);
+
+        _envService.SetVariable(
+            parent.IsSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+            parent.Name,
+            newValue);
+
+        parent.UpdateValue(newValue);
+        StatusMessage = $"Removed entry [{entry.Value}] from [{parent.Name}]";
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

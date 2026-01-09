@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -231,81 +231,6 @@ public sealed partial class MainWindow : Window
         ViewModel.SelectedSystemVariable.IsEditing = true;
         ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
         UpdateStatusBar();
-    }
-
-    private async void DeleteUserVariableButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel.SelectedUserVariable == null)
-        {
-            ViewModel.StatusMessage = "Please select a variable to delete";
-            UpdateStatusBar();
-            return;
-        }
-
-        // Check if this is a child item
-        if (ViewModel.SelectedUserVariable.IsEntry)
-        {
-            await DeleteChildEntry(ViewModel.SelectedUserVariable, false);
-            return;
-        }
-
-        var confirmDialog = new ContentDialog
-        {
-            Title = "Confirm Delete",
-            Content = $"Are you sure you want to delete the user variable '{ViewModel.SelectedUserVariable.Name}'?",
-            PrimaryButtonText = "Delete",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Close,
-            XamlRoot = this.Content.XamlRoot
-        };
-
-        var result = await confirmDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            ViewModel.DeleteUserVariable();
-            UpdateStatusBar();
-        }
-    }
-
-    private async void DeleteSystemVariableButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (!ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to delete system variables";
-            UpdateStatusBar();
-            return;
-        }
-
-        if (ViewModel.SelectedSystemVariable == null)
-        {
-            ViewModel.StatusMessage = "Please select a variable to delete";
-            UpdateStatusBar();
-            return;
-        }
-
-        // Check if this is a child item
-        if (ViewModel.SelectedSystemVariable.IsEntry)
-        {
-            await DeleteChildEntry(ViewModel.SelectedSystemVariable, true);
-            return;
-        }
-
-        var confirmDialog = new ContentDialog
-        {
-            Title = "Confirm Delete",
-            Content = $"Are you sure you want to delete the system variable '{ViewModel.SelectedSystemVariable.Name}'?",
-            PrimaryButtonText = "Delete",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Close,
-            XamlRoot = this.Content.XamlRoot
-        };
-
-        var result = await confirmDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            ViewModel.DeleteSystemVariable();
-            UpdateStatusBar();
-        }
     }
 
     private void TreeItem_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -575,72 +500,34 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void DeleteItemButton_Click(object sender, RoutedEventArgs e)
+    private async void DeleteButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem item)
-            return;
-
-        // Check if the variable is read-only
-        if (item.IsReadOnly)
-        {
-            ViewModel.StatusMessage = "This is a read-only system-managed variable";
-            UpdateStatusBar();
-            return;
-        }
-
-        // Determine if this is a system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
-        if (!isSystemVariable)
-        {
-            foreach (var sysVar in ViewModel.SystemVariables)
-            {
-                if (sysVar.Children.Contains(item))
-                {
-                    isSystemVariable = true;
-                    break;
-                }
-            }
-        }
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to delete system variables";
-            UpdateStatusBar();
-            return;
-        }
+        EnvVarItem item = ((sender as MenuFlyoutItem)?.DataContext as EnvVarItem)!;
 
         // Check if this is a child item
         if (item.IsEntry)
         {
-            await DeleteChildEntry(item, isSystemVariable);
+            bool isSystemVariable = ViewModel.SystemVariables.Any(v => v.Children.Contains(item));
+            await DeleteEntry(item);
             return;
         }
 
-        // Delete parent variable
-        var confirmDialog = new ContentDialog
+        // Delete parent variable - show confirmation
+        ContentDialog confirmDialog = new()
         {
             Title = "Confirm Delete",
-            Content = $"Are you sure you want to delete the {(isSystemVariable ? "system" : "user")} variable '{item.Name}'?",
+            Content = $"Are you sure you want to delete " +
+                      $"the {(item.IsSystemVariable ? "system" : "user")} variable '{item.Name}'?",
             PrimaryButtonText = "Delete",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close,
-            XamlRoot = this.Content.XamlRoot
+            XamlRoot = Content.XamlRoot
         };
 
-        var result = await confirmDialog.ShowAsync();
+        ContentDialogResult result = await confirmDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            if (isSystemVariable)
-            {
-                ViewModel.SelectedSystemVariable = item;
-                ViewModel.DeleteSystemVariable();
-            }
-            else
-            {
-                ViewModel.SelectedUserVariable = item;
-                ViewModel.DeleteUserVariable();
-            }
+            ViewModel.Delete(item);
             UpdateStatusBar();
         }
     }
@@ -842,10 +729,12 @@ public sealed partial class MainWindow : Window
         return ViewModel.UserVariables.Any(v => v == item || v.Children.Contains(item));
     }
 
-    private EnvVarItem? GetParentVariable(EnvVarItem childItem, bool isUserVariable)
+    private EnvVarItem GetParentVariable(EnvVarItem entry)
     {
-        var collection = isUserVariable ? ViewModel.UserVariables : ViewModel.SystemVariables;
-        return collection.FirstOrDefault(v => v.Children.Contains(childItem));
+        ObservableCollection<EnvVarItem> collection = entry.IsSystemVariable
+            ? ViewModel.SystemVariables
+            : ViewModel.UserVariables;
+        return collection.First(v => v.Children.Contains(entry));
     }
 
     private async void AddEntryButton_Click(object sender, RoutedEventArgs e)
@@ -888,166 +777,27 @@ public sealed partial class MainWindow : Window
         UpdateStatusBar();
     }
 
-    private async void DeleteChildButton_Click(object sender, RoutedEventArgs e)
+    private async Task DeleteEntry(EnvVarItem entry)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem childItem)
-            return;
-
-        if (!childItem.IsEntry)
-            return;
-
         // Find parent variable
-        EnvVarItem? parentVariable = null;
-        bool isSystemVariable = false;
-
-        foreach (var userVar in ViewModel.UserVariables)
-        {
-            if (userVar.Children.Contains(childItem))
-            {
-                parentVariable = userVar;
-                isSystemVariable = false;
-                break;
-            }
-        }
-
-        if (parentVariable == null)
-        {
-            foreach (var sysVar in ViewModel.SystemVariables)
-            {
-                if (sysVar.Children.Contains(childItem))
-                {
-                    parentVariable = sysVar;
-                    isSystemVariable = true;
-                    break;
-                }
-            }
-        }
-
-        if (parentVariable == null) return;
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
-            UpdateStatusBar();
-            return;
-        }
+        EnvVarItem parentVariable = GetParentVariable(entry);
 
         // Confirm deletion
-        var confirmDialog = new ContentDialog
+        ContentDialog confirmDialog = new()
         {
             Title = "Confirm Delete",
-            Content = $"Are you sure you want to delete this entry?\n\n{childItem.Name}",
+            Content = $"Are you sure you want to delete this entry?\n\n{entry.Name}",
             PrimaryButtonText = "Delete",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close,
-            XamlRoot = this.Content.XamlRoot
+            XamlRoot = Content.XamlRoot
         };
 
-        var result = await confirmDialog.ShowAsync();
+        ContentDialogResult result = await confirmDialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            try
-            {
-
-
-                // Remove the child and reconstruct the parent PATH variable
-                var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
-                string newValue = string.Join(";", paths);
-
-                ViewModel.StatusMessage = $"Removing path entry from {parentVariable.Name}";
-
-                if (isSystemVariable)
-                    _envService.SetVariable(EnvironmentVariableTarget.Machine, parentVariable.Name, newValue);
-                else
-                    _envService.SetVariable(EnvironmentVariableTarget.User, parentVariable.Name, newValue);
-
-                ViewModel.RefreshVariables();
-                UpdateStatusBar();
-                ViewModel.StatusMessage = $"Removed path entry from {parentVariable.Name}";
-            }
-            catch (Exception ex)
-            {
-                ViewModel.StatusMessage = $"Error removing path entry: {ex.Message}";
-                UpdateStatusBar();
-            }
-        }
-    }
-
-    private async Task DeleteChildEntry(EnvVarItem childItem, bool isSystemVariable)
-    {
-        // Find parent variable
-        EnvVarItem? parentVariable = null;
-
-        foreach (var userVar in ViewModel.UserVariables)
-        {
-            if (userVar.Children.Contains(childItem))
-            {
-                parentVariable = userVar;
-                break;
-            }
-        }
-
-        if (parentVariable == null)
-        {
-            foreach (var sysVar in ViewModel.SystemVariables)
-            {
-                if (sysVar.Children.Contains(childItem))
-                {
-                    parentVariable = sysVar;
-                    break;
-                }
-            }
-        }
-
-        if (parentVariable == null) return;
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
+            ViewModel.DeleteEntry(parentVariable, entry);
             UpdateStatusBar();
-            return;
-        }
-
-        // Confirm deletion
-        var confirmDialog = new ContentDialog
-        {
-            Title = "Confirm Delete",
-            Content = $"Are you sure you want to delete this entry?\n\n{childItem.Name}",
-            PrimaryButtonText = "Delete",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Close,
-            XamlRoot = this.Content.XamlRoot
-        };
-
-        var result = await confirmDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            try
-            {
-
-
-                // Remove the child and reconstruct the parent PATH variable
-                var paths = parentVariable.Children.Where(c => c != childItem).Select(c => c.Name).ToList();
-                string newValue = string.Join(";", paths);
-
-                ViewModel.StatusMessage = $"Removing path entry from {parentVariable.Name}";
-
-                if (isSystemVariable)
-                    _envService.SetVariable(EnvironmentVariableTarget.Machine, parentVariable.Name, newValue);
-                else
-                    _envService.SetVariable(EnvironmentVariableTarget.User, parentVariable.Name, newValue);
-
-                ViewModel.RefreshVariables();
-                UpdateStatusBar();
-                ViewModel.StatusMessage = $"Removed path entry from {parentVariable.Name}";
-            }
-            catch (Exception ex)
-            {
-                ViewModel.StatusMessage = $"Error removing path entry: {ex.Message}";
-                UpdateStatusBar();
-            }
         }
     }
 
