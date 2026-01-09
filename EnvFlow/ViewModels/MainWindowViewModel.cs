@@ -295,6 +295,33 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
         StatusMessage = $"Sorted {item.Name}";
     }
 
+    public void AddEntry(EnvVarItem item, string entry)
+    {
+        if (item.IsSystemVariable && !IsAdmin)
+        {
+            StatusMessage = "Administrator privileges required to modify system variables";
+            return;
+        }
+
+        if (!item.IsComposite)
+        {
+            return;
+        }
+
+        // Add the new path to the existing paths
+        List<string> existingPaths = item.Children.Select(c => c.Name).ToList();
+        existingPaths.Add(entry);
+        string newValue = string.Join(";", existingPaths);
+
+        _envService.SetVariable(
+            item.IsSystemVariable ? EnvironmentVariableTarget.Machine : EnvironmentVariableTarget.User,
+            item.Name,
+            newValue);
+
+        item.UpdateValue(newValue);
+        StatusMessage = $"Added path entry to {item.Name}";
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

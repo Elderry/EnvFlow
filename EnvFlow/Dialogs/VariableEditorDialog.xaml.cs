@@ -29,7 +29,7 @@ public sealed partial class VariableEditorDialog : ContentDialog
         UpdatePrimaryButtonState();
     }
     
-    public void ConfigureForPathEntry(string parentVariableName, bool isEditMode = false)
+    public void ConfigureForEntry(string parentVariableName, bool isEditMode = false)
     {
         IsPathEntryMode = true;
         IsEditMode = isEditMode;

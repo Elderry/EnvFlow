@@ -461,7 +461,7 @@ public sealed partial class MainWindow : Window
 
             if (parentItem == null) return;
 
-            dialog.ConfigureForPathEntry(parentItem.Name, isEditMode: true);
+            dialog.ConfigureForEntry(parentItem.Name, isEditMode: true);
             dialog.VariableValue = item.Name;
 
             var result = await dialog.ShowAsync();
@@ -848,58 +848,22 @@ public sealed partial class MainWindow : Window
         return collection.FirstOrDefault(v => v.Children.Contains(childItem));
     }
 
-    private async void AddChildButton_Click(object sender, RoutedEventArgs e)
+    private async void AddEntryButton_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem parentItem)
-            return;
-
-        // Determine if this is a user or system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(parentItem);
-
-        // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to modify system variables";
-            UpdateStatusBar();
-            return;
-        }
+        EnvVarItem item = ((sender as FrameworkElement)?.DataContext as EnvVarItem)!;
 
         // Use the VariableEditorDialog in path entry mode
-        var dialog = new Dialogs.VariableEditorDialog
+        VariableEditorDialog dialog = new()
         {
-            XamlRoot = this.Content.XamlRoot
+            XamlRoot = Content.XamlRoot
         };
+        dialog.ConfigureForEntry(item.Name);
 
-        dialog.ConfigureForPathEntry(parentItem.Name);
-
-        var result = await dialog.ShowAsync();
+        ContentDialogResult result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(dialog.VariableValue))
         {
-            try
-            {
-
-
-                // Add the new path to the existing paths
-                var existingPaths = parentItem.Children.Select(c => c.Name).ToList();
-                existingPaths.Add(dialog.VariableValue.Trim());
-                string newValue = string.Join(";", existingPaths);
-
-                ViewModel.StatusMessage = $"Adding path entry to {parentItem.Name}";
-
-                if (isSystemVariable)
-                    _envService.SetVariable(EnvironmentVariableTarget.Machine, parentItem.Name, newValue);
-                else
-                    _envService.SetVariable(EnvironmentVariableTarget.User, parentItem.Name, newValue);
-
-                ViewModel.RefreshVariables();
-                UpdateStatusBar();
-                ViewModel.StatusMessage = $"Added path entry to {parentItem.Name}";
-            }
-            catch (Exception ex)
-            {
-                ViewModel.StatusMessage = $"Error adding path entry: {ex.Message}";
-                UpdateStatusBar();
-            }
+            ViewModel.AddEntry(item, dialog.VariableValue);
+            UpdateStatusBar();
         }
     }
 
