@@ -25,7 +25,6 @@ public sealed partial class MainWindow : Window
 {
     public MainWindowViewModel ViewModel { get; }
     private readonly EnvVarService _envService;
-    private EnvVarItem? _currentlyEditingItem;
     private bool _isSplitterDragging = false;
     private double _splitterStartX;
     private TreeViewItem? _currentFlyoutTreeItem = null;
@@ -145,63 +144,6 @@ public sealed partial class MainWindow : Window
             ViewModel.AddVariable(dialog.VariableName, dialog.VariableValue, isSystemVariable: true);
             UpdateStatusBar();
         }
-    }
-
-    private void EditUserVariableButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel.SelectedUserVariable == null)
-        {
-            ViewModel.StatusMessage = "Please select a variable to edit";
-            UpdateStatusBar();
-            return;
-        }
-
-        // Exit edit mode for previously editing item
-        if (_currentlyEditingItem != null && _currentlyEditingItem != ViewModel.SelectedUserVariable)
-        {
-            _currentlyEditingItem.IsEditing = false;
-        }
-
-        // Enter inline edit mode
-        _currentlyEditingItem = ViewModel.SelectedUserVariable;
-        ViewModel.SelectedUserVariable.EditValue = ViewModel.SelectedUserVariable.IsEntry
-            ? ViewModel.SelectedUserVariable.Name
-            : ViewModel.SelectedUserVariable.Value;
-        ViewModel.SelectedUserVariable.IsEditing = true;
-        ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
-        UpdateStatusBar();
-    }
-
-    private void EditSystemVariableButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (!ViewModel.IsAdmin)
-        {
-            ViewModel.StatusMessage = "Administrator privileges required to edit system variables";
-            UpdateStatusBar();
-            return;
-        }
-
-        if (ViewModel.SelectedSystemVariable == null)
-        {
-            ViewModel.StatusMessage = "Please select a variable to edit";
-            UpdateStatusBar();
-            return;
-        }
-
-        // Exit edit mode for previously editing item
-        if (_currentlyEditingItem != null && _currentlyEditingItem != ViewModel.SelectedSystemVariable)
-        {
-            _currentlyEditingItem.IsEditing = false;
-        }
-
-        // Enter inline edit mode
-        _currentlyEditingItem = ViewModel.SelectedSystemVariable;
-        ViewModel.SelectedSystemVariable.EditValue = ViewModel.SelectedSystemVariable.IsEntry
-            ? ViewModel.SelectedSystemVariable.Name
-            : ViewModel.SelectedSystemVariable.Value;
-        ViewModel.SelectedSystemVariable.IsEditing = true;
-        ViewModel.StatusMessage = "Editing variable inline. Press Enter to save, Escape to cancel.";
-        UpdateStatusBar();
     }
 
     private void TreeItem_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -439,14 +381,7 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        // Exit edit mode for previously editing item
-        if (_currentlyEditingItem != null && _currentlyEditingItem != item)
-        {
-            _currentlyEditingItem.IsEditing = false;
-        }
-
         // Enter edit mode
-        _currentlyEditingItem = item;
         item.EditValue = item.IsEntry ? item.Name : item.Value;
         item.IsEditing = true;
 
@@ -482,12 +417,6 @@ public sealed partial class MainWindow : Window
             // Cancel editing
             e.Handled = true;
             item.IsEditing = false;
-
-            // Clear currently editing item
-            if (_currentlyEditingItem == item)
-            {
-                _currentlyEditingItem = null;
-            }
         }
     }
 
@@ -504,12 +433,6 @@ public sealed partial class MainWindow : Window
     {
         // Exit edit mode
         item.IsEditing = false;
-
-        // Clear currently editing item
-        if (_currentlyEditingItem == item)
-        {
-            _currentlyEditingItem = null;
-        }
 
         // Check if value changed
         string originalValue = item.IsEntry ? item.Name : item.Value;
