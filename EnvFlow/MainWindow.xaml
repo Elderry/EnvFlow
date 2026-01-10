@@ -192,22 +192,21 @@
                                 </MenuFlyout>
                               </StackPanel.ContextFlyout>
                               <FontIcon Glyph="{Binding Icon}" 
-                                                                  FontSize="16" 
-                                                                  Foreground="{Binding IconColor}"/>
+                                        FontSize="16" 
+                                        Foreground="{Binding IconColor}"/>
 
                               <TextBlock Text="{Binding Name}" 
-                                                                   VerticalAlignment="Center"
-                                                                   Visibility="{Binding NameVisibility}"/>
+                                         VerticalAlignment="Center"
+                                         Visibility="{Binding NameVisibility}"/>
                             </StackPanel>
 
                             <!-- Edit TextBox for child items -->
                             <TextBox x:Name="ChildEditTextBox"
-                                                             Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                             Visibility="{Binding ChildEditVisibility}"
-                                                             KeyDown="EditTextBox_KeyDown"
-                                                             LostFocus="EditTextBox_LostFocus"
-                                                             Loaded="EditTextBox_Loaded"
-                                                             Margin="24,0,0,0"/>
+                                     Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Visibility="{Binding ChildEditVisibility}"
+                                     KeyDown="EditTextBox_KeyDown"
+                                     LostFocus="EditTextBox_LostFocus"
+                                     Margin="24,0,0,0"/>
                           </Grid>
 
                           <!-- Column Separator -->
@@ -217,10 +216,10 @@
                           <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">
                             <!-- Display Mode: Show value in gray -->
                             <TextBlock Text="{Binding Value}" 
-                                                               Foreground="Gray"
-                                                               VerticalAlignment="Center"
-                                                               TextTrimming="CharacterEllipsis"
-                                                               Visibility="{Binding ValueVisibility}">
+                                       Foreground="Gray"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"
+                                       Visibility="{Binding ValueVisibility}">
                               <TextBlock.ContextFlyout>
                                 <MenuFlyout>
                                   <MenuFlyoutItem Text="Copy name" Click="CopyName_Click">
@@ -270,11 +269,10 @@
 
                             <!-- Edit Mode: Show TextBox -->
                             <TextBox x:Name="EditTextBox"
-                                                             Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                             Visibility="{Binding EditVisibility}"
-                                                             KeyDown="EditTextBox_KeyDown"
-                                                             LostFocus="EditTextBox_LostFocus"
-                                                             Loaded="EditTextBox_Loaded"/>
+                                     Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Visibility="{Binding EditVisibility}"
+                                     KeyDown="EditTextBox_KeyDown"
+                                     LostFocus="EditTextBox_LostFocus"/>
                           </Grid>
 
                           <!-- Hover Buttons (Right-aligned) -->
@@ -534,7 +532,6 @@
                                      Visibility="{Binding ChildEditVisibility}"
                                      KeyDown="EditTextBox_KeyDown"
                                      LostFocus="EditTextBox_LostFocus"
-                                     Loaded="EditTextBox_Loaded"
                                      Margin="32,0,0,0"/>
                           </Grid>
 
@@ -601,8 +598,7 @@
                                      Text="{Binding EditValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      Visibility="{Binding EditVisibility}"
                                      KeyDown="EditTextBox_KeyDown"
-                                     LostFocus="EditTextBox_LostFocus"
-                                     Loaded="EditTextBox_Loaded"/>
+                                     LostFocus="EditTextBox_LostFocus"/>
                           </Grid>
 
                           <!-- Hover Buttons (Right-aligned) -->

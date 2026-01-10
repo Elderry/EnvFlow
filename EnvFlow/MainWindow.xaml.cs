@@ -409,11 +409,10 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void TreeViewItem_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+    private async void TreeViewItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
         // Get the data context (EnvVariableItem) from the tapped element
-        if ((sender as FrameworkElement)?.DataContext is not EnvVarItem item)
-            return;
+        EnvVarItem item = ((sender as FrameworkElement)?.DataContext as EnvVarItem)!;
 
         // Prevent event from bubbling up
         e.Handled = true;
@@ -432,23 +431,8 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        // Determine if this is a user or system variable
-        bool isSystemVariable = ViewModel.SystemVariables.Contains(item);
-        if (!isSystemVariable)
-        {
-            // Check if it's a child of a system variable
-            foreach (var sysVar in ViewModel.SystemVariables)
-            {
-                if (sysVar.Children.Contains(item))
-                {
-                    isSystemVariable = true;
-                    break;
-                }
-            }
-        }
-
         // Check admin permissions for system variables
-        if (isSystemVariable && !ViewModel.IsAdmin)
+        if (item.IsSystemVariable && !ViewModel.IsAdmin)
         {
             ViewModel.StatusMessage = "Administrator privileges required to edit system variables";
             UpdateStatusBar();
@@ -465,16 +449,22 @@ public sealed partial class MainWindow : Window
         _currentlyEditingItem = item;
         item.EditValue = item.IsEntry ? item.Name : item.Value;
         item.IsEditing = true;
+
+        // Find the TextBox and focus it
+        TreeViewItem treeViewItem = FindAncestor<TreeViewItem>(sender as DependencyObject)!;
+        TextBox textBox = FindChildByName<TextBox>(treeViewItem, item.IsEntry ? "ChildEditTextBox" : "EditTextBox")!;
+        textBox.Focus(FocusState.Programmatic);
     }
 
-    private void EditTextBox_Loaded(object sender, RoutedEventArgs e)
+    private static T? FindAncestor<T>(DependencyObject? child) where T : DependencyObject
     {
-        // Focus and select all when TextBox appears
-        if (sender is TextBox textBox)
+        while (child != null)
         {
-            textBox.Focus(FocusState.Programmatic);
-            textBox.SelectAll();
+            child = VisualTreeHelper.GetParent(child);
+            if (child is T ancestor)
+                return ancestor;
         }
+        return null;
     }
 
     private void EditTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
