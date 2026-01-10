@@ -602,7 +602,14 @@
                           </Grid>
 
                           <!-- Hover Buttons (Right-aligned) -->
-                          <StackPanel Grid.Column="3" x:Name="HoverButtons" Orientation="Horizontal" Spacing="4" Opacity="0" Margin="8,0,8,0" Visibility="{Binding HoverButtonsVisibility}" Tag="System" Loaded="HoverButtons_Loaded">
+                          <StackPanel Grid.Column="3"
+                                      x:Name="HoverButtons"
+                                      Orientation="Horizontal"
+                                      Spacing="4"
+                                      Opacity="0"
+                                      Margin="8,0,8,0"
+                                      Visibility="{Binding HoverButtonsVisibility}"
+                                      Loaded="HoverButtons_Loaded">
                             <!-- Add Child Button for composite variables -->
                             <Button Padding="4" 
                                     Click="AddEntryButton_Click"
@@ -630,7 +637,6 @@
 
                             <Button Padding="4"
                                     Visibility="{Binding MoreOptionsButtonVisibility}"
-                                    Loaded="MoreOptionsButton_Loaded"
                                     ToolTipService.ToolTip="More options">
                               <FontIcon Glyph="&#xE712;" FontSize="12"/>
                               <Button.Flyout>

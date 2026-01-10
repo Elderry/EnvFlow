@@ -9,6 +9,7 @@ using EnvFlow.Models;
 using EnvFlow.Services;
 using EnvFlow.ViewModels;
 
+using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -701,51 +702,31 @@ public sealed partial class MainWindow : Window
 
     private void NameColumn_Loaded(object sender, RoutedEventArgs e)
     {
-        if (sender is StackPanel stackPanel && stackPanel.DataContext is EnvVarItem item)
+        StackPanel panel = (sender as StackPanel)!;
+        Grid parent = (panel.Parent as Grid)!;
+        EnvVarItem item = (panel.DataContext as EnvVarItem)!;
+
+        // Entries and parents should span all columns
+        if (item.IsEntry || item.IsComposite)
         {
-            // All child items (leaf entries) span all columns
-            if (item.IsEntry)
-            {
-                // Find the parent Grid and make it span all columns
-                if (stackPanel.Parent is Grid parentGrid)
-                {
-                    Grid.SetColumnSpan(parentGrid, 3);
-                    Canvas.SetZIndex(parentGrid, 1);  // Ensure it's on top
-                }
-            }
+            Grid.SetColumnSpan(parent, 3);
         }
     }
 
     private void HoverButtons_Loaded(object sender, RoutedEventArgs e)
     {
-        if (sender is not StackPanel panel || panel.Tag?.ToString() != "System")
-            return;
+        StackPanel panel = (sender as StackPanel)!;
 
-        // Only gray out and disable buttons if not admin (for system variables)
+        // Gray out and disable buttons if not admin (for system variables)
         if (!ViewModel.IsAdmin)
         {
-            var grayBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 160, 160, 160));
-
-            foreach (var child in panel.Children)
+            foreach (UIElement child in panel.Children)
             {
-                if (child is Button button && button.Content is FontIcon icon)
-                {
-                    icon.Foreground = grayBrush;
-                    button.IsEnabled = false;
-                }
+                Button button = (child as Button)!;
+                FontIcon icon = (button.Content as FontIcon)!;
+                icon.Foreground = new SolidColorBrush(Colors.Gray);
+                button.IsEnabled = false;
             }
-        }
-    }
-
-    private void MoreOptionsButton_Loaded(object sender, RoutedEventArgs e)
-    {
-        if (sender is not Button button)
-            return;
-
-        // Check if this is a system variable and disable if not admin
-        if (button.DataContext is EnvVarItem item && item.IsSystemVariable && !ViewModel.IsAdmin)
-        {
-            button.IsEnabled = false;
         }
     }
 }
