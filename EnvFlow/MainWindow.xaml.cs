@@ -91,30 +91,6 @@ public sealed partial class MainWindow : Window
         AdminHelper.RestartAsAdmin();
     }
 
-    private void UserEnvTreeView_SelectionChanged(object sender, TreeViewSelectionChangedEventArgs e)
-    {
-        if (e.AddedItems.Count > 0 && e.AddedItems[0] is EnvVarItem item)
-        {
-            ViewModel.SelectedUserVariable = item;
-        }
-        else
-        {
-            ViewModel.SelectedUserVariable = null;
-        }
-    }
-
-    private void SystemEnvTreeView_SelectionChanged(object sender, TreeViewSelectionChangedEventArgs e)
-    {
-        if (e.AddedItems.Count > 0 && e.AddedItems[0] is EnvVarItem item)
-        {
-            ViewModel.SelectedSystemVariable = item;
-        }
-        else
-        {
-            ViewModel.SelectedSystemVariable = null;
-        }
-    }
-
     private async void AddUserVariableButton_Click(object sender, RoutedEventArgs e)
     {
         VariableEditorDialog dialog = new()

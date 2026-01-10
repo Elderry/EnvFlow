@@ -18,40 +18,9 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     private int _userVariableCount;
     private int _systemVariableCount;
     private bool _isAdmin;
-    private EnvVarItem? _selectedUserVariable;
-    private EnvVarItem? _selectedSystemVariable;
 
     public ObservableCollection<EnvVarItem> UserVariables { get; } = [];
     public ObservableCollection<EnvVarItem> SystemVariables { get; } = [];
-
-    public EnvVarItem? SelectedUserVariable
-    {
-        get => _selectedUserVariable;
-        set
-        {
-            _selectedUserVariable = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(CanEditUserVariable));
-            OnPropertyChanged(nameof(CanDeleteUserVariable));
-        }
-    }
-
-    public EnvVarItem? SelectedSystemVariable
-    {
-        get => _selectedSystemVariable;
-        set
-        {
-            _selectedSystemVariable = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(CanEditSystemVariable));
-            OnPropertyChanged(nameof(CanDeleteSystemVariable));
-        }
-    }
-
-    public bool CanEditUserVariable => SelectedUserVariable != null && !SelectedUserVariable.IsReadOnly;
-    public bool CanDeleteUserVariable => SelectedUserVariable != null && !SelectedUserVariable.IsReadOnly;
-    public bool CanEditSystemVariable => IsAdmin && SelectedSystemVariable != null;
-    public bool CanDeleteSystemVariable => IsAdmin && SelectedSystemVariable != null;
 
     public string StatusMessage
     {
@@ -149,28 +118,6 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     public void RefreshVariables()
     {
         LoadVariables();
-    }
-
-    public void AddUserVariable()
-    {
-        // Will be called from UI
-    }
-
-    public void AddSystemVariable()
-    {
-        // Will be called from UI
-    }
-
-    public void EditUserVariable()
-    {
-        if (SelectedUserVariable == null || SelectedUserVariable.IsEntry) return;
-        // Will be called from UI
-    }
-
-    public void EditSystemVariable()
-    {
-        if (!IsAdmin || SelectedSystemVariable == null || SelectedSystemVariable.IsEntry) return;
-        // Will be called from UI
     }
 
     public void Delete(EnvVarItem item)

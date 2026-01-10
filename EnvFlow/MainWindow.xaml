@@ -441,9 +441,8 @@
               <!-- TreeView with ScrollViewer -->
               <ScrollViewer Grid.Row="1">
                 <TreeView x:Name="SystemEnvTreeView" 
-                                      ItemsSource="{x:Bind ViewModel.SystemVariables, Mode=OneWay}"
-                                      SelectionChanged="SystemEnvTreeView_SelectionChanged"
-                                      Padding="12">
+                          ItemsSource="{x:Bind ViewModel.SystemVariables, Mode=OneWay}"
+                          Padding="12">
                   <TreeView.ItemContainerStyle>
                     <Style TargetType="TreeViewItem">
                       <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -451,7 +450,10 @@
                   </TreeView.ItemContainerStyle>
                   <TreeView.ItemTemplate>
                     <DataTemplate>
-                      <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
+                      <TreeViewItem ItemsSource="{Binding Children}"
+                                    IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                                    PointerEntered="TreeItem_PointerEntered"
+                                    PointerExited="TreeItem_PointerExited">
                         <Grid HorizontalAlignment="Stretch">
                           <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="250"/> <!-- Name Column -->
@@ -462,7 +464,11 @@
 
                           <!-- Name Column - spans all columns for composite variables -->
                           <Grid Grid.Column="0">
-                            <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Tag="System" Loaded="NameColumn_Loaded">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
+                                        Background="Transparent"
+                                        DoubleTapped="TreeViewItem_DoubleTapped"
+                                        Loaded="NameColumn_Loaded">
                               <StackPanel.ContextFlyout>
                                 <MenuFlyout>
                                   <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameMenuVisibility}">
