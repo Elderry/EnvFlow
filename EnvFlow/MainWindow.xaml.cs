@@ -29,7 +29,6 @@ public sealed partial class MainWindow : Window
     private bool _isSplitterDragging = false;
     private double _splitterStartX;
     private TreeViewItem? _currentFlyoutTreeItem = null;
-    private double _nameColumnWidth = 250;
 
     public MainWindow(MainWindowViewModel viewModel, EnvVarService envService)
     {
@@ -542,51 +541,59 @@ public sealed partial class MainWindow : Window
     private double _columnSplitterStartWidth;
     private ColumnDefinition? _resizingColumn;
 
-    private void ColumnSplitter_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void UserColumnSplitter_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        if (sender is UIElement splitter)
-        {
-            _isColumnSplitterDragging = true;
-            var point = e.GetCurrentPoint(null);  // Get screen coordinates
-            _columnSplitterStartX = point.Position.X;
-
-            // Determine which column to resize based on Tag
-            var tag = (sender as FrameworkElement)?.Tag as string;
-            _resizingColumn = tag == "User" ? UserNameColumn : SystemNameColumn;
-            _columnSplitterStartWidth = _resizingColumn.ActualWidth;  // Use ActualWidth for current rendered width
-
-            splitter.CapturePointer(e.Pointer);
-            e.Handled = true;
-        }
+        StartColumnSplitterDrag(sender, e, UserNameColumn);
     }
 
-    private void ColumnSplitter_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void SystemColumnSplitter_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        if (_isColumnSplitterDragging && _resizingColumn != null)
+        StartColumnSplitterDrag(sender, e, SystemNameColumn);
+    }
+
+    private void StartColumnSplitterDrag(object sender, PointerRoutedEventArgs e, ColumnDefinition columnToResize)
+    {
+        UIElement splitter = (UIElement)sender;
+        _isColumnSplitterDragging = true;
+        PointerPoint point = e.GetCurrentPoint(null);
+        _columnSplitterStartX = point.Position.X;
+        _resizingColumn = columnToResize;
+        _columnSplitterStartWidth = _resizingColumn.ActualWidth;
+
+        splitter.CapturePointer(e.Pointer);
+    }
+
+    private void UserColumnSplitter_PointerMoved(object _sender, PointerRoutedEventArgs e)
+    {
+        HandleColumnSplitterMove(e, UserEnvTreeView);
+    }
+
+    private void SystemColumnSplitter_PointerMoved(object _sender, PointerRoutedEventArgs e)
+    {
+        HandleColumnSplitterMove(e, SystemEnvTreeView);
+    }
+
+    private void HandleColumnSplitterMove(PointerRoutedEventArgs e, TreeView treeView)
+    {
+        if (_resizingColumn == null)
         {
-            var point = e.GetCurrentPoint(null);  // Get screen coordinates
-            var currentX = point.Position.X;
-            var delta = currentX - _columnSplitterStartX;
+            return;
+        }
 
-            var newWidth = _columnSplitterStartWidth + delta;
-            if (newWidth >= 100 && newWidth <= 600)  // Min and max width constraints
-            {
-                _resizingColumn.Width = new GridLength(newWidth);
+        PointerPoint point = e.GetCurrentPoint(null);
+        double currentX = point.Position.X;
+        double delta = currentX - _columnSplitterStartX;
 
-                // Update all TreeViewItem column widths to match
-                var tag = (sender as FrameworkElement)?.Tag as string;
-                var treeView = tag == "User" ? UserEnvTreeView : SystemEnvTreeView;
-                UpdateTreeViewColumnWidths(treeView, newWidth);
-            }
-
-            e.Handled = true;
+        double newWidth = _columnSplitterStartWidth + delta;
+        if (newWidth >= 100 && newWidth <= 600)
+        {
+            _resizingColumn.Width = new GridLength(newWidth);
+            UpdateTreeViewColumnWidths(treeView, newWidth);
         }
     }
 
     private void UpdateTreeViewColumnWidths(TreeView treeView, double width)
     {
-        _nameColumnWidth = width;
-
         // Recursively update all TreeViewItems
         UpdateContainersColumnWidth(treeView, width);
 

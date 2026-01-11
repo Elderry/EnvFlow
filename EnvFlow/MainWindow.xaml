@@ -102,11 +102,13 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                <controls:CursorGrid x:Name="UserColumnSplitter" Grid.Column="1" Width="8" Background="Transparent"
-                                    PointerPressed="ColumnSplitter_PointerPressed"
-                                    PointerMoved="ColumnSplitter_PointerMoved"
-                                    PointerReleased="ColumnSplitter_PointerReleased"
-                                    Tag="User">
+                <controls:CursorGrid x:Name="UserColumnSplitter"
+                                     Grid.Column="1"
+                                     Width="8"
+                                     Background="Transparent"
+                                     PointerPressed="UserColumnSplitter_PointerPressed"
+                                     PointerMoved="UserColumnSplitter_PointerMoved"
+                                     PointerReleased="ColumnSplitter_PointerReleased">
                   <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
                 </controls:CursorGrid>
                 <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0"/>
@@ -426,11 +428,13 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Text="Name" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                <controls:CursorGrid x:Name="SystemColumnSplitter" Grid.Column="1" Width="8" Background="Transparent"
-                                    PointerPressed="ColumnSplitter_PointerPressed"
-                                    PointerMoved="ColumnSplitter_PointerMoved"
-                                    PointerReleased="ColumnSplitter_PointerReleased"
-                                    Tag="System">
+                <controls:CursorGrid x:Name="SystemColumnSplitter"
+                                     Grid.Column="1"
+                                     Width="8"
+                                     Background="Transparent"
+                                     PointerPressed="SystemColumnSplitter_PointerPressed"
+                                     PointerMoved="SystemColumnSplitter_PointerMoved"
+                                     PointerReleased="ColumnSplitter_PointerReleased">
                   <Rectangle Width="1" Fill="{ThemeResource CardStrokeColorDefaultBrush}"/>
                 </controls:CursorGrid>
                 <TextBlock Grid.Column="2" Text="Value" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0"/>
