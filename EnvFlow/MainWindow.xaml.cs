@@ -499,7 +499,6 @@ public sealed partial class MainWindow : Window
         _isSplitterDragging = true;
         _splitterStartX = e.GetCurrentPoint(null).Position.X;
         splitter.CapturePointer(e.Pointer);
-        e.Handled = true;
     }
 
     private void Splitter_PointerMoved(object sender, PointerRoutedEventArgs e)
@@ -534,27 +533,7 @@ public sealed partial class MainWindow : Window
 
     private void Splitter_PointerReleased(object sender, PointerRoutedEventArgs e)
     {
-        if (_isSplitterDragging && sender is Grid splitter)
-        {
-            _isSplitterDragging = false;
-            splitter.ReleasePointerCaptures();
-
-            // Convert pixel widths back to star sizing for responsive behavior
-            if (splitter.Parent is Grid parentGrid && parentGrid.ColumnDefinitions.Count >= 3)
-            {
-                var leftColumn = parentGrid.ColumnDefinitions[0];
-                var rightColumn = parentGrid.ColumnDefinitions[2];
-
-                var totalWidth = leftColumn.ActualWidth + rightColumn.ActualWidth;
-                var leftRatio = leftColumn.ActualWidth / totalWidth;
-                var rightRatio = rightColumn.ActualWidth / totalWidth;
-
-                leftColumn.Width = new GridLength(leftRatio, GridUnitType.Star);
-                rightColumn.Width = new GridLength(rightRatio, GridUnitType.Star);
-            }
-
-            e.Handled = true;
-        }
+        _isSplitterDragging = false;
     }
 
     // Column Splitter Handlers
