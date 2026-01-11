@@ -493,58 +493,46 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    // Splitter drag functionality
-    private void Splitter_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void Splitter_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        // Cursor change to SizeWestEast handled by system when dragging
+        Grid splitter = (Grid)sender;
+        _isSplitterDragging = true;
+        _splitterStartX = e.GetCurrentPoint(null).Position.X;
+        splitter.CapturePointer(e.Pointer);
+        e.Handled = true;
     }
 
-    private void Splitter_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void Splitter_PointerMoved(object sender, PointerRoutedEventArgs e)
     {
-        // Cursor restored by system
-    }
-
-    private void Splitter_PointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-        if (sender is Grid splitter)
+        if (!_isSplitterDragging)
         {
-            _isSplitterDragging = true;
-            _splitterStartX = e.GetCurrentPoint(null).Position.X;
-            splitter.CapturePointer(e.Pointer);
-            e.Handled = true;
+            return;
         }
-    }
 
-    private void Splitter_PointerMoved(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-        if (_isSplitterDragging && sender is Grid splitter)
+        Grid splitter = (Grid)sender;
+        double currentPoint = e.GetCurrentPoint(null).Position.X;
+        double delta = currentPoint - _splitterStartX;
+
+        // Get the parent grid
+        Grid parentGrid = (Grid)splitter.Parent;
+        ColumnDefinition leftColumn = parentGrid.ColumnDefinitions[0];
+        ColumnDefinition rightColumn = parentGrid.ColumnDefinitions[2];
+
+        // Calculate new widths
+        double leftWidth = leftColumn.ActualWidth + delta;
+        double rightWidth = rightColumn.ActualWidth - delta;
+
+        // Enforce minimum widths
+        if (leftWidth >= 300 && rightWidth >= 300)
         {
-            var currentPoint = e.GetCurrentPoint(null).Position.X;
-            var delta = currentPoint - _splitterStartX;
-
-            // Get the parent grid
-            if (splitter.Parent is Grid parentGrid && parentGrid.ColumnDefinitions.Count >= 3)
-            {
-                var leftColumn = parentGrid.ColumnDefinitions[0];
-                var rightColumn = parentGrid.ColumnDefinitions[2];
-
-                // Calculate new widths
-                var leftWidth = leftColumn.ActualWidth + delta;
-                var rightWidth = rightColumn.ActualWidth - delta;
-
-                // Enforce minimum widths
-                if (leftWidth >= 300 && rightWidth >= 300)
-                {
-                    leftColumn.Width = new GridLength(leftWidth, GridUnitType.Pixel);
-                    rightColumn.Width = new GridLength(rightWidth, GridUnitType.Pixel);
-                    _splitterStartX = currentPoint;
-                }
-            }
-            e.Handled = true;
+            leftColumn.Width = new GridLength(leftWidth, GridUnitType.Pixel);
+            rightColumn.Width = new GridLength(rightWidth, GridUnitType.Pixel);
+            _splitterStartX = currentPoint;
         }
+        e.Handled = true;
     }
 
-    private void Splitter_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void Splitter_PointerReleased(object sender, PointerRoutedEventArgs e)
     {
         if (_isSplitterDragging && sender is Grid splitter)
         {

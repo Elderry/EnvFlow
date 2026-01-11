@@ -348,14 +348,12 @@
                   Width="12" 
                   Background="Transparent"
                   x:Name="SplitterGrid"
-                  PointerEntered="Splitter_PointerEntered"
-                  PointerExited="Splitter_PointerExited"
                   PointerPressed="Splitter_PointerPressed"
                   PointerMoved="Splitter_PointerMoved"
                   PointerReleased="Splitter_PointerReleased">
           <Rectangle Fill="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                           Width="2"
-                           HorizontalAlignment="Center"/>
+                     Width="2"
+                     HorizontalAlignment="Center"/>
         </controls:CursorGrid>
 
         <!-- Right Panel: System Environment Variables -->
