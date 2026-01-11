@@ -123,82 +123,69 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void TreeItem_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void TreeItem_PointerEntered(object sender, PointerRoutedEventArgs e)
     {
-        if (sender is TreeViewItem treeViewItem)
-        {
-            var hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons");
-            if (hoverButtons != null)
-            {
-                hoverButtons.Opacity = 1.0;
-            }
-        }
+        TreeViewItem treeViewItem = (TreeViewItem)sender;
+        StackPanel hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons")!;
+        hoverButtons.Opacity = 1.0;
     }
 
-    private void TreeItem_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void TreeItem_PointerExited(object sender, PointerRoutedEventArgs e)
     {
-        if (sender is TreeViewItem treeViewItem)
+        TreeViewItem treeViewItem = (TreeViewItem)sender;
+        // Don't hide buttons if the flyout is currently open for this item
+        if (_currentFlyoutTreeItem == treeViewItem)
         {
-            // Don't hide buttons if the flyout is currently open for this item
-            if (_currentFlyoutTreeItem == treeViewItem)
-                return;
-
-            var hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons");
-            if (hoverButtons != null)
-            {
-                hoverButtons.Opacity = 0;
-            }
+            return;
         }
+
+        StackPanel hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons")!;
+        hoverButtons.Opacity = 0;
     }
 
     private void MenuFlyout_Opening(object sender, object e)
     {
         // Track which TreeViewItem has its flyout open
-        if (sender is MenuFlyout flyout && flyout.Target is Button button)
+        Button button = (Button)((MenuFlyout)sender).Target;
+        // Find the parent TreeViewItem
+        DependencyObject parent = button;
+        while (parent != null && parent is not TreeViewItem)
         {
-            // Find the parent TreeViewItem
-            DependencyObject parent = button;
-            while (parent != null && parent is not TreeViewItem)
-            {
-                parent = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(parent);
-            }
+            parent = VisualTreeHelper.GetParent(parent);
+        }
 
-            if (parent is TreeViewItem treeViewItem)
-            {
-                _currentFlyoutTreeItem = treeViewItem;
-            }
+        if (parent is TreeViewItem treeViewItem)
+        {
+            _currentFlyoutTreeItem = treeViewItem;
         }
     }
 
     private void MenuFlyout_Closed(object sender, object e)
     {
         // Clear the tracked item
-        var previousItem = _currentFlyoutTreeItem;
+        TreeViewItem? previousItem = _currentFlyoutTreeItem;
         _currentFlyoutTreeItem = null;
 
         // Hide hover buttons if pointer is not over the item
         if (previousItem != null)
         {
-            var hoverButtons = FindChildByName<StackPanel>(previousItem, "HoverButtons");
-            if (hoverButtons != null)
-            {
-                hoverButtons.Opacity = 0;
-            }
+            StackPanel hoverButtons = FindChildByName<StackPanel>(previousItem, "HoverButtons")!;
+            hoverButtons.Opacity = 0;
         }
     }
 
     private T? FindChildByName<T>(DependencyObject parent, string childName) where T : FrameworkElement
     {
-        int childCount = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent);
+        int childCount = VisualTreeHelper.GetChildrenCount(parent);
         for (int i = 0; i < childCount; i++)
         {
-            var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
+            DependencyObject child = VisualTreeHelper.GetChild(parent, i);
             if (child is T typedChild && typedChild.Name == childName)
             {
                 return typedChild;
             }
 
-            var result = FindChildByName<T>(child, childName);
+            T? result = FindChildByName<T>(child, childName);
             if (result != null)
             {
                 return result;
@@ -432,12 +419,6 @@ public sealed partial class MainWindow : Window
         }
 
         UpdateStatusBar();
-    }
-
-    private bool IsInUserTreeView(EnvVarItem item)
-    {
-        // Check if the item exists in the user variables collection
-        return ViewModel.UserVariables.Any(v => v == item || v.Children.Contains(item));
     }
 
     private EnvVarItem GetParentVariable(EnvVarItem entry)
