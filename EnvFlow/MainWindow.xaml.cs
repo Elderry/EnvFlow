@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -536,7 +537,6 @@ public sealed partial class MainWindow : Window
     }
 
     // Column Splitter Handlers
-    private bool _isColumnSplitterDragging = false;
     private double _columnSplitterStartX;
     private double _columnSplitterStartWidth;
     private ColumnDefinition? _resizingColumn;
@@ -554,7 +554,6 @@ public sealed partial class MainWindow : Window
     private void StartColumnSplitterDrag(object sender, PointerRoutedEventArgs e, ColumnDefinition columnToResize)
     {
         UIElement splitter = (UIElement)sender;
-        _isColumnSplitterDragging = true;
         PointerPoint point = e.GetCurrentPoint(null);
         _columnSplitterStartX = point.Position.X;
         _resizingColumn = columnToResize;
@@ -592,43 +591,34 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void UpdateTreeViewColumnWidths(TreeView treeView, double width)
+    private static void UpdateTreeViewColumnWidths(TreeView treeView, double width)
     {
-        // Recursively update all TreeViewItems
-        UpdateContainersColumnWidth(treeView, width);
+        // Update only first-level TreeViewItem containers
+        IEnumerable items = (IEnumerable)treeView.ItemsSource;
+        foreach (object? item in items)
+        {
+            TreeViewItem container = (TreeViewItem)treeView.ContainerFromItem(item);
+            UpdateTreeViewItemGrid(container, width);
+        }
 
         // Force layout update
         treeView.UpdateLayout();
     }
 
-    private void UpdateContainersColumnWidth(DependencyObject parent, double width)
+    private static void UpdateTreeViewItemGrid(TreeViewItem treeViewItem, double width)
     {
-        int count = VisualTreeHelper.GetChildrenCount(parent);
-        for (int i = 0; i < count; i++)
+        // Find the named Grid in the TreeViewItem template
+        Grid grid = (Grid)treeViewItem.FindName("ItemGrid");
+        EnvVarItem item = (EnvVarItem)grid.DataContext;
+        if (!item.IsComposite)
         {
-            var child = VisualTreeHelper.GetChild(parent, i);
-
-            // If we find a Grid with exactly 4 column definitions (our item template structure)
-            if (child is Grid grid && grid.ColumnDefinitions.Count == 4)
-            {
-                // Update the first column (Name column)
-                grid.ColumnDefinitions[0].Width = new GridLength(width);
-            }
-
-            // Continue searching deeper
-            UpdateContainersColumnWidth(child, width);
+            grid.ColumnDefinitions[0].Width = new GridLength(width);
         }
     }
 
-    private void ColumnSplitter_PointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void ColumnSplitter_PointerReleased(object _sender, PointerRoutedEventArgs _e)
     {
-        if (_isColumnSplitterDragging && sender is UIElement splitter)
-        {
-            _isColumnSplitterDragging = false;
-            _resizingColumn = null;
-            splitter.ReleasePointerCaptures();
-            e.Handled = true;
-        }
+        _resizingColumn = null;
     }
 
     private void NameColumn_Loaded(object sender, RoutedEventArgs e)

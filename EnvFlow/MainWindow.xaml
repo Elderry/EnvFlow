@@ -127,7 +127,7 @@
                   <TreeView.ItemTemplate>
                     <DataTemplate>
                       <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
-                        <Grid HorizontalAlignment="Stretch">
+                        <Grid x:Name="ItemGrid" HorizontalAlignment="Stretch">
                           <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="250"/>
                             <ColumnDefinition Width="Auto"/>
@@ -456,7 +456,7 @@
                                     IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
                                     PointerEntered="TreeItem_PointerEntered"
                                     PointerExited="TreeItem_PointerExited">
-                        <Grid HorizontalAlignment="Stretch">
+                        <Grid x:Name="ItemGrid" HorizontalAlignment="Stretch">
                           <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="250"/> <!-- Name Column -->
                             <ColumnDefinition Width="Auto"/> <!-- Column Separator -->
