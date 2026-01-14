@@ -126,7 +126,10 @@
                   </TreeView.ItemContainerStyle>
                   <TreeView.ItemTemplate>
                     <DataTemplate>
-                      <TreeViewItem ItemsSource="{Binding Children}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" PointerEntered="TreeItem_PointerEntered" PointerExited="TreeItem_PointerExited">
+                      <TreeViewItem ItemsSource="{Binding Children}"
+                                    IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                                    PointerEntered="TreeItem_PointerEntered"
+                                    PointerExited="TreeItem_PointerExited">
                         <Grid x:Name="ItemGrid" HorizontalAlignment="Stretch">
                           <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="250"/>
@@ -137,7 +140,11 @@
 
                           <!-- Name Column - spans all columns for composite variables -->
                           <Grid Grid.Column="0">
-                            <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped" Loaded="NameColumn_Loaded">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
+                                        Background="Transparent"
+                                        DoubleTapped="TreeViewItem_DoubleTapped"
+                                        Loaded="NameColumn_Loaded">
                               <StackPanel.ContextFlyout>
                                 <MenuFlyout>
                                   <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameMenuVisibility}">
@@ -212,10 +219,17 @@
                           </Grid>
 
                           <!-- Column Separator -->
-                          <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ColumnSeparatorVisibility}"/>
+                          <Border Grid.Column="1"
+                                  Width="1"
+                                  Background="{ThemeResource CardStrokeColorDefaultBrush}"
+                                  Margin="8,0"
+                                  Visibility="{Binding ColumnSeparatorVisibility}"/>
 
                           <!-- Value Column -->
-                          <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">
+                          <Grid Grid.Column="2"
+                                Background="Transparent"
+                                DoubleTapped="TreeViewItem_DoubleTapped"
+                                Visibility="{Binding ValueColumnVisibility}">
                             <!-- Display Mode: Show value in gray -->
                             <TextBlock Text="{Binding Value}" 
                                        Foreground="Gray"
@@ -544,16 +558,23 @@
                           </Grid>
 
                           <!-- Column Separator -->
-                          <Border Grid.Column="1" Width="1" Background="{ThemeResource CardStrokeColorDefaultBrush}" Margin="8,0" Visibility="{Binding ColumnSeparatorVisibility}"/>
+                          <Border Grid.Column="1"
+                                  Width="1"
+                                  Background="{ThemeResource CardStrokeColorDefaultBrush}"
+                                  Margin="8,0"
+                                  Visibility="{Binding ColumnSeparatorVisibility}"/>
 
                           <!-- Value Column -->
-                          <Grid Grid.Column="2" Background="Transparent" DoubleTapped="TreeViewItem_DoubleTapped">
+                          <Grid Grid.Column="2"
+                                Background="Transparent"
+                                DoubleTapped="TreeViewItem_DoubleTapped"
+                                Visibility="{Binding ValueVisibility}">
                             <!-- Display Mode: Show value in gray -->
                             <TextBlock Text="{Binding Value}" 
-                                                               Foreground="Gray"
-                                                               VerticalAlignment="Center"
-                                                               TextTrimming="CharacterEllipsis"
-                                                               Visibility="{Binding ValueVisibility}">
+                                       Foreground="Gray"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"
+                                       Visibility="{Binding ValueVisibility}">
                               <TextBlock.ContextFlyout>
                                 <MenuFlyout>
                                   <MenuFlyoutItem Text="Copy name" Click="CopyName_Click">

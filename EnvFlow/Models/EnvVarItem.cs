@@ -69,6 +69,7 @@ public partial class EnvVarItem : INotifyPropertyChanged
     // Tree view item visibility
     public Visibility NameVisibility => (IsEditing && IsEntry) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility ValueVisibility => (IsEditing || IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility ValueColumnVisibility => (IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
     public Visibility EditVisibility => (IsEditing && !IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ChildEditVisibility => (IsEditing && IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ColumnSeparatorVisibility => (IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
