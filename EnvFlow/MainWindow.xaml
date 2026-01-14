@@ -139,12 +139,11 @@
                           </Grid.ColumnDefinitions>
 
                           <!-- Name Column - spans all columns for composite variables -->
-                          <Grid Grid.Column="0">
+                          <Grid Grid.Column="0" Grid.ColumnSpan="{Binding NameColumnSpan}">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8"
                                         Background="Transparent"
-                                        DoubleTapped="TreeViewItem_DoubleTapped"
-                                        Loaded="NameColumn_Loaded">
+                                        DoubleTapped="TreeViewItem_DoubleTapped">
                               <StackPanel.ContextFlyout>
                                 <MenuFlyout>
                                   <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameMenuVisibility}">
@@ -479,12 +478,11 @@
                           </Grid.ColumnDefinitions>
 
                           <!-- Name Column - spans all columns for composite variables -->
-                          <Grid Grid.Column="0">
+                          <Grid Grid.Column="0" Grid.ColumnSpan="{Binding NameColumnSpan}">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="8"
                                         Background="Transparent"
-                                        DoubleTapped="TreeViewItem_DoubleTapped"
-                                        Loaded="NameColumn_Loaded">
+                                        DoubleTapped="TreeViewItem_DoubleTapped">
                               <StackPanel.ContextFlyout>
                                 <MenuFlyout>
                                   <MenuFlyoutItem Text="Copy name" Click="CopyName_Click" Visibility="{Binding CopyNameMenuVisibility}">

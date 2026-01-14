@@ -621,19 +621,6 @@ public sealed partial class MainWindow : Window
         _resizingColumn = null;
     }
 
-    private void NameColumn_Loaded(object sender, RoutedEventArgs e)
-    {
-        StackPanel panel = (sender as StackPanel)!;
-        Grid parent = (panel.Parent as Grid)!;
-        EnvVarItem item = (panel.DataContext as EnvVarItem)!;
-
-        // Entries and parents should span all columns
-        if (item.IsEntry || item.IsComposite)
-        {
-            Grid.SetColumnSpan(parent, 3);
-        }
-    }
-
     private void HoverButtons_Loaded(object sender, RoutedEventArgs e)
     {
         StackPanel panel = (sender as StackPanel)!;

@@ -73,6 +73,7 @@ public partial class EnvVarItem : INotifyPropertyChanged
     public Visibility EditVisibility => (IsEditing && !IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ChildEditVisibility => (IsEditing && IsEntry) ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ColumnSeparatorVisibility => (IsEntry || IsComposite) ? Visibility.Collapsed : Visibility.Visible;
+    public int NameColumnSpan => (IsEntry || IsComposite) ? 3 : 1;
 
     // Hover button visibility
     public Visibility AddChildButtonVisibility => !IsReadOnly && IsComposite
