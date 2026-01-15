@@ -16,6 +16,7 @@ namespace EnvFlow.Models;
 public partial class EnvVarItem : INotifyPropertyChanged
 {
     private bool _isEditing;
+    private bool _isHovered;
     private string _editValue = string.Empty;
     private string _value = string.Empty;
 
@@ -63,6 +64,17 @@ public partial class EnvVarItem : INotifyPropertyChanged
         }
     }
 
+    public bool IsHovered
+    {
+        get => _isHovered;
+        set
+        {
+            _isHovered = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HoverButtonsVisibility));
+        }
+    }
+
     public bool IsLimitAccess => IsSystemVariable && !AdminHelper.IsAdmin();
     public bool IsComposite => Children.Count > 0;
 
@@ -76,6 +88,9 @@ public partial class EnvVarItem : INotifyPropertyChanged
     public int NameColumnSpan => (IsEntry || IsComposite) ? 3 : 1;
 
     // Hover button visibility
+    public Visibility HoverButtonsVisibility => IsHovered && !IsReadOnly
+        ? Visibility.Visible
+        : Visibility.Collapsed;
     public Visibility AddChildButtonVisibility => !IsReadOnly && IsComposite
         ? Visibility.Visible
         : Visibility.Collapsed;

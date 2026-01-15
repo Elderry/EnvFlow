@@ -125,22 +125,22 @@ public sealed partial class MainWindow : Window
 
     private void TreeItem_PointerEntered(object sender, PointerRoutedEventArgs e)
     {
-        TreeViewItem treeViewItem = (TreeViewItem)sender;
-        StackPanel hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons")!;
-        hoverButtons.Opacity = 1.0;
+        EnvVarItem item = (EnvVarItem)((TreeViewItem)sender).DataContext;
+        item.IsHovered = true;
     }
 
     private void TreeItem_PointerExited(object sender, PointerRoutedEventArgs e)
     {
         TreeViewItem treeViewItem = (TreeViewItem)sender;
+
         // Don't hide buttons if the flyout is currently open for this item
         if (_currentFlyoutTreeItem == treeViewItem)
         {
             return;
         }
 
-        StackPanel hoverButtons = FindChildByName<StackPanel>(treeViewItem, "HoverButtons")!;
-        hoverButtons.Opacity = 0;
+        EnvVarItem item = (EnvVarItem)treeViewItem.DataContext;
+        item.IsHovered = false;
     }
 
     private void MenuFlyout_Opening(object sender, object e)
@@ -167,10 +167,9 @@ public sealed partial class MainWindow : Window
         _currentFlyoutTreeItem = null;
 
         // Hide hover buttons if pointer is not over the item
-        if (previousItem != null)
+        if (previousItem != null && previousItem.DataContext is EnvVarItem item)
         {
-            StackPanel hoverButtons = FindChildByName<StackPanel>(previousItem, "HoverButtons")!;
-            hoverButtons.Opacity = 0;
+            item.IsHovered = false;
         }
     }
 
