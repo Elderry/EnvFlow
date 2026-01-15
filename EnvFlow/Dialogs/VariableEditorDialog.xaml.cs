@@ -2,11 +2,7 @@ using System;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
-using Windows.Storage;
-using Windows.Storage.Pickers;
-
-using WinRT.Interop;
+using Microsoft.Windows.Storage.Pickers;
 
 namespace EnvFlow.Dialogs;
 
@@ -47,16 +43,10 @@ public sealed partial class VariableEditorDialog : ContentDialog
 
     private async void BrowseFolder_Click(object sender, RoutedEventArgs e)
     {
-        FolderPicker folderPicker = new()
-        {
-            SuggestedStartLocation = PickerLocationId.ComputerFolder
-        };
+        Button button = (Button)sender;
+        FolderPicker folderPicker = new(button.XamlRoot.ContentIslandEnvironment.AppWindowId);
 
-        // Get window handle from App.MainWindow
-        nint hwnd = WindowNative.GetWindowHandle(App.MainWindow);
-        InitializeWithWindow.Initialize(folderPicker, hwnd);
-
-        StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+        PickFolderResult folder = await folderPicker.PickSingleFolderAsync();
         if (folder != null)
         {
             VariableValueTextBox.Text = folder.Path;
@@ -65,17 +55,11 @@ public sealed partial class VariableEditorDialog : ContentDialog
 
     private async void BrowseFile_Click(object sender, RoutedEventArgs e)
     {
-        FileOpenPicker filePicker = new()
-        {
-            SuggestedStartLocation = PickerLocationId.ComputerFolder
-        };
+        Button button = (Button)sender;
+        FileOpenPicker filePicker = new(button.XamlRoot.ContentIslandEnvironment.AppWindowId);
         filePicker.FileTypeFilter.Add("*");
 
-        // Get window handle from App.MainWindow
-        nint hwnd = WindowNative.GetWindowHandle(App.MainWindow);
-        InitializeWithWindow.Initialize(filePicker, hwnd);
-
-        StorageFile file = await filePicker.PickSingleFileAsync();
+        PickFileResult file = await filePicker.PickSingleFileAsync();
         if (file != null)
         {
             VariableValueTextBox.Text = file.Path;
