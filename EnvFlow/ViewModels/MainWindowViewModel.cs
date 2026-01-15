@@ -69,20 +69,20 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     {
         _envService = envService;
         IsAdmin = AdminHelper.IsAdmin();
-        LoadVariables();
+        RefreshVariables();
     }
 
-    private void LoadVariables()
+    public void RefreshVariables()
     {
         StatusMessage = "Loading environment variables...";
 
-        // Load user variables - update in place to avoid blink
-        var userVars = _envService.GetUserVariables();
+        // Load user variables
+        List<EnvVarItem> userVars = _envService.GetUserVariables();
         UpdateVariableCollection(UserVariables, userVars);
         UserVariableCount = userVars.Count;
 
-        // Load system variables - update in place to avoid blink
-        var systemVars = _envService.GetSystemVariables();
+        // Load system variables
+        List<EnvVarItem> systemVars = _envService.GetSystemVariables();
         UpdateVariableCollection(SystemVariables, systemVars);
         SystemVariableCount = systemVars.Count;
 
@@ -92,32 +92,24 @@ public partial class MainWindowViewModel : INotifyPropertyChanged
     private void UpdateVariableCollection(ObservableCollection<EnvVarItem> collection, List<EnvVarItem> newItems)
     {
         // Save expanded state before clearing
-        var expandedStates = collection
+        HashSet<string> expandedStates = collection
             .Where(v => v.IsExpanded)
             .Select(v => v.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        // Clear and rebuild - simpler and more reliable than in-place updates
+        // Clear and rebuild
         collection.Clear();
 
         // Add all variables in sorted order
-        var sortedItems = newItems.OrderBy(v => v.Name);
+        IOrderedEnumerable<EnvVarItem> sortedItems = newItems.OrderBy(v => v.Name);
 
-        foreach (var item in sortedItems)
+        foreach (EnvVarItem item in sortedItems)
         {
             // Restore expanded state
             item.IsExpanded = expandedStates.Contains(item.Name);
 
-            // Update children with parent's properties
-            item.UpdateChildrenProperties();
-
             collection.Add(item);
         }
-    }
-
-    public void RefreshVariables()
-    {
-        LoadVariables();
     }
 
     public void Delete(EnvVarItem item)

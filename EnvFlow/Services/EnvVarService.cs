@@ -163,38 +163,6 @@ public class EnvVarService
         return items;
     }
 
-    public List<string> ParsePathVariable(string pathValue)
-    {
-        if (string.IsNullOrEmpty(pathValue))
-            return new List<string>();
-
-        return pathValue
-            .Split(';', StringSplitOptions.RemoveEmptyEntries)
-            .Select(p => p.Trim())
-            .Where(p => !string.IsNullOrWhiteSpace(p))
-            .ToList();
-    }
-
-    public bool IsPathLike(string variableName)
-    {
-        var pathVariables = new[] { "PATH", "PSMODULEPATH", "CLASSPATH" };
-        return pathVariables.Contains(variableName.ToUpper());
-    }
-
-    public bool PathExists(string path)
-    {
-        try
-        {
-            // Expand environment variables before checking
-            var expandedPath = Environment.ExpandEnvironmentVariables(path);
-            return Directory.Exists(expandedPath) || File.Exists(expandedPath);
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     public void SetVariable(EnvironmentVariableTarget target, string name, string value)
     {
         using RegistryKey key = target switch

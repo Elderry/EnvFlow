@@ -169,15 +169,6 @@ public partial class EnvVarItem : INotifyPropertyChanged
         };
     }
 
-    public void UpdateChildrenProperties()
-    {
-        foreach (var child in Children)
-        {
-            child.IsSystemVariable = IsSystemVariable;
-            child.IsReadOnly = IsReadOnly;
-        }
-    }
-
     public void UpdateValue(string value)
     {
         Value = value;
