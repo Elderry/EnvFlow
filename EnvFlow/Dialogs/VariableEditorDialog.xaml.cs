@@ -1,7 +1,12 @@
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml;
 using System;
-using System.Threading.Tasks;
+
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+
+using Windows.Storage;
+using Windows.Storage.Pickers;
+
+using WinRT.Interop;
 
 namespace EnvFlow.Dialogs;
 
@@ -20,42 +25,38 @@ public sealed partial class VariableEditorDialog : ContentDialog
     }
 
     public bool IsEditMode { get; set; }
-    
-    public bool IsPathEntryMode { get; set; }
+
+    public bool IsEntryMode { get; set; }
 
     public VariableEditorDialog()
     {
         InitializeComponent();
         UpdatePrimaryButtonState();
     }
-    
+
     public void ConfigureForEntry(string parentVariableName, bool isEditMode = false)
     {
-        IsPathEntryMode = true;
+        IsEntryMode = true;
         IsEditMode = isEditMode;
-        Title = isEditMode ? $"Edit Variable Entry in {parentVariableName}" : $"Add Variable Entry to {parentVariableName}";
+        Title = isEditMode ? $"Edit Entry in [{parentVariableName}]" : $"Add Entry to [{parentVariableName}]";
         PrimaryButtonText = isEditMode ? "Save" : "Add";
         VariableNameLabel.Visibility = Visibility.Collapsed;
         VariableNameTextBox.Visibility = Visibility.Collapsed;
-        VariableValueTextBox.PlaceholderText = "Enter new path (e.g., C:\\Program Files\\MyApp)";
-        VariableValueTextBox.MinHeight = 40;
-        VariableValueTextBox.MaxHeight = 100;
+        VariableValueTextBox.PlaceholderText = "Enter entry value";
     }
 
     private async void BrowseFolder_Click(object sender, RoutedEventArgs e)
     {
-        var folderPicker = new Windows.Storage.Pickers.FolderPicker();
-        folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder;
-        folderPicker.FileTypeFilter.Add("*");
-        
-        // Get window handle from App.MainWindow
-        if (App.MainWindow != null)
+        FolderPicker folderPicker = new()
         {
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
-        }
-        
-        var folder = await folderPicker.PickSingleFolderAsync();
+            SuggestedStartLocation = PickerLocationId.ComputerFolder
+        };
+
+        // Get window handle from App.MainWindow
+        nint hwnd = WindowNative.GetWindowHandle(App.MainWindow);
+        InitializeWithWindow.Initialize(folderPicker, hwnd);
+
+        StorageFolder folder = await folderPicker.PickSingleFolderAsync();
         if (folder != null)
         {
             VariableValueTextBox.Text = folder.Path;
@@ -64,18 +65,17 @@ public sealed partial class VariableEditorDialog : ContentDialog
 
     private async void BrowseFile_Click(object sender, RoutedEventArgs e)
     {
-        var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
-        filePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder;
-        filePicker.FileTypeFilter.Add("*");
-        
-        // Get window handle from App.MainWindow
-        if (App.MainWindow != null)
+        FileOpenPicker filePicker = new()
         {
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
-        }
-        
-        var file = await filePicker.PickSingleFileAsync();
+            SuggestedStartLocation = PickerLocationId.ComputerFolder
+        };
+        filePicker.FileTypeFilter.Add("*");
+
+        // Get window handle from App.MainWindow
+        nint hwnd = WindowNative.GetWindowHandle(App.MainWindow);
+        InitializeWithWindow.Initialize(filePicker, hwnd);
+
+        StorageFile file = await filePicker.PickSingleFileAsync();
         if (file != null)
         {
             VariableValueTextBox.Text = file.Path;
@@ -85,7 +85,7 @@ public sealed partial class VariableEditorDialog : ContentDialog
     private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         // Validate input based on mode
-        if (IsPathEntryMode)
+        if (IsEntryMode)
         {
             // For path entry mode, only validate the value field
             if (string.IsNullOrWhiteSpace(VariableValueTextBox.Text))
@@ -132,7 +132,7 @@ public sealed partial class VariableEditorDialog : ContentDialog
 
     private void UpdatePrimaryButtonState()
     {
-        if (IsPathEntryMode)
+        if (IsEntryMode)
         {
             IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(VariableValueTextBox.Text);
         }
