@@ -66,63 +66,49 @@ public sealed partial class VariableEditorDialog : ContentDialog
         }
     }
 
-    private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-    {
-        // Validate input based on mode
-        if (IsEntryMode)
-        {
-            // For path entry mode, only validate the value field
-            if (string.IsNullOrWhiteSpace(VariableValueTextBox.Text))
-            {
-                ErrorTextBlock.Text = "Path cannot be empty.";
-                ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                args.Cancel = true;
-                return;
-            }
-        }
-        else
-        {
-            // For variable mode, validate the name field
-            if (string.IsNullOrWhiteSpace(VariableNameTextBox.Text))
-            {
-                ErrorTextBlock.Text = "Variable name cannot be empty.";
-                ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                args.Cancel = true;
-                return;
-            }
-
-            if (VariableNameTextBox.Text.Contains('='))
-            {
-                ErrorTextBlock.Text = "Variable name cannot contain '=' character.";
-                ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-                args.Cancel = true;
-                return;
-            }
-        }
-
-        ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-    }
-
-    private void ContentDialog_CloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-    {
-        // User cancelled
-    }
-
     private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
         UpdatePrimaryButtonState();
-        ErrorTextBlock.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
     }
 
     private void UpdatePrimaryButtonState()
     {
         if (IsEntryMode)
         {
-            IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(VariableValueTextBox.Text);
+            bool isEmpty = string.IsNullOrWhiteSpace(VariableValueTextBox.Text);
+            IsPrimaryButtonEnabled = !isEmpty;
+            
+            if (isEmpty)
+            {
+                ErrorTextBlock.Text = "Path cannot be empty.";
+                ErrorTextBlock.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ErrorTextBlock.Visibility = Visibility.Collapsed;
+            }
         }
         else
         {
-            IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(VariableNameTextBox.Text);
+            bool isNameEmpty = string.IsNullOrWhiteSpace(VariableNameTextBox.Text);
+            bool hasInvalidChar = !isNameEmpty && VariableNameTextBox.Text.Contains('=');
+            
+            IsPrimaryButtonEnabled = !isNameEmpty && !hasInvalidChar;
+            
+            if (isNameEmpty)
+            {
+                ErrorTextBlock.Text = "Variable name cannot be empty.";
+                ErrorTextBlock.Visibility = Visibility.Visible;
+            }
+            else if (hasInvalidChar)
+            {
+                ErrorTextBlock.Text = "Variable name cannot contain '=' character.";
+                ErrorTextBlock.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ErrorTextBlock.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
