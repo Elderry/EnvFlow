@@ -17,8 +17,12 @@ public partial class EnvVarItem : INotifyPropertyChanged
 {
     private bool _isEditing;
     private bool _isHovered;
+    private bool _isEntry;
+    private bool _isComposite;
     private string _editValue = string.Empty;
     private string _value = string.Empty;
+    private string _icon = AppIcons.Tag;
+    private Brush _iconColor = new SolidColorBrush(Colors.Gray);
 
     public string Name { get; set; } = string.Empty;
     public string Value
@@ -31,10 +35,44 @@ public partial class EnvVarItem : INotifyPropertyChanged
         }
     }
 
-    public string Icon { get; set; } = AppIcons.Tag;
-    public Brush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
+    public string Icon
+    {
+        get => _icon;
+        set
+        {
+            _icon = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Brush IconColor
+    {
+        get => _iconColor;
+        set
+        {
+            _iconColor = value;
+            OnPropertyChanged();
+        }
+    }
     public ObservableCollection<EnvVarItem> Children { get; set; } = [];
-    public bool IsEntry { get; set; }
+
+    public bool IsEntry
+    {
+        get => _isEntry;
+        set
+        {
+            _isEntry = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(NameVisibility));
+            OnPropertyChanged(nameof(ValueVisibility));
+            OnPropertyChanged(nameof(ValueColumnVisibility));
+            OnPropertyChanged(nameof(EditVisibility));
+            OnPropertyChanged(nameof(ChildEditVisibility));
+            OnPropertyChanged(nameof(ColumnSeparatorVisibility));
+            OnPropertyChanged(nameof(NameColumnSpan));
+        }
+    }
+
     public bool IsValid { get; set; } = true;
     public bool IsReadOnly { get; set; } = false; // For volatile environment variables
     public bool IsSystemVariable { get; set; } = false; // Track if this is a system variable
@@ -76,7 +114,21 @@ public partial class EnvVarItem : INotifyPropertyChanged
     }
 
     public bool IsLimitAccess => IsSystemVariable && !AdminHelper.IsAdmin();
-    public bool IsComposite => Children.Count > 0;
+
+    public bool IsComposite
+    {
+        get => _isComposite;
+        set
+        {
+            _isComposite = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(ValueVisibility));
+            OnPropertyChanged(nameof(ValueColumnVisibility));
+            OnPropertyChanged(nameof(ColumnSeparatorVisibility));
+            OnPropertyChanged(nameof(NameColumnSpan));
+            OnPropertyChanged(nameof(AddChildButtonVisibility));
+        }
+    }
 
     // Tree view item visibility
     public Visibility NameVisibility => (IsEditing && IsEntry) ? Visibility.Collapsed : Visibility.Visible;
@@ -165,7 +217,8 @@ public partial class EnvVarItem : INotifyPropertyChanged
             Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : isPathLike ? AppIcons.Error : AppIcons.Tag,
             IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : isPathLike ? Colors.Crimson : Colors.DeepSkyBlue),
             IsReadOnly = IsReadOnly,
-            IsSystemVariable = IsSystemVariable
+            IsSystemVariable = IsSystemVariable,
+            IsComposite = false
         };
     }
 
@@ -190,8 +243,14 @@ public partial class EnvVarItem : INotifyPropertyChanged
             {
                 Children.Add(CreateEntry(entry));
             }
+            IsComposite = true;
+            return;
         }
-        else if (isPathLike)
+
+        Children.Clear();
+        IsComposite = false;
+
+        if (isPathLike)
         {
             // Single path value (like OneDrive, TEMP, etc.)
             if (IsReadOnly)
@@ -199,22 +258,20 @@ public partial class EnvVarItem : INotifyPropertyChanged
                 // Volatile variables - gray color, no validation
                 Icon = AppIcons.Folder;
                 IconColor = new SolidColorBrush(Colors.Gray);
+                return;
             }
-            else
-            {
-                var expandedValue = Environment.ExpandEnvironmentVariables(value);
-                bool isFolder = Directory.Exists(expandedValue);
-                bool isFile = File.Exists(expandedValue);
-                bool exists = isFolder || isFile;
-                Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : AppIcons.Error;
-                IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
-            }
+
+            string expandedValue = Environment.ExpandEnvironmentVariables(value);
+            bool isFolder = Directory.Exists(expandedValue);
+            bool isFile = File.Exists(expandedValue);
+            bool exists = isFolder || isFile;
+            Icon = isFolder ? AppIcons.Folder : isFile ? AppIcons.File : AppIcons.Error;
+            IconColor = new SolidColorBrush(exists ? Colors.MediumSeaGreen : Colors.Crimson);
+            return;
         }
-        else
-        {
-            Icon = AppIcons.Tag;
-            IconColor = new SolidColorBrush(IsReadOnly ? Colors.Gray : Colors.DeepSkyBlue);
-        }
+
+        Icon = AppIcons.Tag;
+        IconColor = new SolidColorBrush(IsReadOnly ? Colors.Gray : Colors.DeepSkyBlue);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
